@@ -1,32 +1,29 @@
-import { Injectable } from '@nestjs/common';
-
-export type User = any;
+import {ConflictException, Injectable} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+import { User } from './users.schema';
+import { AuthNewUserDto } from '../auth/auth-credentials.dto';
 
 @Injectable()
 export class UsersService {
-    private readonly users: User[];
+    constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-    constructor() {
-        this.users = [
-            {
-                userId: 1,
-                username: 'john',
-                password: 'changeme',
-            },
-            {
-                userId: 2,
-                username: 'chris',
-                password: 'secret',
-            },
-            {
-                userId: 3,
-                username: 'maria',
-                password: 'guess',
-            },
-        ];
+    async findOne(emailOrNumber: string): Promise<User | undefined> {
+        return this.userModel.findOne({ $or: [{ email: emailOrNumber }, { phone: emailOrNumber }] });
     }
 
-    async findOne(username: string): Promise<User | undefined> {
-        return this.users.find(user => user.username === username);
+    async register(authNewUserDto: AuthNewUserDto) {
+        const { password } = authNewUserDto;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const createdCat = new this.userModel({ ...authNewUserDto, password: hashedPassword});
+        try {
+            return await createdCat.save();
+        } catch (error) {
+            if (error.code === 11000) {
+                throw new ConflictException('Phone number or Email address already exists');
+            }
+            throw error;
+        }
     }
 }
