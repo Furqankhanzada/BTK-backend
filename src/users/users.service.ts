@@ -16,14 +16,24 @@ export class UsersService {
     async register(authNewUserDto: AuthNewUserDto) {
         const { password } = authNewUserDto;
         const hashedPassword = await bcrypt.hash(password, 10);
-        const createdCat = new this.userModel({ ...authNewUserDto, password: hashedPassword});
+        const createdUser = new this.userModel({ ...authNewUserDto, password: hashedPassword });
+        createdUser.addresses.push({
+            type: 'VILLA',
+            unit: 'P10 A',
+            street: 'Road 2',
+            house: '',
+            location: {
+                type: 'Point',
+                coordinates: [-104.9903, 39.7392]
+            }
+        })
         try {
-            return await createdCat.save();
+            return await createdUser.save();
         } catch (error) {
             if (error.code === 11000) {
                 throw new ConflictException('Phone number or Email address already exists');
             }
-            throw error;
+            return error;
         }
     }
 }

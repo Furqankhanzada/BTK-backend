@@ -13,14 +13,38 @@ export enum UserStatus {
   BLOCKED = 'BLOCKED',
 }
 
-interface Address {
-  type: AddressTypes,
-  unit: string,
-  street: string,
-  block: string
-}
 
-@Schema()
+@Schema() // _id for watermelon DB
+export class Location  {
+  @Prop({ required: true, enum: ['Point'] })
+  type: string;
+
+  @Prop({ required: true })
+  coordinates: number[];
+}
+const locationSchema = SchemaFactory.createForClass(Location);
+
+@Schema() // _id for watermelon DB
+export class Address  {
+  @Prop({ required: true, enum: [AddressTypes.VILLA, AddressTypes.TOWER] })
+  type: string;
+
+  @Prop()
+  unit: string; // Precinct, Midway Commercial
+
+  @Prop()
+  street: string; // Road 2, or Street
+
+  @Prop()
+  house: string; // House or Flats in tower
+
+  @Prop({ type: locationSchema })
+  location: Location;
+}
+const addressSchema = SchemaFactory.createForClass(Address);
+
+
+@Schema({ timestamps: true })
 export class User extends Document {
   @Prop({ required: true, index: true, trim: true })
   name: string;
@@ -37,11 +61,11 @@ export class User extends Document {
   @Prop({ default: true })
   resident: boolean;
 
-  @Prop()
+  @Prop({ type: [addressSchema] })
   addresses: Address[];
 
-  @Prop({ default: UserStatus.PENDING })
-  status: UserStatus;
+  @Prop({ default: UserStatus.PENDING, enum: [UserStatus.PENDING, UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.VERIFIED] })
+  status: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
