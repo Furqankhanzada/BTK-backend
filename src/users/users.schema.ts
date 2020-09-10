@@ -6,6 +6,11 @@ export enum AddressTypes {
   TOWER = 'TOWER',
 }
 
+export enum Roles {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+}
+
 export enum UserStatus {
   VERIFIED = 'VERIFIED',
   ACTIVE = 'ACTIVE',
@@ -66,6 +71,9 @@ export class User extends Document {
 
   @Prop({ default: UserStatus.PENDING, enum: [UserStatus.PENDING, UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.VERIFIED] })
   status: string;
+
+  @Prop({ type: [String], default: [ Roles.USER ], enum: [Roles.ADMIN, Roles.USER] })
+  roles: string[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

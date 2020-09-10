@@ -9,7 +9,11 @@ import { AuthNewUserDto } from '../auth/auth-credentials.dto';
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-    async findOne(emailOrNumber: string): Promise<User | undefined> {
+    async findOne(_id: string): Promise<User | undefined> {
+        return this.userModel.findOne({ _id }, { password: 0 });
+    }
+
+    async findOneByEmailOrNumber(emailOrNumber: string): Promise<User | undefined> {
         return this.userModel.findOne({ $or: [{ email: emailOrNumber }, { phone: emailOrNumber }] });
     }
 

@@ -13,7 +13,7 @@ export class AuthService {
     ) {}
 
     async validateUser(authCredentialsDto: AuthCredentialsDto): Promise<any> {
-        const user = await this.usersService.findOne(authCredentialsDto.emailOrNumber);
+        const user = await this.usersService.findOneByEmailOrNumber(authCredentialsDto.emailOrNumber);
 
         if (!user) {
             return null;

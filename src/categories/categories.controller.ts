@@ -1,13 +1,19 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { CategoriesService } from './categories.service';
 import { Category } from './category.schema';
-import { CreateCategoryDto, UpdateCategoryDto } from './create-category.dto';
+import { CreateCategoryDto } from './create-category.dto';
+import { RolesGuard } from '../auth/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
 
 @Controller('categories')
 export class CategoriesController {
     constructor(private readonly categoriesService: CategoriesService) {}
     @Post()
+    @Roles('ADMIN')
+    @UseGuards(RolesGuard)
+    @UseGuards(JwtAuthGuard)
     create(@Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
         return this.categoriesService.create(createCategoryDto);
     }

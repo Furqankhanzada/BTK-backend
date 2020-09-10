@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Category } from './category.schema';
 import { Model } from 'mongoose';
@@ -10,7 +10,14 @@ export class CategoriesService {
 
     async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
         const createdCat = new this.categoryModel(createCategoryDto);
-        return createdCat.save();
+        try {
+            return await createdCat.save();
+        } catch (error) {
+            if (error.code === 11000) {
+                throw new ConflictException('Category with this name already exist!');
+            }
+            return error;
+        }
     }
 
     async findAll(): Promise<Category[]> {
