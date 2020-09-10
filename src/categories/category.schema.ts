@@ -6,6 +6,15 @@ export class Category extends Document {
   @Prop({ required: true, unique: true })
   name: string;
 
+  @Prop()
+  icon: string;
+
+  @Prop()
+  color: string;
+
+  @Prop()
+  image: string;
+
   @Prop({ default: 0 })
   order: number;
 }

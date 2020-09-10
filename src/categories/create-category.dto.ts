@@ -1,7 +1,11 @@
 export class CreateCategoryDto {
     name: string;
-    order: number;
+    icon?: string;
+    color?: string;
+    image?: string;
+    order?: number;
 }
+
 export class UpdateCategoryDto {
     id: string;
     name: string;
