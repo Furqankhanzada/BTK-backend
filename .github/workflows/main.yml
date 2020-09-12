@@ -27,7 +27,16 @@ jobs:
         with:
           cmd: install --frozen-lockfile # will run `yarn install` command
 
-      # Runs a single command using the runners shell
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.EC2KEY }}
+          known_hosts: ${{ secrets.HOST_ADDRESS }}
+
+      - name: rsync over ssh
+        run: rsync ./dist/ ${{ secrets.HOST_USER }}@${{ secrets.HOST_ADDRESS }}:~/repos/btk
+
+        # Runs a single command using the runners shell
       - name: Run secrets
         run: echo ${{ secrets.HOST_USER }}
 
