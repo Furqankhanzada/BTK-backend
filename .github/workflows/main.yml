@@ -31,7 +31,7 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.EC2KEY }}
-          known_hosts: ${{ secrets.HOST_ADDRESS }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: rsync over ssh
         run: rsync ./dist/ ${{ secrets.HOST_USER }}@${{ secrets.HOST_ADDRESS }}:~/repos/btk
