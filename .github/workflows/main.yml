@@ -40,7 +40,7 @@ jobs:
         run: ls
 
       - name: rsync over ssh
-        run: rsync -a --exclude=node_modules --exclude=src --exclude=test ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/btk
+        run: rsync -a --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/btk
 
         # Runs a single command using the runners shell
       - name: Run secrets
