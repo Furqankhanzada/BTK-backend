@@ -24,8 +24,8 @@ jobs:
 
       - name: Setup yarn
       - uses: borales/actions-yarn@v2.0.0
-          with:
-            cmd: install --frozen-lockfile # will run `yarn install` command
+        with:
+          cmd: install --frozen-lockfile # will run `yarn install` command
 
       # Runs a single command using the runners shell
       - name: yarn version test
