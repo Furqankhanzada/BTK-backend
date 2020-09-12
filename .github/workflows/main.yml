@@ -28,10 +28,6 @@ jobs:
           cmd: install --frozen-lockfile # will run `yarn install` command
 
       # Runs a single command using the runners shell
-      - name: yarn version test
-        run: yarn -v
-
-      # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
 
