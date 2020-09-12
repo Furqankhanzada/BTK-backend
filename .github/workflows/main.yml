@@ -36,6 +36,9 @@ jobs:
           key: ${{ secrets.EC2KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
+      - name: files
+        run: ls
+
       - name: rsync over ssh
         run: rsync ./dist/ ${{ secrets.HOST_USER }}@${{ secrets.HOST_ADDRESS }}:~/repos/btk
 
