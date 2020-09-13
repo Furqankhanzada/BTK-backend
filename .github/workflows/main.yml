@@ -43,8 +43,10 @@ jobs:
         run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/btk
 
         # Runs a single command using the runners shell
-      - name: Run secrets
-        run: echo ${{ secrets.HOST_USER }}
+      - name: Run inside ec2
+        run: ssh -i ${{ secrets.EC2KEY }} ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com <<ENDSSH
+          ls
+        ENDSSH
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
