@@ -51,8 +51,7 @@ jobs:
           key: ${{ secrets.EC2KEY }}
           #port: ${{ secrets.PORT }}
           script: |
-            exec bash
-            nvm use 8.11.3
+            bash -l -eo pipefail {0}
             echo 'enter to the server'
             ls
             echo 'enter ~/repos/btk and list file: '
