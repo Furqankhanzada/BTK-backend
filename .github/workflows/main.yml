@@ -44,9 +44,7 @@ jobs:
 
         # Runs a single command using the runners shell
       - name: Run inside ec2
-        run: ssh -i ${{ secrets.EC2KEY }} ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com <<ENDSSH
-          ls
-        ENDSSH
+        run: ssh -i ${{ secrets.EC2KEY }} ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com <<ENDSSH ls ENDSSH
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
