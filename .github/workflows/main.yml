@@ -56,3 +56,5 @@ jobs:
             echo 'enter ~/repos/btk and list file: '
             cd ~/repos/btk
             ls
+            echo 'user node lastest version'
+            nvm use 14.10
