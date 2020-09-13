@@ -45,15 +45,10 @@ jobs:
         # Runs a single command using the runners shell
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
-        env:
-          DATABASE_USER: ${{ secrets.DATABASE_USER }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
         with:
           host: ${{ secrets.HOST_ADDRESS }}
           username: ${{ secrets.HOST_USER }}
           key: ${{ secrets.EC2KEY }}
-          envs: NODE_ENV,DATABASE_USER,DATABASE_PASSWORD,DATABASE_NAME
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm

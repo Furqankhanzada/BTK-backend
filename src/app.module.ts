@@ -9,8 +9,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TagsModule } from './tags/tags.module';
 import { ContactsModule } from './contacts/contacts.module';
 
-console.log('process.env', process.env)
-console.log('process.env.DATABASE_USER', process.env.DATABASE_USER)
 @Module({
   imports: [
       ConfigModule.forRoot({
