@@ -51,7 +51,7 @@ jobs:
           key: ${{ secrets.EC2KEY }}
           #port: ${{ secrets.PORT }}
           script: |
-            source ~/.bashrc
+            exec bash
             echo 'enter to the server'
             ls
             echo 'enter ~/repos/btk and list file: '
