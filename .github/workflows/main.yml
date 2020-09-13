@@ -49,7 +49,6 @@ jobs:
           DATABASE_USER: ${{ secrets.DATABASE_USER }}
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-          NODE_ENV: "production"
         with:
           host: ${{ secrets.HOST_ADDRESS }}
           username: ${{ secrets.HOST_USER }}
@@ -67,6 +66,10 @@ jobs:
             nvm use 14.10
             echo "Node Version :"
             node -v
+            export NODE_ENV=production
+            export DATABASE_USER=${{ secrets.DATABASE_USER }}
+            export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            export DATABASE_NAME=${{ secrets.DATABASE_NAME }}
             npm install --only=prod
             pm2 delete "btk"
             pm2 start dist/main.js --name "btk"
