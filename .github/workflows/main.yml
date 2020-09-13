@@ -36,13 +36,9 @@ jobs:
           key: ${{ secrets.EC2KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: files
-        run: ls
-
       - name: rsync over ssh
         run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/btk
 
-        # Runs a single command using the runners shell
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
         with:
@@ -52,15 +48,9 @@ jobs:
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-            echo 'enter to the server'
             ls
-            echo 'enter ~/repos/btk and list file: '
             cd ~/repos/btk
-            ls
-            echo 'user node lastest version'
             nvm use 14.10
-            echo "Node Version :"
-            node -v
             export NODE_ENV=production
             export DATABASE_USER=${{ secrets.DATABASE_USER }}
             export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
