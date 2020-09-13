@@ -45,7 +45,7 @@ jobs:
         # Runs a single command using the runners shell
       - name: executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@master
-        run: sh ./run.sh
+          run: sh ./run.sh
         with:
           host: ${{ secrets.HOST_ADDRESS }}
           username: ${{ secrets.HOST_USER }}
