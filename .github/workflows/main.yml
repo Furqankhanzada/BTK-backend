@@ -60,6 +60,8 @@ jobs:
             echo 'enter to the server'
             ls
             echo 'enter ~/repos/btk and list file: '
+            echo $DATABASE_USER
+            echo $DATABASE_NAME
             cd ~/repos/btk
             ls
             echo 'user node lastest version'
