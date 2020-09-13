@@ -57,4 +57,4 @@ jobs:
             cd ~/repos/btk
             ls
             echo 'user node lastest version'
-            nvm use 14.10
+            sh ./run.sh
