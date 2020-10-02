@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { TagsModule } from './tags/tags.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { PlacesModule } from './places/places.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { ContactsModule } from './contacts/contacts.module';
       AuthModule,
       UsersModule,
       TagsModule,
-      ContactsModule
+      ContactsModule,
+      PlacesModule
   ],
   controllers: [AppController],
   providers: [AppService],

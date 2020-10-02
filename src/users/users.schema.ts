@@ -4,6 +4,9 @@ import { Document } from 'mongoose';
 export enum AddressTypes {
   VILLA = 'VILLA',
   TOWER = 'TOWER',
+  SCHOOL = 'SCHOOL',
+  HOSPITAL = 'HOSPITAL',
+  MOSQUE = 'MOSQUE',
 }
 
 export enum Roles {

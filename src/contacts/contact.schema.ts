@@ -1,17 +1,30 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Address } from '../users/users.schema';
 
-export interface OpenHours {
-  day: string,
-  from: string,
-  to: string
-}
+@Schema()
+export class OpenHours {
+  @Prop()
+  day: string;
 
-export interface PriceRange {
-  from: string,
-  to: string
+  @Prop()
+  from: string;
+
+  @Prop()
+  to: string;
 }
+const openHoursSchema = SchemaFactory.createForClass(OpenHours);
+
+@Schema()
+export class PriceRange {
+  @Prop()
+  from: string;
+
+  @Prop()
+  to: string;
+}
+const priceRangeSchema = SchemaFactory.createForClass(PriceRange);
+
+
 
 @Schema({ timestamps: true })
 export class Review {
@@ -27,7 +40,6 @@ export class Review {
   @Prop()
   user: object;
 }
-
 const reviewSchema = SchemaFactory.createForClass(Review);
 
 @Schema({ timestamps: true })
@@ -45,9 +57,6 @@ export class Contact extends Document {
   tags: string[];
 
   @Prop({ required: true })
-  address: Address;
-
-  @Prop({ required: true })
   telephone: string;
 
   @Prop()
@@ -56,10 +65,10 @@ export class Contact extends Document {
   @Prop()
   website: string;
 
-  @Prop()
+  @Prop({ type: openHoursSchema })
   openHours: OpenHours[];
 
-  @Prop()
+  @Prop({ type: priceRangeSchema })
   priceRange: PriceRange[];
 
   @Prop()

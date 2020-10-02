@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Req, UseGuards, ParseIntPipe } from '@nestjs/common';
 import { Request } from 'express';
 import { CategoriesService } from './categories.service';
 import { Category } from './category.schema';
@@ -19,8 +19,8 @@ export class CategoriesController {
     }
 
     @Get()
-    findAll(@Req() request: Request): Promise<Category[]> {
-        return this.categoriesService.findAll();
+    findAll(@Req() request: Request, @Query('search') search: string, @Query('limit', ParseIntPipe) limit: number, @Query('skip', ParseIntPipe) skip: number): Promise<Category[]> {
+        return this.categoriesService.findAll({ query: { name: { $regex: search || '', $options: 'i' } }, options: { skip, limit } });
     }
 
     @Get(':id')
