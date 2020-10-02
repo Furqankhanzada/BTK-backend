@@ -56,7 +56,7 @@ export class CategoriesService {
             options = {}
         } = {}
     ): Promise<Category[]> {
-        return this.categoryModel.find(query, projection, { skip: 0, limit: 2, sort: { order: 1 }, ...options }).exec();
+        return this.categoryModel.find(query, projection, { sort: { order: 1 }, ...options }).exec();
     }
 
     async findOne(_id: string): Promise<Category> {
