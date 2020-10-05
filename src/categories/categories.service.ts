@@ -6,37 +6,7 @@ import { CreateCategoryDto } from './create-category.dto';
 
 @Injectable()
 export class CategoriesService {
-    constructor(@InjectModel(Category.name) private categoryModel: Model<Category>) {
-        const categories = [
-            { name: 'AC Technicians', icon: 'map-marked-alt', color: '#FF8A65' },
-            { name: 'Plumber', icon: 'map-marked-alt', color: '#FF8A65' },
-            { name: 'Electricians', icon: 'car', color: 'green' },
-            // { name: 'Maintenance', icon: 'car', color: 'green' },
-            { name: 'Food', icon: 'car', color: 'green' },
-
-            { name: 'Schools', icon: 'car', color: 'green' },
-            { name: 'Colleges', icon: 'car', color: 'green' },
-            { name: 'Universities', icon: 'car', color: 'green' },
-            { name: 'Institutes', icon: 'car', color: 'green' },
-            { name: 'Madrassas', icon: 'car', color: 'green' },
-            { name: 'Education', icon: 'car', color: 'green' },
-
-            { name: 'Hospitals', icon: 'car', color: 'green' },
-            { name: 'Gyms', icon: 'car', color: 'green', },
-           //  { name: 'Health & Fitness', icon: 'car', color: 'green' },
-            { name: 'Salons', icon: 'car', color: 'green' },
-
-            { name: 'Entertainment', icon: 'car', color: 'green' },
-
-            { name: 'Real Estate', icon: 'car', color: 'green' }
-        ]
-
-        categories.forEach(async(cat) => {
-            const category = await this.categoryModel.findOne({ name: cat.name})
-            if (!category) this.create(cat).catch((e) => console.log(e))
-        })
-
-    }
+    constructor(@InjectModel(Category.name) private categoryModel: Model<Category>) {}
 
     async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
         const createdCategory = new this.categoryModel(createCategoryDto);
