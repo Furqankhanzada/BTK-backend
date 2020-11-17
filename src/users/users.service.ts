@@ -18,7 +18,7 @@ export class UsersService {
     }
 
     async update(id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
-        return this.userModel.updateOne({ id }, profileUpdateDto).exec();
+        return this.userModel.updateOne({ id }, { $set: profileUpdateDto }).exec();
     }
 
     async register(authNewUserDto: AuthNewUserDto) {
