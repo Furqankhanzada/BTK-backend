@@ -19,6 +19,20 @@ export class AuthNewUserDto {
     password: string;
 }
 
+export class ProfileUpdateDto {
+    @IsString()
+    @IsNotEmpty()
+    name: string;
+
+    @IsEmail()
+    @IsNotEmpty()
+    email: string;
+
+    @IsString()
+    @IsNotEmpty()
+    phone: string;
+}
+
 export class AuthCredentialsDto {
     @IsNotEmpty()
     emailOrNumber: string;

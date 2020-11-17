@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './users.schema';
-import { AuthNewUserDto } from '../auth/auth-credentials.dto';
+import { AuthNewUserDto, ProfileUpdateDto } from '../auth/auth-credentials.dto';
 
 @Injectable()
 export class UsersService {
@@ -15,6 +15,10 @@ export class UsersService {
 
     async findOneByEmailOrNumber(emailOrNumber: string): Promise<User | undefined> {
         return this.userModel.findOne({ $or: [{ email: emailOrNumber }, { phone: emailOrNumber }] });
+    }
+
+    async update(id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
+        return this.userModel.updateOne({ id }, profileUpdateDto).exec();
     }
 
     async register(authNewUserDto: AuthNewUserDto) {
