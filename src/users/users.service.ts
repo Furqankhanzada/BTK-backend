@@ -17,8 +17,8 @@ export class UsersService {
         return this.userModel.findOne({ $or: [{ email: emailOrNumber }, { phone: emailOrNumber }] });
     }
 
-    async update(id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
-        return this.userModel.updateOne({ id }, { $set: profileUpdateDto }).exec();
+    async update(_id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
+        return this.userModel.updateOne({ _id }, profileUpdateDto).exec();
     }
 
     async register(authNewUserDto: AuthNewUserDto) {

@@ -11,8 +11,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Put(':id')
-  @Roles(RolesEnum.USER)
-  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() profileUpdateDto: ProfileUpdateDto) {
     return this.usersService.update(id, profileUpdateDto);
