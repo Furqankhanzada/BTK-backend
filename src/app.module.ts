@@ -7,8 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { TagsModule } from './tags/tags.module';
-import { ContactsModule } from './contacts/contacts.module';
 import { PlacesModule } from './places/places.module';
+import { BusinessesModule } from './businesses/businesses.module';
 
 @Module({
   imports: [
@@ -21,8 +21,8 @@ import { PlacesModule } from './places/places.module';
       AuthModule,
       UsersModule,
       TagsModule,
-      ContactsModule,
-      PlacesModule
+      PlacesModule,
+      BusinessesModule
   ],
   controllers: [AppController],
   providers: [AppService],
