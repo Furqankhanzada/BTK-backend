@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsObject, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { Location } from '../users/users.schema';
 
 export class CreateBusinessDTO {
     @IsString()
@@ -10,6 +11,7 @@ export class CreateBusinessDTO {
     description?: string;
 
     @IsString()
+    @IsPhoneNumber('PK')
     telephone: string;
 
     @IsString()
@@ -17,12 +19,14 @@ export class CreateBusinessDTO {
     email?: string;
 
     @IsString()
+    @IsUrl({ require_protocol: true })
     website?: string;
 
     @IsString()
     address: string;
 
-    coordinates?: Number[];
+    @IsObject()
+    location?: Location;
 
     @IsString()
     established?: string;
