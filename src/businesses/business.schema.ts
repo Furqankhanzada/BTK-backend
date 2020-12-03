@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { Location, locationSchema } from '../users/users.schema';
 
 @Schema()
 export class OpenHours {
@@ -43,7 +44,7 @@ export class Review {
 const reviewSchema = SchemaFactory.createForClass(Review);
 
 @Schema({ timestamps: true })
-export class Contact extends Document {
+export class Business extends Document {
   @Prop({ required: true, index: true, trim: true })
   name: string;
 
@@ -65,6 +66,12 @@ export class Contact extends Document {
   @Prop()
   website: string;
 
+  @Prop({ required: true })
+  address: string;
+
+  @Prop({ type: locationSchema })
+  location: Location;
+
   @Prop({ type: openHoursSchema })
   openHours: OpenHours[];
 
@@ -79,4 +86,4 @@ export class Contact extends Document {
 
 }
 
-export const ContactSchema = SchemaFactory.createForClass(Contact);
+export const BusinessSchema = SchemaFactory.createForClass(Business);

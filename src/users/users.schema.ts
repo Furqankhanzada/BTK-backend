@@ -30,7 +30,7 @@ export class Location  {
   @Prop({ required: true })
   coordinates: number[];
 }
-const locationSchema = SchemaFactory.createForClass(Location);
+export const locationSchema = SchemaFactory.createForClass(Location);
 
 @Schema() // _id for watermelon DB
 export class Address  {
