@@ -8,8 +8,8 @@ import { CreateBusinessDTO } from './business.dto';
 export class BusinessesService {
   constructor(@InjectModel(Business.name) private businessModel: Model<Business>) {}
 
-  async create(createBusinessDTO: CreateBusinessDTO): Promise<Business> {
-    const createdBusiness = new this.businessModel(createBusinessDTO);
+  async create(createBusinessDTO: CreateBusinessDTO, ownerId): Promise<Business> {
+    const createdBusiness = new this.businessModel({ ...createBusinessDTO, ownerId });
     try {
       return await createdBusiness.save();
     } catch (error) {

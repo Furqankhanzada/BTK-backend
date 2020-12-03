@@ -84,6 +84,8 @@ export class Business extends Document {
   @Prop({ type: reviewSchema })
   reviews: Review[];
 
+  @Prop({ required: true })
+  ownerId: string
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);
