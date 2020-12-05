@@ -36,6 +36,7 @@ export class CategoriesService {
     async update(id: string, createCategoryDto: CreateCategoryDto): Promise<Category> {
         return this.categoryModel.updateOne({ id }, createCategoryDto).exec();
     }
+
     async delete(id: string): Promise<{ deletedCount?: number }> {
         return this.categoryModel.deleteOne({ id }).exec();
     }

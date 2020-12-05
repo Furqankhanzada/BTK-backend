@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model } from 'mongoose';
-import { CreateBusinessDTO } from './business.dto';
+import { CreateBusinessDTO, UpdateBusinessDTO } from './business.dto';
 
 @Injectable()
 export class BusinessesService {
@@ -16,5 +16,26 @@ export class BusinessesService {
       console.log('business create error', error);
       return error;
     }
+  }
+
+  async findAll({
+                  query = {},
+                  projection = {},
+                  options = {}
+                } = {}
+  ): Promise<Business[]> {
+    return this.businessModel.find(query, projection, { sort: { order: 1 }, ...options }).exec();
+  }
+
+  async findOne(_id: string): Promise<Business> {
+    return this.businessModel.findOne({ _id }).exec();
+  }
+
+  async update({ _id, ownerId }: { _id: string, ownerId: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
+    return this.businessModel.updateOne({ _id, ownerId }, updateBusinessDTO).exec();
+  }
+
+  async remove(_id: string): Promise<{ deletedCount?: number }> {
+    return this.businessModel.deleteOne({ _id }).exec();
   }
 }

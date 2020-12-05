@@ -6,9 +6,9 @@ import { CategoriesModule } from './categories/categories.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { TagsModule } from './tags/tags.module';
 import { PlacesModule } from './places/places.module';
 import { BusinessesModule } from './businesses/businesses.module';
+import { TagsModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -20,9 +20,9 @@ import { BusinessesModule } from './businesses/businesses.module';
       CategoriesModule,
       AuthModule,
       UsersModule,
-      TagsModule,
       PlacesModule,
-      BusinessesModule
+      BusinessesModule,
+      TagsModule
   ],
   controllers: [AppController],
   providers: [AppService],
