@@ -15,7 +15,7 @@ import {
   ValidationPipe
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CreateBusinessDTO, UpdateBusinessDTO } from './business.dto';
+import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
 import { Business } from './business.schema';
 import { BusinessesService } from './businesses.service';
 import { Roles } from '../auth/roles.decorator';
@@ -57,5 +57,12 @@ export class BusinessesController {
   @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
     return this.businessesService.remove(id);
+  }
+
+  @Post('/:id/review')
+  @UseGuards(JwtAuthGuard)
+  createReview(@Param('id') id: string, @Request() req, @Body(ValidationPipe) createReviewDTO: CreateReviewDTO): Promise<Business> {
+    const { _id, name, avatar } = req.user;
+    return this.businessesService.createReview(id, { _id, name, avatar }, createReviewDTO);
   }
 }

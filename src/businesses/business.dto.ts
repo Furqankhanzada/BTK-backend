@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsObject, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Location } from '../users/users.schema';
 import { PartialType } from '@nestjs/mapped-types';
 
@@ -42,3 +42,16 @@ export class CreateBusinessDTO {
 }
 
 export class UpdateBusinessDTO extends PartialType(CreateBusinessDTO) {}
+
+export class CreateReviewDTO {
+    @IsString()
+    @IsNotEmpty()
+    @MinLength(6, { message: 'Title is too short' })
+    title: string;
+
+    @IsString()
+    description?: string;
+
+    @IsNumber()
+    rating: number;
+}

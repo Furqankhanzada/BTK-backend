@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model } from 'mongoose';
-import { CreateBusinessDTO, UpdateBusinessDTO } from './business.dto';
+import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
 
 @Injectable()
 export class BusinessesService {
@@ -37,5 +37,9 @@ export class BusinessesService {
 
   async remove(_id: string): Promise<{ deletedCount?: number }> {
     return this.businessModel.deleteOne({ _id }).exec();
+  }
+
+  async createReview(_id, owner, createReviewDTO: CreateReviewDTO): Promise<Business> {
+    return this.businessModel.updateOne({ _id }, { $push: { reviews: { ...createReviewDTO, owner }} }).exec();
   }
 }

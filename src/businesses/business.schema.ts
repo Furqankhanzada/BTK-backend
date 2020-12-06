@@ -26,6 +26,18 @@ export class PriceRange {
 const priceRangeSchema = SchemaFactory.createForClass(PriceRange);
 
 
+@Schema()
+export class ReviewUser {
+  @Prop()
+  _id: string;
+
+  @Prop()
+  name: string;
+
+  @Prop()
+  avatar: string;
+}
+const reviewUserSchema = SchemaFactory.createForClass(ReviewUser);
 
 @Schema({ timestamps: true })
 export class Review {
@@ -33,13 +45,16 @@ export class Review {
   title: string;
 
   @Prop()
-  description: string;
+  description?: string;
 
   @Prop()
   rating: number;
 
-  @Prop()
-  user: object;
+  @Prop({ default: false })
+  disable?: boolean;
+
+  @Prop({ type: reviewUserSchema })
+  owner: ReviewUser;
 }
 const reviewSchema = SchemaFactory.createForClass(Review);
 
@@ -81,7 +96,7 @@ export class Business extends Document {
   @Prop()
   established: Date;
 
-  @Prop({ type: reviewSchema })
+  @Prop({ type: [reviewSchema] })
   reviews: Review[];
 
   @Prop({ required: true })
