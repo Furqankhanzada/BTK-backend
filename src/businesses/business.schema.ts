@@ -87,7 +87,7 @@ export class Business extends Document {
   @Prop({ type: locationSchema })
   location: Location;
 
-  @Prop({ type: openHoursSchema })
+  @Prop({ type: [openHoursSchema] })
   openHours: OpenHours[];
 
   @Prop({ type: priceRangeSchema })
