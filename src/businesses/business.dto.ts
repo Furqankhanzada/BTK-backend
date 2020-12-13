@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Location } from '../users/users.schema';
 import { PartialType } from '@nestjs/mapped-types';
 
@@ -8,20 +8,23 @@ export class CreateBusinessDTO {
     @MinLength(6, { message: 'Name is too short' })
     name: string;
 
+    @IsOptional()
     @IsString()
-    description?: string;
+    description: string;
 
     @IsString()
     @IsPhoneNumber('PK')
     telephone: string;
 
+    @IsOptional()
     @IsString()
     @IsEmail()
-    email?: string;
+    email: string;
 
+    @IsOptional()
     @IsString()
     @IsUrl({ require_protocol: true })
-    website?: string;
+    website: string;
 
     @IsString()
     address: string;
@@ -29,12 +32,14 @@ export class CreateBusinessDTO {
     @IsObject()
     location?: Location;
 
+    @IsOptional()
     @IsString()
-    established?: Date;
+    established: Date;
 
     @IsString()
     category: string;
 
+    @IsOptional()
     @MaxLength(15, {
         each: true,
     })
