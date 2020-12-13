@@ -28,6 +28,7 @@ export class BusinessesService {
   }
 
   async findOne(_id: string): Promise<Business> {
+    await this.businessModel.updateOne({ _id }, { $inc: { views: 1 } }).exec();
     return this.businessModel.findOne({ _id }).exec();
   }
 

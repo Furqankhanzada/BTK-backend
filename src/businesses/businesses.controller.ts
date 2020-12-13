@@ -41,15 +41,21 @@ export class BusinessesController {
     @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
   ): Promise<Business[]> {
     const projection: Record<string, number> = {};
+    const options: Record<string, any> = { skip, limit };
+    // Bring only required fields
     if(fields.length) {
       fields.forEach((key) => {
         projection[key.trim()] = 1;
       })
     }
+    // Sort by popular
+    if(popular) {
+      options.sort = { views: -1 };
+    }
     return this.businessesService.findAll({
       query: { name: { $regex: search || '', $options: 'i' } },
       projection,
-      options: { skip, limit }
+      options
     });
   }
 
