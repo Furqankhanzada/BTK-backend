@@ -25,6 +25,16 @@ export class PriceRange {
 }
 const priceRangeSchema = SchemaFactory.createForClass(PriceRange);
 
+@Schema()
+export class Gallery {
+  @Prop()
+  image: string;
+
+  @Prop({ default: false })
+  cover: boolean;
+}
+const gallerySchema = SchemaFactory.createForClass(Gallery);
+
 
 @Schema()
 export class ReviewUser {
@@ -104,6 +114,12 @@ export class Business extends Document {
 
   @Prop({ default: 0 })
   views: number
+
+  @Prop()
+  thumbnail: string
+
+  @Prop({ type: [gallerySchema] })
+  gallery: Gallery[];
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);

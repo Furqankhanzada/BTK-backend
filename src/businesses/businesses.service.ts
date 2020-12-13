@@ -18,13 +18,25 @@ export class BusinessesService {
     }
   }
 
-  async findAll({
-                  query = {},
-                  projection = {},
-                  options = {}
-                } = {}
-  ): Promise<Business[]> {
-    return this.businessModel.find(query, projection, { sort: { createdAt: -1 }, ...options }).exec();
+  async findAll({ query = {}, projection = {}, options = {} }: any = {}): Promise<Business[]> {
+    const pipelines: any = [
+      { $match: query },
+      { $addFields: {
+          averageRatings: { $avg: '$reviews.rating' },
+        }
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: options.skip },
+      { $limit: options.limit }
+    ];
+    if (Object.keys(projection).length) {
+      pipelines.push({ $project : projection })
+    }
+    if (options && options.sort && Object.keys(options).length) {
+      const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
+      sortPipeline && (sortPipeline.$sort = options.sort);
+    }
+    return this.businessModel.aggregate(pipelines);
   }
 
   async findOne(_id: string): Promise<Business> {
