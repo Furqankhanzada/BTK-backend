@@ -5,7 +5,7 @@ import { PartialType } from '@nestjs/mapped-types';
 export class CreateBusinessDTO {
     @IsString()
     @IsNotEmpty()
-    @MinLength(6, { message: 'Name is too short' })
+    @MinLength(3, { message: 'Name is too short' })
     name: string;
 
     @IsOptional()

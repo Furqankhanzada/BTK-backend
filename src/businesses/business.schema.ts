@@ -101,6 +101,9 @@ export class Business extends Document {
 
   @Prop({ required: true })
   ownerId: string
+
+  @Prop({ default: 0 })
+  views: number
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);

@@ -24,7 +24,7 @@ export class BusinessesService {
                   options = {}
                 } = {}
   ): Promise<Business[]> {
-    return this.businessModel.find(query, projection, { sort: { order: 1 }, ...options }).exec();
+    return this.businessModel.find(query, projection, { sort: { createdAt: -1 }, ...options }).exec();
   }
 
   async findOne(_id: string): Promise<Business> {

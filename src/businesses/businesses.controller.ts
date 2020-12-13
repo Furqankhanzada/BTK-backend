@@ -6,13 +6,14 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  ParseArrayPipe,
   Post,
   Put,
   Query,
   Req,
   Request,
   UseGuards,
-  ValidationPipe
+  ValidationPipe, ParseBoolPipe
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
@@ -35,9 +36,21 @@ export class BusinessesController {
     @Req() request: Request,
     @Query('search') search: string,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
+    @Query('popular', new DefaultValuePipe(false), ParseBoolPipe) popular: boolean,
+    @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
   ): Promise<Business[]> {
-    return this.businessesService.findAll({ query: { name: { $regex: search || '', $options: 'i' } }, options: { skip, limit } });
+    const projection: Record<string, number> = {};
+    if(fields.length) {
+      fields.forEach((key) => {
+        projection[key.trim()] = 1;
+      })
+    }
+    return this.businessesService.findAll({
+      query: { name: { $regex: search || '', $options: 'i' } },
+      projection,
+      options: { skip, limit }
+    });
   }
 
   @Get(':id')
