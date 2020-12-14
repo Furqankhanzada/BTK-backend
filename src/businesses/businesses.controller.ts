@@ -34,6 +34,7 @@ export class BusinessesController {
   @Get()
   findAll(
     @Req() request: Request,
+    @Query('category') category: string,
     @Query('search') search: string,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
@@ -42,6 +43,7 @@ export class BusinessesController {
   ): Promise<Business[]> {
     const projection: Record<string, number> = {};
     const options: Record<string, any> = { skip, limit };
+    const query: Record<string, any> = { name: { $regex: search || '', $options: 'i' } };
     // Bring only required fields
     if(fields.length) {
       fields.forEach((key) => {
@@ -52,8 +54,12 @@ export class BusinessesController {
     if(popular) {
       options.sort = { views: -1 };
     }
+    // Filter By Category
+    if(category) {
+      query.category = category;
+    }
     return this.businessesService.findAll({
-      query: { name: { $regex: search || '', $options: 'i' } },
+      query,
       projection,
       options
     });
