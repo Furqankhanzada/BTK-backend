@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
 
 @Injectable()
@@ -39,9 +39,19 @@ export class BusinessesService {
     return this.businessModel.aggregate(pipelines);
   }
 
-  async findOne(_id: string): Promise<Business> {
+  async findOne(_id: string, projection = {}): Promise<Business> {
+    // Increment Views
     await this.businessModel.updateOne({ _id }, { $inc: { views: 1 } }).exec();
-    return this.businessModel.findOne({ _id }).exec();
+    // Query Single
+    const pipelines: any = [
+      { $match: { _id: Types.ObjectId(_id) } },
+      { $addFields: {
+          averageRatings: { $avg: '$reviews.rating' },
+        }
+      }
+    ];
+    const businesses = await this.businessModel.aggregate(pipelines).exec();
+    return businesses && businesses.length ? businesses[0] : null;
   }
 
   async update({ _id, ownerId }: { _id: string, ownerId: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
