@@ -1,10 +1,7 @@
-import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Put, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ProfileUpdateDto } from '../auth/auth-credentials.dto';
 import { UsersService } from './users.service';
-import { RolesGuard } from '../auth/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { Roles as RolesEnum } from './users.schema';
 
 @Controller('users')
 export class UsersController {
@@ -12,7 +9,7 @@ export class UsersController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() profileUpdateDto: ProfileUpdateDto) {
+  update(@Param('id') id: string, @Body(ValidationPipe) profileUpdateDto: ProfileUpdateDto) {
     return this.usersService.update(id, profileUpdateDto);
   }
 }
