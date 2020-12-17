@@ -46,10 +46,93 @@ export class BusinessesService {
     const pipelines: any = [
       { $match: { _id: Types.ObjectId(_id) } },
       { $addFields: {
-          averageRatings: { $avg: '$reviews.rating' },
+          reviewStats: {
+            averageRatings: { $avg: '$reviews.rating' },
+            oneStarCount: {
+              $sum: {
+                $map:
+                  {
+                    input: "$reviews",
+                    as: "review",
+                    in: {
+                      $cond: [
+                        {
+                          $eq: [{ $floor: '$$review.rating' }, 1 ]
+                        }, 1, 0
+                      ]
+                    }
+                  }
+              }
+            },
+            twoStarCount: {
+              $sum: {
+                $map:
+                  {
+                    input: "$reviews",
+                    as: "review",
+                    in: {
+                      $cond: [
+                        {
+                          $eq: [{ $floor: '$$review.rating' }, 2 ]
+                        }, 1, 0
+                      ]
+                    }
+                  }
+              }
+            },
+            threeStarCount: {
+              $sum: {
+                $map:
+                  {
+                    input: "$reviews",
+                    as: "review",
+                    in: {
+                      $cond: [
+                        {
+                          $eq: [{ $floor: '$$review.rating' }, 3 ]
+                        }, 1, 0
+                      ]
+                    }
+                  }
+              }
+            },
+            fourStarCount: {
+              $sum: {
+                $map:
+                  {
+                    input: "$reviews",
+                    as: "review",
+                    in: {
+                      $cond: [
+                        {
+                          $eq: [{ $floor: '$$review.rating' }, 4 ]
+                        }, 1, 0
+                      ]
+                    }
+                  }
+              }
+            },
+            fiveStarCount: {
+              $sum: {
+                $map:
+                  {
+                    input: "$reviews",
+                    as: "review",
+                    in: {
+                      $cond: [
+                        {
+                          $eq: [{ $floor: '$$review.rating' }, 5 ]
+                        }, 1, 0
+                      ]
+                    }
+                  }
+              }
+            }
+          },
         }
       }
     ];
+
     const businesses = await this.businessModel.aggregate(pipelines).exec();
     return businesses && businesses.length ? businesses[0] : null;
   }
