@@ -5,10 +5,16 @@ name: CI
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
   push:
-    branches: [ master ]
+    branches:
+      - master
+      - development
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - development
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -36,10 +42,16 @@ jobs:
           key: ${{ secrets.EC2KEY }}
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: rsync over ssh
+      - name: Deploy Development
+        if: github.ref == 'refs/heads/development'
         run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/btk
 
-      - name: executing remote ssh commands using ssh key
+      - name: Deploy Production
+        if: github.ref == 'refs/heads/master'
+        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/explore-btk
+
+      - name: Build and Run Development
+        if: github.ref == 'refs/heads/development'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_ADDRESS }}
@@ -62,3 +74,28 @@ jobs:
             npm install --only=prod
             pm2 delete "btk"
             pm2 start dist/main.js --name "btk"
+
+      - name: Build and Run Production
+        if: github.ref == 'refs/heads/master'
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_ADDRESS }}
+          username: ${{ secrets.HOST_USER }}
+          key: ${{ secrets.EC2KEY }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+            ls
+            cd ~/repos/explore-btk
+            nvm use 14.10
+            export NODE_ENV=production
+            export DATABASE_USER=${{ secrets.DATABASE_USER }}
+            export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            export DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+            export AWS_REGION=${{ secrets.AWS_REGION }}
+            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            export AWS_PUBLIC_BUCKET_NAME=${{ secrets.AWS_PUBLIC_BUCKET_NAME }}
+            npm install --only=prod
+            pm2 delete "explore-btk"
+            pm2 start dist/main.js --name "explore-btk"
