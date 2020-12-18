@@ -7,6 +7,6 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api/v1');
   app.enableCors(); // add this line
-  await app.listen(3000);
+  await app.listen(parseInt(process.env.PORT, 10) || 3000);
 }
 bootstrap();
