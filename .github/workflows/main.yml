@@ -89,6 +89,7 @@ jobs:
             cd ~/repos/explore-btk
             nvm use 14.10
             export NODE_ENV=production
+            export PORT=3002
             export DATABASE_USER=${{ secrets.DATABASE_USER }}
             export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
             export DATABASE_NAME=${{ secrets.DATABASE_NAME }}
