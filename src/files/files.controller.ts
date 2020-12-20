@@ -1,6 +1,6 @@
 import {
   Controller,
-  Post,
+  Post, Query,
   Request, UploadedFile,
   UseGuards, UseInterceptors,
 } from '@nestjs/common';
@@ -14,7 +14,11 @@ export class FilesController {
   @Post('/upload')
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(JwtAuthGuard)
-  upload(@Request() req, @UploadedFile() file: any): Promise<any> {
-    return this.filesService.uploadPublicFile(file.buffer, file.originalname);
+  upload(@Request() req, @UploadedFile() file: any, @Query('folder') folder: string): Promise<any> {
+    let filename = file.originalname;
+    if (folder) {
+      filename = `${folder}/${filename}`;
+    }
+    return this.filesService.uploadPublicFile(file.buffer, filename);
   }
 }
