@@ -15,6 +15,7 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(JwtAuthGuard)
   upload(@Request() req, @UploadedFile() file: any, @Query('folder') folder: string): Promise<any> {
+    console.log('FIle:## ', file);
     let filename = file.originalname;
     if (folder) {
       filename = `${folder}/${filename}`;
