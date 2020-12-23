@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Location } from '../users/users.schema';
 import { PartialType } from '@nestjs/mapped-types';
+import { Facilities } from './business.schema';
 
 export class CreateBusinessDTO {
     @IsString()
@@ -44,6 +45,9 @@ export class CreateBusinessDTO {
         each: true,
     })
     tags: string[];
+
+    @IsOptional()
+    facilities: Facilities[];
 }
 
 export class UpdateBusinessDTO extends PartialType(CreateBusinessDTO) {}
@@ -54,8 +58,9 @@ export class CreateReviewDTO {
     @MinLength(6, { message: 'Title is too short' })
     title: string;
 
+    @IsOptional()
     @IsString()
-    description?: string;
+    description: string;
 
     @IsNumber()
     rating: number;

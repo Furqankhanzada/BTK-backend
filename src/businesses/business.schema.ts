@@ -68,6 +68,16 @@ export class Review {
 }
 const reviewSchema = SchemaFactory.createForClass(Review);
 
+@Schema({ _id: false })
+export class Facilities {
+  @Prop()
+  name: string;
+
+  @Prop()
+  icon: string;
+}
+const facilitiesSchema = SchemaFactory.createForClass(Facilities);
+
 @Schema({ timestamps: true })
 export class Business extends Document {
   @Prop({ required: true, index: true, trim: true })
@@ -108,6 +118,9 @@ export class Business extends Document {
 
   @Prop({ type: [reviewSchema] })
   reviews: Review[];
+
+  @Prop({ type: [facilitiesSchema] })
+  facilities: Facilities[];
 
   @Prop({ required: true })
   ownerId: string
