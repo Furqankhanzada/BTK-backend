@@ -20,7 +20,7 @@ export class BusinessesService {
 
   async findAll({ query = {}, projection = {}, options = {} }: any = {}): Promise<Business[]> {
     const pipelines: any = [
-      { $match: query },
+      { $match: { ...query } },
       { $addFields: {
           averageRatings: { $avg: '$reviews.rating' },
         }
