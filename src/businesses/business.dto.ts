@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Location } from '../users/users.schema';
 import { PartialType } from '@nestjs/mapped-types';
-import { Facilities } from './business.schema';
+import { Facilities, Gallery } from './business.schema';
 
 export class CreateBusinessDTO {
     @IsString()
@@ -48,6 +48,12 @@ export class CreateBusinessDTO {
 
     @IsOptional()
     facilities: Facilities[];
+
+    @IsOptional()
+    thumbnail: string
+
+    @IsOptional()
+    gallery: Gallery[];
 }
 
 export class UpdateBusinessDTO extends PartialType(CreateBusinessDTO) {}

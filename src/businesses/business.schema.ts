@@ -92,7 +92,7 @@ export class Business extends Document {
   @Prop()
   tags: string[];
 
-  @Prop({ required: true })
+  @Prop()
   telephone: string;
 
   @Prop()
