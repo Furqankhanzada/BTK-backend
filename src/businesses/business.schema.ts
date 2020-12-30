@@ -1,6 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Location, locationSchema } from '../users/users.schema';
+import { Location, locationSchema, UserStatus } from '../users/users.schema';
+
+export enum BusinessStatus {
+  VERIFIED = 'VERIFIED',
+  ACTIVE = 'ACTIVE',
+  PENDING = 'PENDING',
+  BLOCKED = 'BLOCKED',
+}
 
 @Schema()
 export class OpenHours {
@@ -133,6 +140,9 @@ export class Business extends Document {
 
   @Prop({ type: [gallerySchema] })
   gallery: Gallery[];
+
+  @Prop({ default: BusinessStatus.PENDING, enum: [BusinessStatus.PENDING, BusinessStatus.ACTIVE, BusinessStatus.BLOCKED, BusinessStatus.VERIFIED] })
+  status: string;
 }
 
 export const BusinessSchema = SchemaFactory.createForClass(Business);
