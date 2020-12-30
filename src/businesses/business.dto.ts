@@ -13,6 +13,7 @@ export class CreateBusinessDTO {
     @IsString()
     description: string;
 
+    @IsOptional()
     @IsString()
     @IsPhoneNumber('PK')
     telephone: string;
