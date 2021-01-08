@@ -38,6 +38,7 @@ export class BusinessesController {
     @Query('search') search: string,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
+    @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
     @Query('popular', new DefaultValuePipe(false), ParseBoolPipe) popular: boolean,
     @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
   ): Promise<Business[]> {
@@ -50,6 +51,12 @@ export class BusinessesController {
         projection[key.trim()] = 1;
       })
     }
+    
+    // Sort by favorites
+     if(favorite) {
+      options.sort = { totalFavorites: -1 };
+    }
+
     // Sort by popular
     if(popular) {
       options.sort = { views: -1 };
