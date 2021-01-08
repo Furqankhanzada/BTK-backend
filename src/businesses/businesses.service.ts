@@ -23,6 +23,7 @@ export class BusinessesService {
       { $match: { ...query } },
       { $addFields: {
           averageRatings: { $avg: '$reviews.rating' },
+          totalFavorites: { $size: { "$ifNull": [ "$favorites", [] ] } },
         }
       },
       { $sort: { createdAt: -1 } },
