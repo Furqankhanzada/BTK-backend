@@ -97,4 +97,11 @@ export class BusinessesController {
     const { _id } = req.user;
     return this.businessesService.createFavorite(id, _id);
   }
+
+  @Delete('/:id/favorite')
+  @UseGuards(JwtAuthGuard)
+  removeFavorite(@Param('id') id: string, @Request() req): Promise<Business> {
+    const { _id } = req.user;
+    return this.businessesService.removeFavorite(id, _id);
+  }
 }
