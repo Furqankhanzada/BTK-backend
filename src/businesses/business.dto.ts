@@ -59,6 +59,8 @@ export class CreateBusinessDTO {
 
 export class UpdateBusinessDTO extends PartialType(CreateBusinessDTO) {}
 
+export class CreateFavoriteDTO {}
+
 export class CreateReviewDTO {
     @IsString()
     @IsNotEmpty()

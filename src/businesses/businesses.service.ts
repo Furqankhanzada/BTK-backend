@@ -145,6 +145,11 @@ export class BusinessesService {
     return this.businessModel.deleteOne({ _id }).exec();
   }
 
+  // Favorites
+  async createFavorite(_id, ownerId): Promise<Business> {
+    return this.businessModel.updateOne({ _id }, { $addToSet: { favorites: { ownerId }} }).exec();
+  }
+
   async createReview(_id, owner, createReviewDTO: CreateReviewDTO): Promise<Business> {
     return this.businessModel.updateOne({ _id }, { $push: { reviews: { ...createReviewDTO, owner }} }).exec();
   }

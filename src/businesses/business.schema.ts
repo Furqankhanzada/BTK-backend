@@ -42,7 +42,6 @@ export class Gallery {
 }
 const gallerySchema = SchemaFactory.createForClass(Gallery);
 
-
 @Schema()
 export class ReviewUser {
   @Prop()
@@ -85,6 +84,13 @@ export class Facilities {
 }
 const facilitiesSchema = SchemaFactory.createForClass(Facilities);
 
+@Schema({ _id: false })
+export class Favorite {
+  @Prop()
+  ownerId: string;
+}
+const favoriteSchema = SchemaFactory.createForClass(Favorite);
+
 @Schema({ timestamps: true })
 export class Business extends Document {
   @Prop({ required: true, index: true, trim: true })
@@ -104,6 +110,9 @@ export class Business extends Document {
 
   @Prop()
   email: string;
+
+  @Prop({ type: [favoriteSchema] })
+  favorites: Favorite[];
 
   @Prop()
   website: string;
