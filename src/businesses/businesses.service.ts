@@ -150,6 +150,10 @@ export class BusinessesService {
     return this.businessModel.updateOne({ _id }, { $addToSet: { favorites: { ownerId }} }).exec();
   }
 
+  async removeFavorite(_id, ownerId): Promise<Business> {
+    return this.businessModel.updateOne({ _id }, { $pull: { favorites: { ownerId }} }).exec();
+  }
+
   async createReview(_id, owner, createReviewDTO: CreateReviewDTO): Promise<Business> {
     return this.businessModel.updateOne({ _id }, { $push: { reviews: { ...createReviewDTO, owner }} }).exec();
   }
