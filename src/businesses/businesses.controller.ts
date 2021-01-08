@@ -90,4 +90,11 @@ export class BusinessesController {
     const { _id, name, avatar } = req.user;
     return this.businessesService.createReview(id, { _id, name, avatar }, createReviewDTO);
   }
+
+  @Post('/:id/favorite')
+  @UseGuards(JwtAuthGuard)
+  createFavorite(@Param('id') id: string, @Request() req): Promise<Business> {
+    const { _id } = req.user;
+    return this.businessesService.createFavorite(id, _id);
+  }
 }
