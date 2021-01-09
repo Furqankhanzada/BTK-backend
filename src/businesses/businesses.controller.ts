@@ -16,6 +16,7 @@ import {
   ValidationPipe, ParseBoolPipe
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuardOptional } from '../auth/jwt-auth-optional.guard';
 import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
 import { Business } from './business.schema';
 import { BusinessesService } from './businesses.service';
@@ -32,8 +33,9 @@ export class BusinessesController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuardOptional)
   findAll(
-    @Req() request: Request,
+    @Request() req,
     @Query('category') category: string,
     @Query('search') search: string,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
@@ -42,6 +44,8 @@ export class BusinessesController {
     @Query('popular', new DefaultValuePipe(false), ParseBoolPipe) popular: boolean,
     @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
   ): Promise<Business[]> {
+    const { user } = req;
+
     const projection: Record<string, number> = {};
     const options: Record<string, any> = { skip, limit };
     const query: Record<string, any> = { name: { $regex: search || '', $options: 'i' } };
@@ -50,11 +54,6 @@ export class BusinessesController {
       fields.forEach((key) => {
         projection[key.trim()] = 1;
       })
-    }
-    
-    // Sort by favorites
-     if(favorite) {
-      options.sort = { totalFavorites: -1 };
     }
 
     // Sort by popular
@@ -65,6 +64,12 @@ export class BusinessesController {
     if(category) {
       query.category = category;
     }
+
+    // Filter by favorite - only for logged in user
+    if(favorite && user) {
+      query['favorites.ownerId'] = user._id.toString();
+    }
+
     return this.businessesService.findAll({
       query,
       projection,
