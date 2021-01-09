@@ -38,6 +38,7 @@ export class BusinessesController {
     @Request() req,
     @Query('category') category: string,
     @Query('search') search: string,
+    @Query('ownerId') ownerId: string,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
@@ -63,6 +64,11 @@ export class BusinessesController {
     // Filter By Category
     if(category) {
       query.category = category;
+    }
+
+    // Filter By Owner
+    if(ownerId) {
+      query.ownerId = ownerId;
     }
 
     // Filter by favorite - only for logged in user
