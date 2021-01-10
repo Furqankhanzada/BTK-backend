@@ -90,7 +90,7 @@ export class BusinessesController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Request() req, @Body(ValidationPipe) updateBusinessDTO: UpdateBusinessDTO) {
+  update(@Param('id') id: string, @Request() req, @Body(new ValidationPipe({ whitelist: true })) updateBusinessDTO: UpdateBusinessDTO) {
     return this.businessesService.update({ _id: id, ownerId: req.user._id }, updateBusinessDTO);
   }
 
