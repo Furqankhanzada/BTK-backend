@@ -168,7 +168,7 @@ export class BusinessesService {
       updates['reviews.$.owner.avatar'] = avatar;
     }
 
-    return this.businessModel.update({ 'reviews.owner._id': ownerId }, { $set: updates}, { multi: true }).exec();
+    return this.businessModel.updateMany({ 'reviews.owner._id': ownerId }, { $set: updates}).exec();
   }
 
   async getOne(): Promise<Business> {
