@@ -80,3 +80,12 @@ export class CreateReviewDTO {
     @IsNumber()
     rating: number;
 }
+
+export class UpdateReviewUserDTO {
+    @IsString()
+    @IsOptional()
+    avatar: string;
+    
+    @IsString()
+    name: string;
+}
