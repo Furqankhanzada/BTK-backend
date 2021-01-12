@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Category } from './category.schema';
 import { Model } from 'mongoose';
-import { CreateCategoryDto } from './create-category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './create-category.dto';
 import { BusinessesService } from '../businesses/businesses.service';
 
 @Injectable()
@@ -34,8 +34,20 @@ export class CategoriesService {
         return this.categoryModel.findOne({ _id }).exec();
     }
 
-    async update(id: string, createCategoryDto: CreateCategoryDto): Promise<Category> {
-        return this.categoryModel.updateOne({ id }, createCategoryDto).exec();
+    async update(_id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+        try {
+            const category = await this.findOne(_id);
+        
+            const updatedCategory = await this.categoryModel.updateOne({ _id }, updateCategoryDto).exec();
+
+            if(updateCategoryDto.name && updateCategoryDto.name !== category.name ){
+                await this.businessService.updateMany({ category: category.name }, { category: updateCategoryDto.name });
+            }
+
+            return updatedCategory;
+        } catch (error) {
+            return error;
+        }
     }
 
     async remove(_id: string): Promise<{ deletedCount?: number }> {

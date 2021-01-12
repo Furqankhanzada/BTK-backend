@@ -1,4 +1,5 @@
-import {IsNotEmpty, IsString, IsOptional, IsHexColor, IsUrl, IsNumber, isPositive, IsPort, IsPositive, Min, IsIn, IsInt, Max} from "class-validator";
+import { PartialType } from '@nestjs/mapped-types';
+import { IsHexColor, IsInt, IsNotEmpty, IsOptional, IsString, IsUrl, Min } from "class-validator";
 
 export class CreateCategoryDto {
     @IsString()
@@ -25,8 +26,4 @@ export class CreateCategoryDto {
     order: number;
 }
 
-export class UpdateCategoryDto {
-    id: string;
-    name: string;
-    order: number;
-}
+export class UpdateCategoryDto extends PartialType(CreateCategoryDto) {}
