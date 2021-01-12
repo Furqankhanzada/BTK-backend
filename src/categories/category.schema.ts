@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Category extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, index: true, unique: true })
   name: string;
 
   @Prop()
