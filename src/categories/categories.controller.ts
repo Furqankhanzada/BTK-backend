@@ -11,7 +11,8 @@ import {
     UseGuards,
     ParseIntPipe,
     ParseArrayPipe,
-    DefaultValuePipe
+    DefaultValuePipe,
+    ValidationPipe
 } from '@nestjs/common';
 import { Request } from 'express';
 import { CategoriesService } from './categories.service';
@@ -28,7 +29,7 @@ export class CategoriesController {
     @Roles('ADMIN')
     @UseGuards(RolesGuard)
     @UseGuards(JwtAuthGuard)
-    create(@Body() createCategoryDto: CreateCategoryDto): Promise<Category> {
+    create(@Body(ValidationPipe) createCategoryDto: CreateCategoryDto): Promise<Category> {
         return this.categoriesService.create(createCategoryDto);
     }
 
