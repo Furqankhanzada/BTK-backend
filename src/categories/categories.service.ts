@@ -3,10 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Category } from './category.schema';
 import { Model } from 'mongoose';
 import { CreateCategoryDto } from './create-category.dto';
+import { BusinessesService } from '../businesses/businesses.service';
 
 @Injectable()
 export class CategoriesService {
-    constructor(@InjectModel(Category.name) private categoryModel: Model<Category>) {}
+    constructor(@InjectModel(Category.name) private categoryModel: Model<Category>, private businessService: BusinessesService) {}
 
     async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
         const createdCategory = new this.categoryModel(createCategoryDto);
@@ -37,7 +38,18 @@ export class CategoriesService {
         return this.categoryModel.updateOne({ id }, createCategoryDto).exec();
     }
 
-    async delete(id: string): Promise<{ deletedCount?: number }> {
-        return this.categoryModel.deleteOne({ id }).exec();
+    async remove(_id: string): Promise<{ deletedCount?: number }> {
+       try {
+            const category = await this.findOne(_id);
+            const businessesUsingCategory = await this.businessService.findAll({ query: { category: category.name }, projection: { _id: 1 }});
+
+            if(businessesUsingCategory.length){
+                throw new ConflictException('Category is in use.');
+            }
+  
+            return this.categoryModel.deleteOne({ _id }).exec();
+       } catch (error) {
+           return error;
+       }
     }
 }
