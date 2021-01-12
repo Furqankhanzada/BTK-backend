@@ -1,13 +1,28 @@
-import {IsNotEmpty, IsString} from "class-validator";
+import {IsNotEmpty, IsString, IsOptional, IsHexColor, IsUrl, IsNumber, isPositive, IsPort, IsPositive, Min, IsIn, IsInt, Max} from "class-validator";
 
 export class CreateCategoryDto {
     @IsString()
     @IsNotEmpty()
     name: string;
-    icon?: string;
-    color?: string;
-    image?: string;
-    order?: number;
+
+    @IsString()
+    @IsOptional()
+    icon: string;
+
+    @IsString()
+    @IsHexColor()
+    @IsOptional()
+    color: string;
+
+    @IsString()
+    @IsUrl({ require_protocol: true })
+    @IsOptional()
+    image: string;
+
+    @IsInt()
+    @Min(0)
+    @IsOptional()
+    order: number;
 }
 
 export class UpdateCategoryDto {
