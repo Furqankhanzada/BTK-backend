@@ -10,6 +10,7 @@ import {
     Req,
     UseGuards,
     ParseIntPipe,
+    ParseArrayPipe,
     DefaultValuePipe
 } from '@nestjs/common';
 import { Request } from 'express';
@@ -36,9 +37,21 @@ export class CategoriesController {
         @Req() request: Request,
         @Query('search') search: string,
         @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
-        @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number
+        @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
+        @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
     ): Promise<Category[]> {
-        return this.categoriesService.findAll({ query: { name: { $regex: search || '', $options: 'i' } }, options: { skip, limit } });
+        const projection: Record<string, number> = {};
+        const options: Record<string, any> = { skip, limit };
+        const query: Record<string, any> = { name: { $regex: search || '', $options: 'i' } };
+
+        // Bring only required fields
+        if(fields.length) {
+            fields.forEach((key) => {
+                projection[key.trim()] = 1;
+            });
+        }
+
+        return this.categoriesService.findAll({ query, projection, options });
     }
 
     @Get(':id')
