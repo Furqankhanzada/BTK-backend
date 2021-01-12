@@ -17,7 +17,7 @@ import {
 import { Request } from 'express';
 import { CategoriesService } from './categories.service';
 import { Category } from './category.schema';
-import { CreateCategoryDto } from './create-category.dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './create-category.dto';
 import { RolesGuard } from '../auth/roles.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.decorator';
@@ -61,8 +61,11 @@ export class CategoriesController {
     }
 
     @Put(':id')
-    update(@Param('id') id: string, @Body() createCategoryDto: CreateCategoryDto) {
-        return this.categoriesService.update(id, createCategoryDto);
+    @Roles('ADMIN')
+    @UseGuards(RolesGuard)
+    @UseGuards(JwtAuthGuard)
+    update(@Param('id') id: string, @Body(ValidationPipe) updateCategoryDto: UpdateCategoryDto) {
+        return this.categoriesService.update(id, updateCategoryDto);
     }
 
     @Delete(':id')
