@@ -27,8 +27,8 @@ export class BusinessesService {
         }
       },
       { $sort: { createdAt: -1 } },
-      { $skip: options.skip },
-      { $limit: options.limit }
+      { $skip: options.skip || 0 },
+      { $limit: options.limit || 20}
     ];
     if (Object.keys(projection).length) {
       pipelines.push({ $project : projection })
