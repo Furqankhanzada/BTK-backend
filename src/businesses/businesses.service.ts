@@ -142,6 +142,10 @@ export class BusinessesService {
     return this.businessModel.updateOne({ _id, ownerId }, updateBusinessDTO).exec();
   }
 
+  async updateMany({ category }: { category: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
+    return this.businessModel.updateMany({ category }, updateBusinessDTO).exec();
+  }
+
   async remove(_id: string): Promise<{ deletedCount?: number }> {
     return this.businessModel.deleteOne({ _id }).exec();
   }
