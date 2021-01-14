@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './users.schema';
-import { UsersController } from './users.controller';
 import { BusinessesModule } from '../businesses/businesses.module';
 import { BusinessesService } from '../businesses/businesses.service';
+import { UsersController } from './users.controller';
+import { UsersHooks } from './users.hooks';
+import { User } from './users.schema';
+import { UsersService } from './users.service';
 
 @Module({
   imports: [
@@ -12,33 +13,12 @@ import { BusinessesService } from '../businesses/businesses.service';
       {
         name: User.name,
         imports: [BusinessesModule],
-        useFactory: async (businessesService: BusinessesService) => {
-          const schema = UserSchema;
-          schema.post('updateOne', async function() {
-            try {
-              const query = this.getQuery();
-              const userUpdates = this._update.$set;
-
-              if (query?._id && userUpdates?.name) {
-                const ownerId = query._id;
-                const updates = {
-                  avatar: userUpdates.avatar,
-                  name: userUpdates.name,
-                };
-
-                await businessesService.updateReviewUser(ownerId, updates);
-              }
-            } catch (error) {
-              throw new Error('Failed to update user data in reviews.');
-            }
-          });
-          return schema;
-        },
+        useFactory: new UsersHooks().hooks,
         inject: [BusinessesService],
       },
     ]),
   ],
-  providers: [UsersService],
+  providers: [UsersService, UsersHooks],
   exports: [UsersService],
   controllers: [UsersController],
 })
