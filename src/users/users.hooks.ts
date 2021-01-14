@@ -12,13 +12,9 @@ export class UsersHooks {
 
         if (query?._id && updates?.name) {
           const ownerId = query._id;
+          const { avatar, name } = updates;
 
-          const reviewUpdates = {
-            avatar: updates.avatar,
-            name: updates.name,
-          };
-
-          await businessService.updateReviewUser(ownerId, reviewUpdates);
+          await businessService.updateReview({ _id: ownerId, name, avatar }, {});
         }
       } catch (error) {
         throw new Error('Failed to update user data in reviews.');
