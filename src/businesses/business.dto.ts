@@ -81,11 +81,4 @@ export class CreateReviewDTO {
     rating: number;
 }
 
-export class UpdateReviewUserDTO {
-    @IsString()
-    @IsOptional()
-    avatar: string;
-    
-    @IsString()
-    name: string;
-}
+export class UpdateReviewUserDTO extends PartialType(CreateReviewDTO) {}

@@ -159,20 +159,21 @@ export class BusinessesService {
     return this.businessModel.updateOne({ _id }, { $push: { reviews: { ...createReviewDTO, owner }} }).exec();
   }
 
-  async updateReviewUser(ownerId, { avatar, name }: UpdateReviewUserDTO): Promise<Business> {
-    const updates = {
-      'reviews.$.owner.name': name
+  async updateReview(owner, updateReviewDTO: UpdateReviewUserDTO): Promise<Business> {
+    const updates = {};
+
+    Object.entries(updateReviewDTO).forEach(([key, value]) => {
+      updates[`reviews.$.${key}`] = value;
+    })
+
+    if(owner.avatar){
+      updates[`reviews.$.owner.avatar`] = owner.avatar;
     }
 
-    if(avatar){
-      updates['reviews.$.owner.avatar'] = avatar;
+    if(owner.name){
+      updates[`reviews.$.owner.name`] = owner.name;
     }
 
-    return this.businessModel.updateMany({ 'reviews.owner._id': ownerId }, { $set: updates}).exec();
-  }
-
-  async getOne(): Promise<Business> {
-    const businesses = await this.businessModel.findOne({}).exec();
-    return businesses ;
+    return this.businessModel.updateMany({ 'reviews.owner._id': owner._id }, { $set: updates}).exec();
   }
 }
