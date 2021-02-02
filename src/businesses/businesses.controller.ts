@@ -36,7 +36,7 @@ export class BusinessesController {
   @UseGuards(JwtAuthGuardOptional)
   findAll(
     @Request() req,
-    @Query('category') category: string,
+    @Query('category') category: string | string[],
     @Query('search') search: string,
     @Query('ownerId') ownerId: string,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
@@ -63,7 +63,8 @@ export class BusinessesController {
     }
     // Filter By Category
     if(category) {
-      query.category = category;
+      category = Array.isArray(category) ? category : [category];
+      query.category = { $in: category };
     }
 
     // Filter By Owner
