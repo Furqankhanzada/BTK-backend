@@ -37,6 +37,7 @@ export class BusinessesController {
   findAll(
     @Request() req,
     @Query('category') category: string | string[],
+    @Query('facilities') facilities: string | string[],
     @Query('search') search: string,
     @Query('ownerId') ownerId: string,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
@@ -65,6 +66,12 @@ export class BusinessesController {
     if(category) {
       category = Array.isArray(category) ? category : [category];
       query.category = { $in: category };
+    }
+
+    // Filter By Facility
+    if(facilities) {
+      facilities = Array.isArray(facilities) ? facilities : [facilities];
+      query["facilities.name"] = { $in: facilities };
     }
 
     // Filter By Owner
