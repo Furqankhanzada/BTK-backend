@@ -40,6 +40,8 @@ export class BusinessesController {
     @Query('facilities') facilities: string | string[],
     @Query('search') search: string,
     @Query('ownerId') ownerId: string,
+    @Query('longitude') longitude: number,
+    @Query('latitude') latitude: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
@@ -82,6 +84,12 @@ export class BusinessesController {
     // Filter by favorite - only for logged in user
     if(favorite && user) {
       query['favorites.ownerId'] = user._id.toString();
+    }
+
+    if(latitude && longitude) {
+      options.geoLocation = {
+        coordinates: [Number(longitude), Number(latitude)]
+      }
     }
 
     return this.businessesService.findAll({
