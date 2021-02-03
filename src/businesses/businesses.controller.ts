@@ -45,6 +45,7 @@ export class BusinessesController {
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
+    @Query('near', new DefaultValuePipe(false), ParseBoolPipe) near: boolean,
     @Query('popular', new DefaultValuePipe(false), ParseBoolPipe) popular: boolean,
     @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
   ): Promise<Business[]> {
@@ -86,6 +87,18 @@ export class BusinessesController {
       query['favorites.ownerId'] = user._id.toString();
     }
 
+    // Use a general location to sort by distance.
+    // if(near){
+    //   longitude = 0;
+    //   latitude = 0;
+    // }
+
+    // Use user's geo location. Using the first address. Overrides general location.
+    if(near && user?.addresses?.length && user.addresses[0].location?.coordinates?.length){
+      [longitude, latitude] = user.addresses[0].location.coordinates;
+    }
+
+    // Use the provided coordinates, overrides others coordinates.
     if(latitude && longitude) {
       options.geoLocation = {
         coordinates: [Number(longitude), Number(latitude)]
