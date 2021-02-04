@@ -30,13 +30,32 @@ export class BusinessesService {
       { $skip: options.skip || 0 },
       { $limit: options.limit || 20}
     ];
+
+    if(options?.geoLocation?.coordinates){
+      pipelines.splice(0, 0, {
+        $geoNear: {
+          near: { type: "Point", coordinates: options.geoLocation.coordinates },
+          includeLocs: "dist.location",
+          distanceField: "dist.calculated"
+        }
+      })
+    }
+
     if (Object.keys(projection).length) {
       pipelines.push({ $project : projection })
     }
+
     if (options && options.sort && Object.keys(options).length) {
       const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
       sortPipeline && (sortPipeline.$sort = options.sort);
     }
+
+    // Prevent override of geo distance. This code must be after any sort code.
+    if(options?.geoLocation?.coordinates){
+      const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
+      sortPipeline && (sortPipeline.$sort["dist.calculated"] = 1);
+    }
+
     return this.businessModel.aggregate(pipelines);
   }
 

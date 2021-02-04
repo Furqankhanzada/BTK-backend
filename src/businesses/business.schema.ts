@@ -120,7 +120,7 @@ export class Business extends Document {
   @Prop({ required: true })
   address: string;
 
-  @Prop({ type: locationSchema })
+  @Prop({ type: locationSchema, index: '2dsphere' })
   location: Location;
 
   @Prop({ type: [openHoursSchema] })
