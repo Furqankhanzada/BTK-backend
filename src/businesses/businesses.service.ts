@@ -26,7 +26,7 @@ export class BusinessesService {
           favorites: { $size: { "$ifNull": [ "$favorites", [] ] } },
         }
       },
-      { $sort: { createdAt: -1 } },
+      { $sort: { 'dist.calculated': 1 } },
       { $skip: options.skip || 0 },
       { $limit: options.limit || 20}
     ];
@@ -36,7 +36,8 @@ export class BusinessesService {
         $geoNear: {
           near: { type: "Point", coordinates: options.geoLocation.coordinates },
           includeLocs: "dist.location",
-          distanceField: "dist.calculated"
+          distanceField: "dist.calculated",
+          maxDistance: options.geoLocation.maxDistance,
         }
       })
     }
@@ -44,16 +45,17 @@ export class BusinessesService {
     if (Object.keys(projection).length) {
       pipelines.push({ $project : projection })
     }
+    
+    // Default sort is location. If location does not exist, sort by views and ratings.
+    if(!options?.geoLocation?.coordinates){
+      const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
+      sortPipeline && (sortPipeline.$sort = { averageRatings: -1, views: -1 }); // Order matters. 
+    }
 
+    // If a sort option is provided, override.
     if (options && options.sort && Object.keys(options).length) {
       const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
       sortPipeline && (sortPipeline.$sort = options.sort);
-    }
-
-    // Prevent override of geo distance. This code must be after any sort code.
-    if(options?.geoLocation?.coordinates){
-      const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
-      sortPipeline && (sortPipeline.$sort["dist.calculated"] = 1);
     }
 
     return this.businessModel.aggregate(pipelines);
