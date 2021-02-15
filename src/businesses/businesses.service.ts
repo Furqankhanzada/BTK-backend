@@ -157,6 +157,10 @@ export class BusinessesService {
     return businesses && businesses.length ? businesses[0] : null;
   }
 
+  async getOne({ _id }: { _id: string }): Promise<Business> {
+    return this.businessModel.findOne({ _id }).exec();
+  }
+
   async update({ _id, ownerId }: { _id: string, ownerId: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
     return this.businessModel.updateOne({ _id, ownerId }, updateBusinessDTO).exec();
   }
