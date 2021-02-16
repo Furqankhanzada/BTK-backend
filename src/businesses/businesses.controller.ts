@@ -45,6 +45,7 @@ export class BusinessesController {
   findAll(
     @Request() req,
     @Query('category') category: string | string[],
+    @Query('tags') tags: string | string[],
     @Query('facilities') facilities: string | string[],
     @Query('search') search: string,
     @Query('ownerId') ownerId: string,
@@ -55,6 +56,7 @@ export class BusinessesController {
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
     @Query('popular', new DefaultValuePipe(false), ParseBoolPipe) popular: boolean,
+    @Query('recent', new DefaultValuePipe(false), ParseBoolPipe) recent: boolean,
     @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
   ): Promise<Business[]> {
     const { user } = req;
@@ -73,10 +75,22 @@ export class BusinessesController {
     if(popular) {
       options.sort = { views: -1 };
     }
+
+    // Sort by recent
+    if(recent) {
+      options.sort = { createdAt: -1 };
+    }
+
     // Filter By Category
     if(category) {
       category = Array.isArray(category) ? category : [category];
       query.category = { $in: category };
+    }
+
+     // Filter By Tags
+     if(tags) {
+      tags = Array.isArray(tags) ? tags : [tags];
+      query.tags = { $in: tags };
     }
 
     // Filter By Facility
