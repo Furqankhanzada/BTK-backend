@@ -25,16 +25,7 @@ export class UsersService {
         const { password } = authNewUserDto;
         const hashedPassword = await bcrypt.hash(password, 10);
         const createdUser = new this.userModel({ ...authNewUserDto, password: hashedPassword });
-        createdUser.addresses.push({
-            type: 'VILLA',
-            unit: 'P10 A',
-            street: 'Road 2',
-            house: '',
-            location: {
-                type: 'Point',
-                coordinates: [-104.9903, 39.7392]
-            }
-        })
+
         try {
             return await createdUser.save();
         } catch (error) {

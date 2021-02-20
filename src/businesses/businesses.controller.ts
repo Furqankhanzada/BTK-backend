@@ -10,11 +10,11 @@ import {
   Post,
   Put,
   Query,
-  Req,
   Request,
   UseGuards,
-  ValidationPipe, ParseBoolPipe
+  ValidationPipe, ParseBoolPipe, UnauthorizedException
 } from '@nestjs/common';
+
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { JwtAuthGuardOptional } from '../auth/jwt-auth-optional.guard';
 import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
@@ -22,13 +22,21 @@ import { Business } from './business.schema';
 import { BusinessesService } from './businesses.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
+import { BusinessAbilities, SUBJECT } from './business.abilities'
+import { Action } from '../casl/casl-ability.factory';
 
 @Controller('businesses')
 export class BusinessesController {
-  constructor(private readonly businessesService: BusinessesService) {}
+  constructor(private readonly businessesService: BusinessesService, private readonly businessAbility: BusinessAbilities ) {}
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Request() req, @Body(ValidationPipe) createBusinessDTO: CreateBusinessDTO): Promise<Business> {
+    const ability = this.businessAbility.get(req.user);
+    
+    if (!ability.can(Action.Create, SUBJECT)) {
+      throw new UnauthorizedException();
+    }
+
     return this.businessesService.create(createBusinessDTO, req.user._id);
   }
 
@@ -37,6 +45,7 @@ export class BusinessesController {
   findAll(
     @Request() req,
     @Query('category') category: string | string[],
+    @Query('tags') tags: string | string[],
     @Query('facilities') facilities: string | string[],
     @Query('search') search: string,
     @Query('ownerId') ownerId: string,
@@ -47,6 +56,7 @@ export class BusinessesController {
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
     @Query('popular', new DefaultValuePipe(false), ParseBoolPipe) popular: boolean,
+    @Query('recent', new DefaultValuePipe(false), ParseBoolPipe) recent: boolean,
     @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
   ): Promise<Business[]> {
     const { user } = req;
@@ -65,10 +75,22 @@ export class BusinessesController {
     if(popular) {
       options.sort = { views: -1 };
     }
+
+    // Sort by recent
+    if(recent) {
+      options.sort = { createdAt: -1 };
+    }
+
     // Filter By Category
     if(category) {
       category = Array.isArray(category) ? category : [category];
       query.category = { $in: category };
+    }
+
+     // Filter By Tags
+     if(tags) {
+      tags = Array.isArray(tags) ? tags : [tags];
+      query.tags = { $in: tags };
     }
 
     // Filter By Facility
@@ -114,7 +136,14 @@ export class BusinessesController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Request() req, @Body(new ValidationPipe({ whitelist: true })) updateBusinessDTO: UpdateBusinessDTO) {
+  async update(@Param('id') id: string, @Request() req, @Body(ValidationPipe) updateBusinessDTO: UpdateBusinessDTO) {
+    const ability = this.businessAbility.get(req.user);
+    const business = await this.businessesService.getOne({ _id: id });
+
+    if (!ability.can(Action.Update, business)) {
+      throw new UnauthorizedException();
+    } 
+    
     return this.businessesService.update({ _id: id, ownerId: req.user._id }, updateBusinessDTO);
   }
 
@@ -122,7 +151,14 @@ export class BusinessesController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @Request() req) {
+    const ability = this.businessAbility.get(req.user);
+    const business = await this.businessesService.getOne({ _id: id });
+
+    if (!ability.can(Action.Delete, business)) {
+      throw new UnauthorizedException();
+    } 
+
     return this.businessesService.remove(id);
   }
 
