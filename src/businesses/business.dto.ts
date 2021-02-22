@@ -1,7 +1,7 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
 import { Location } from '../users/users.schema';
 import { PartialType } from '@nestjs/mapped-types';
-import { Facilities, Gallery, OpenHours, PriceRange } from './business.schema';
+import { Facilities, Gallery, OpenHours, PriceRange, BusinessStatus } from './business.schema';
 
 export class CreateBusinessDTO {
     @IsString()
@@ -64,6 +64,13 @@ export class CreateBusinessDTO {
 }
 
 export class UpdateBusinessDTO extends PartialType(CreateBusinessDTO) {}
+
+export class UpdateBusinessStatusDTO {
+    @IsString()
+    @IsNotEmpty()
+    @IsEnum(BusinessStatus)
+    status: BusinessStatus;
+}
 
 export class CreateFavoriteDTO {}
 

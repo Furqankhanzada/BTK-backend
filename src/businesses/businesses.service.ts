@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model, Types } from 'mongoose';
-import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateReviewUserDTO } from './business.dto';
+import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateReviewUserDTO, UpdateBusinessStatusDTO } from './business.dto';
 
 @Injectable()
 export class BusinessesService {
@@ -165,6 +165,10 @@ export class BusinessesService {
 
   async update({ _id, ownerId }: { _id: string, ownerId: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
     return this.businessModel.updateOne({ _id, ownerId }, updateBusinessDTO).exec();
+  }
+
+  async updateStatus({ _id }: { _id: string }, updateStatus: UpdateBusinessStatusDTO): Promise<Business> {
+    return this.businessModel.updateOne({ _id }, updateStatus).exec();
   }
 
   async updateMany({ category }: { category: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
