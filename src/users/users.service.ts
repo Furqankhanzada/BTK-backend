@@ -9,6 +9,20 @@ import { AuthNewUserDto, ProfileUpdateDto } from '../auth/auth-credentials.dto';
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
+    async findAll({ query = {}, projection = {}, options = {} }: any = {}): Promise<User[]> {
+        const pipelines: any = [
+            { $match: { ...query } },
+            { $skip: options.skip || 0 },
+            { $limit: options.limit || 20}
+        ];    
+    
+        if (Object.keys(projection).length) {
+            pipelines.push({ $project : projection })
+        }
+
+        return this.userModel.aggregate(pipelines);
+    }
+
     async findOne(_id: string): Promise<User | undefined> {
         return this.userModel.findOne({ _id }, { password: 0 });
     }
