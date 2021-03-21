@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Action, CaslAbilityFactory } from '../casl/casl-ability.factory';
 import { User } from '../users/users.schema';
 
-export const SUBJECT = 'Business';
+export const SUBJECT = 'User';
 
 @Injectable()
 export class UsersAbilities {
