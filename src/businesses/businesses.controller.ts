@@ -17,7 +17,7 @@ import {
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { JwtAuthGuardOptional } from '../auth/jwt-auth-optional.guard';
-import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
+import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateOwnerDTO } from './business.dto';
 import { Business } from './business.schema';
 import { BusinessesService } from './businesses.service';
 import { Roles } from '../auth/roles.decorator';
@@ -147,16 +147,13 @@ export class BusinessesController {
     return this.businessesService.update({ _id: id }, updateBusinessDTO);
   }
 
-  // @Put(':id')
-  // @Roles('ADMIN')
-  // @UseGuards(RolesGuard)
-  // @UseGuards(JwtAuthGuard)
-  // async updateOwnerId(@Param('id') id: string, @Request() req) {
-  //   const business = await this.businessesService.getOne({ _id: id });
-  //
-  //
-  //   return this.businessesService.update({ _id: id }, {ownerId: req.user._id});
-  // }
+  @Put('changeowner/:id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
+  async updateOwnerId(@Param('id') id: string, @Request() req, @Body(ValidationPipe) updateOwnerDTO: UpdateOwnerDTO) {
+    return this.businessesService.changeOwner({ _id: id }, updateOwnerDTO);
+  }
 
   @Delete(':id')
   @Roles('ADMIN')
