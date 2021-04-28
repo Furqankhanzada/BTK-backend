@@ -15,6 +15,8 @@ import { Action } from '../casl/casl-ability.factory';
 import { UsersAbilities } from './users.abilities';
 import { UsersService } from './users.service';
 import { User } from './users.schema';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @Controller('users')
 export class UsersController {
@@ -24,6 +26,9 @@ export class UsersController {
   ) {}
 
   @Get()
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
   findAll(
     @Req() request: Request,
     @Query('search') search: string,
