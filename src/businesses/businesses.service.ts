@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model, Types } from 'mongoose';
-import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateReviewUserDTO } from './business.dto';
+import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateReviewUserDTO, UpdateOwnerDTO } from './business.dto';
 
 @Injectable()
 export class BusinessesService {
@@ -45,11 +45,11 @@ export class BusinessesService {
     if (Object.keys(projection).length) {
       pipelines.push({ $project : projection })
     }
-    
+
     // Default sort is location. If location does not exist, sort by views and ratings.
     if(!options?.geoLocation?.coordinates){
       const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
-      sortPipeline && (sortPipeline.$sort = { averageRatings: -1, views: -1 }); // Order matters. 
+      sortPipeline && (sortPipeline.$sort = { averageRatings: -1, views: -1 }); // Order matters.
     }
 
     // If a sort option is provided, override.
@@ -163,8 +163,12 @@ export class BusinessesService {
     return this.businessModel.findOne({ _id }).exec();
   }
 
-  async update({ _id, ownerId }: { _id: string, ownerId: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
-    return this.businessModel.updateOne({ _id, ownerId }, updateBusinessDTO).exec();
+  async update({ _id }: { _id: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
+    return this.businessModel.updateOne({ _id }, updateBusinessDTO).exec();
+  }
+
+  async changeOwner({ _id }: { _id: string }, updateOwnerDTO : UpdateOwnerDTO): Promise<Business> {
+    return this.businessModel.updateOne({ _id }, updateOwnerDTO).exec();
   }
 
   async updateMany({ category }: { category: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {

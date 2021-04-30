@@ -21,6 +21,14 @@ export class UsersService {
         return this.userModel.updateOne({ _id }, profileUpdateDto).exec();
     }
 
+    async findAll({query = {},
+                      projection = {},
+                      options = {}
+                  } = {}
+    ): Promise<User[]> {
+        return this.userModel.find(query, projection, { sort: { order: 1 }, ...options }).exec();
+    }
+
     async register(authNewUserDto: AuthNewUserDto) {
         const { password } = authNewUserDto;
         const hashedPassword = await bcrypt.hash(password, 10);
