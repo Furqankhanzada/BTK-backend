@@ -50,6 +50,14 @@ export class UsersController {
     return this.usersService.findAll({ query, projection, options });
   }
 
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
+  }
+
   @Put(':id')
   @UseGuards(JwtAuthGuard)
   async update(
