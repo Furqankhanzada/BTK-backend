@@ -42,7 +42,7 @@ export class CreateBusinessDTO {
     category: string;
 
     @IsOptional()
-    @MaxLength(15, {
+    @MaxLength(25, {
         each: true,
     })
     tags: string[];
