@@ -3,7 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './users.schema';
-import { AuthNewUserDto, ProfileUpdateDto } from '../auth/auth-credentials.dto';
+import { AuthNewUserDto, PasswordUpdateDto, ProfileUpdateDto } from '../auth/auth-credentials.dto';
+import { VerificationCodeDto } from '../auth/dto/verification-code.dto';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +20,18 @@ export class UsersService {
 
     async update(_id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
         return this.userModel.updateOne({ _id }, profileUpdateDto).exec();
+    }
+
+    async setVerificationCode(_id: string, verificationCodeDto: VerificationCodeDto): Promise<User> {
+        return this.userModel.updateOne({ _id }, verificationCodeDto).exec();
+    }
+
+    async removeVerificationCode(_id: string): Promise<User> {
+        return this.userModel.updateOne({ _id }, { $set: {verification: null}}).exec();
+    }
+
+    async setPassword(_id: string, passwordUpdateDto: PasswordUpdateDto): Promise<User> {
+        return this.userModel.updateOne({ _id }, passwordUpdateDto).exec();
     }
 
     async findAll({query = {},
