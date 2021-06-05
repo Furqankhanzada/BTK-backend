@@ -28,13 +28,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Setup yarn
-        uses: borales/actions-yarn@v2.0.0
+      - uses: actions/setup-node@v2
         with:
-          cmd: install --frozen-lockfile # will run `yarn install` command
-      - uses: borales/actions-yarn@v2.0.0
-        with:
-          cmd: build # will run `yarn build` command
+          node-version: '15.x'
+      - run: yarn install
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
