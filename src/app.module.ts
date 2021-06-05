@@ -10,6 +10,8 @@ import { PlacesModule } from './places/places.module';
 import { BusinessesModule } from './businesses/businesses.module';
 import { TagsModule } from './tags/tags.module';
 import { FilesModule } from './files/files.module';
+import { EmailModule } from './email/email.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -18,13 +20,28 @@ import { FilesModule } from './files/files.module';
       envFilePath: ['.env.development.local'],
     }),
     MongooseModule.forRoot(`mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@cluster0.sk8if.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`),
+    MailerModule.forRoot({
+      transport: {
+        host: 'email-smtp.us-east-1.amazonaws.com',
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+          user: process.env.SESUSER,
+          pass: process.env.SESPASSWORD,
+        },
+      },
+      defaults: {
+        from: process.env.FROM,
+      }
+    }),
     CategoriesModule,
     AuthModule,
     UsersModule,
     PlacesModule,
     BusinessesModule,
     TagsModule,
-    FilesModule
+    FilesModule,
+    EmailModule
   ],
   controllers: [AppController],
   providers: [AppService],

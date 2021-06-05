@@ -51,6 +51,16 @@ export class Address  {
 }
 const addressSchema = SchemaFactory.createForClass(Address);
 
+// verification code object
+@Schema()
+export class verificationCode  {
+  @Prop({ required: true})
+  code: string;
+
+  @Prop({ required: true })
+  createdAt: Date;
+}
+
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -80,6 +90,9 @@ export class User extends Document {
 
   @Prop({ type: [String], default: [ Roles.USER ], enum: [Roles.ADMIN, Roles.USER] })
   roles: string[];
+
+  @Prop({ type: verificationCode })
+  verification: verificationCode;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

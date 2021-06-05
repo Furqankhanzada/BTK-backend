@@ -14,7 +14,7 @@ export class AuthNewUserDto {
     phone: string;
 
     @IsNotEmpty()
-    @MinLength(6, { message: 'Password is too short (8 characters min)' })
+    @MinLength(6, { message: 'Password is too short (6 characters min)' })
     @MaxLength(20, { message: 'Password is too long (20 characters max)' })
     password: string;
 }
@@ -37,6 +37,11 @@ export class AuthCredentialsDto {
     @IsNotEmpty()
     emailOrNumber: string;
 
+    @IsNotEmpty()
+    password: string;
+}
+
+export class PasswordUpdateDto {
     @IsNotEmpty()
     password: string;
 }
