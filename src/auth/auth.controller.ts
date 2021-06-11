@@ -21,12 +21,12 @@ export class AuthController {
         return this.authService.login(req.user);
     }
 
-    @Post('/forgotPassword')
+    @Post('/forgotpassword')
     async forgotPassword(@Body(ValidationPipe) forgotPasswordDto: ForgotPasswordDto): Promise<any> {
         return this.authService.forgotPassword(forgotPasswordDto);
     }
 
-    @Post('/verifyCode')
+    @Post('verifyCode')
     async verifyCode(@Body(ValidationPipe) verifyCodeDto: VerifyCodeDto): Promise<any> {
         return this.authService.verifyCode(verifyCodeDto);
     }
