@@ -22,7 +22,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
     MongooseModule.forRoot(`mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@cluster0.sk8if.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`),
     MailerModule.forRoot({
       transport: {
-        host: 'email-smtp.us-east-1.amazonaws.com',
+        host: process.env.SESHOST,
         port: 465,
         secure: true, // true for 465, false for other ports
         auth: {
