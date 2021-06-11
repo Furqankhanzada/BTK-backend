@@ -45,4 +45,15 @@ export class AuthController {
     getProfile(@Request() req) {
         return req.user;
     }
+
+    // test endpoints added for dev and production environments, can be removed later
+    @Post('/test')
+    test() {
+        return 'Yes Post API working fine!';
+    }
+
+    @Get('test')
+    testing() {
+        return 'All  is well, no issue on API side!';
+    }
 }
