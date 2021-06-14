@@ -17,7 +17,7 @@ import {
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { JwtAuthGuardOptional } from '../auth/jwt-auth-optional.guard';
-import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO } from './business.dto';
+import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateOwnerDTO } from './business.dto';
 import { Business } from './business.schema';
 import { BusinessesService } from './businesses.service';
 import { Roles } from '../auth/roles.decorator';
@@ -32,7 +32,7 @@ export class BusinessesController {
   @UseGuards(JwtAuthGuard)
   create(@Request() req, @Body(ValidationPipe) createBusinessDTO: CreateBusinessDTO): Promise<Business> {
     const ability = this.businessAbility.get(req.user);
-    
+
     if (!ability.can(Action.Create, SUBJECT)) {
       throw new UnauthorizedException();
     }
@@ -51,7 +51,7 @@ export class BusinessesController {
     @Query('ownerId') ownerId: string,
     @Query('longitude') longitude: number,
     @Query('latitude') latitude: number,
-    @Query('radius', new DefaultValuePipe(5000), ParseIntPipe) radius: number, // meters, default: 5 km 
+    @Query('radius', new DefaultValuePipe(5000), ParseIntPipe) radius: number, // meters, default: 5 km
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
     @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
@@ -142,9 +142,17 @@ export class BusinessesController {
 
     if (!ability.can(Action.Update, business)) {
       throw new UnauthorizedException();
-    } 
-    
-    return this.businessesService.update({ _id: id, ownerId: req.user._id }, updateBusinessDTO);
+    }
+
+    return this.businessesService.update({ _id: id }, updateBusinessDTO);
+  }
+
+  @Put('changeowner/:id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
+  async updateOwnerId(@Param('id') id: string, @Request() req, @Body(ValidationPipe) updateOwnerDTO: UpdateOwnerDTO) {
+    return this.businessesService.changeOwner({ _id: id }, updateOwnerDTO);
   }
 
   @Delete(':id')
@@ -157,7 +165,7 @@ export class BusinessesController {
 
     if (!ability.can(Action.Delete, business)) {
       throw new UnauthorizedException();
-    } 
+    }
 
     return this.businessesService.remove(id);
   }

@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, IsObject, IsOptional, IsPhoneNumber, IsString, IsUrl, MaxLength, MinLength, IsMongoId } from 'class-validator';
 import { Location } from '../users/users.schema';
 import { PartialType } from '@nestjs/mapped-types';
 import { Facilities, Gallery, OpenHours, PriceRange } from './business.schema';
@@ -42,7 +42,7 @@ export class CreateBusinessDTO {
     category: string;
 
     @IsOptional()
-    @MaxLength(15, {
+    @MaxLength(25, {
         each: true,
     })
     tags: string[];
@@ -82,3 +82,10 @@ export class CreateReviewDTO {
 }
 
 export class UpdateReviewUserDTO extends PartialType(CreateReviewDTO) {}
+
+export class UpdateOwnerDTO {
+
+    @IsOptional()
+    @IsMongoId()
+    ownerId: string;
+}
