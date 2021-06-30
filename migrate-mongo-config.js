@@ -6,7 +6,7 @@
 // I already added both up and down in npm scripts and it up will also run before build
 
 // using dot env to load local env file variables and solve the isolated build issue
-require('dotenv').config({ path: '.env.development.local' })
+require('dotenv').config()
 
 const config = {
   mongodb: {
