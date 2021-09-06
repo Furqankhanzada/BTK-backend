@@ -47,7 +47,7 @@ jobs:
 
       - name: Deploy Production
         if: github.ref == 'refs/heads/master'
-        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ bitnami@18.141.255.223:~/repos/explore-btk
+        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ bitnami@18.141.255.223:/opt/bitnami/projects/explore-btk
 
       - name: Build and Run Development
         if: github.ref == 'refs/heads/development'
