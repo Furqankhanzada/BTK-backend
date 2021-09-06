@@ -43,7 +43,7 @@ jobs:
 
       - name: Deploy Development
         if: github.ref == 'refs/heads/development'
-        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/btk
+        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ${{ secrets.HOST_USER }}@$${{ secrets.HOST_ADDRESS }}:/opt/bitnami/projects/btk
 
       - name: Deploy Production
         if: github.ref == 'refs/heads/master'
