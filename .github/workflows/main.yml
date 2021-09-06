@@ -43,11 +43,11 @@ jobs:
 
       - name: Deploy Development
         if: github.ref == 'refs/heads/development'
-        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/btk
+        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ bitnami@18.141.255.223:/opt/bitnami/projects/btk
 
       - name: Deploy Production
         if: github.ref == 'refs/heads/master'
-        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ ubuntu@ec2-52-20-14-42.compute-1.amazonaws.com:~/repos/explore-btk
+        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ bitnami@18.141.255.223:~/repos/explore-btk
 
       - name: Build and Run Development
         if: github.ref == 'refs/heads/development'
@@ -60,7 +60,7 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
             ls
-            cd ~/repos/btk
+            cd /opt/bitnami/projects/btk
             nvm use 14.10
             export NODE_ENV=production
             export DATABASE_USER=${{ secrets.DATABASE_USER }}
@@ -89,7 +89,7 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
             ls
-            cd ~/repos/explore-btk
+            cd /opt/bitnami/projects/explore-btk
             nvm use 14.10
             export NODE_ENV=production
             export PORT=3002
