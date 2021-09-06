@@ -1,5 +1,5 @@
 <p align="center">
-  #Explore BTK
+  ##Explore BTK
 </p>
 
 [travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
