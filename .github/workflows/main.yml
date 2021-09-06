@@ -60,7 +60,7 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
             ls
-            cd ~/repos/btk
+            cd /opt/bitnami/projects/btk
             nvm use 14.10
             export NODE_ENV=production
             export DATABASE_USER=${{ secrets.DATABASE_USER }}
@@ -89,7 +89,7 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
             ls
-            cd ~/repos/explore-btk
+            cd /opt/bitnami/projects/explore-btk
             nvm use 14.10
             export NODE_ENV=production
             export PORT=3002
