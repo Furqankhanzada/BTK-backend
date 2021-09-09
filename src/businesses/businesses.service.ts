@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
-import { Model, Types } from 'mongoose';
+import { Model, Types, UpdateWriteOpResult } from 'mongoose';
 import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateReviewUserDTO, UpdateOwnerDTO } from './business.dto';
 
 @Injectable()
@@ -66,7 +66,7 @@ export class BusinessesService {
     await this.businessModel.updateOne({ _id }, { $inc: { views: 1 } }).exec();
     // Query Single
     const pipelines: any = [
-      { $match: { _id: Types.ObjectId(_id) } },
+      { $match: { _id: new Types.ObjectId(_id) } },
       { $addFields: {
           reviewStats: {
             averageRatings: { $avg: '$reviews.rating' },
@@ -163,15 +163,15 @@ export class BusinessesService {
     return this.businessModel.findOne({ _id }).exec();
   }
 
-  async update({ _id }: { _id: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
+  async update({ _id }: { _id: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateOne({ _id }, updateBusinessDTO).exec();
   }
 
-  async changeOwner({ _id }: { _id: string }, updateOwnerDTO : UpdateOwnerDTO): Promise<Business> {
+  async changeOwner({ _id }: { _id: string }, updateOwnerDTO : UpdateOwnerDTO): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateOne({ _id }, updateOwnerDTO).exec();
   }
 
-  async updateMany({ category }: { category: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<Business> {
+  async updateMany({ category }: { category: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateMany({ category }, updateBusinessDTO).exec();
   }
 
@@ -180,19 +180,19 @@ export class BusinessesService {
   }
 
   // Favorites
-  async createFavorite(_id, ownerId): Promise<Business> {
+  async createFavorite(_id, ownerId): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateOne({ _id }, { $addToSet: { favorites: { ownerId }} }).exec();
   }
 
-  async removeFavorite(_id, ownerId): Promise<Business> {
+  async removeFavorite(_id, ownerId): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateOne({ _id }, { $pull: { favorites: { ownerId }} }).exec();
   }
 
-  async createReview(_id, owner, createReviewDTO: CreateReviewDTO): Promise<Business> {
+  async createReview(_id, owner, createReviewDTO: CreateReviewDTO): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateOne({ _id }, { $push: { reviews: { ...createReviewDTO, owner }} }).exec();
   }
 
-  async updateReview(owner, updateReviewDTO: UpdateReviewUserDTO): Promise<Business> {
+  async updateReview(owner, updateReviewDTO: UpdateReviewUserDTO): Promise<UpdateWriteOpResult> {
     const updates = {};
 
     Object.entries(updateReviewDTO).forEach(([key, value]) => {

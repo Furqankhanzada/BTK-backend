@@ -5,10 +5,12 @@ import { UserSchema } from './users.schema';
 @Injectable()
 export class UsersHooks {
   async hooks(businessService: BusinessesService) {
-    UserSchema.post('updateOne', async function() {
+    UserSchema.post('updateOne', async () => {
       try {
+        // @ts-ignore
         const query: { _id: string } = this.getQuery();
-        const updates: { avatar?: string; name: string } = this._update.$set;
+        // @ts-ignore
+        const updates: { avatar?: string; name: string } = this.update.$set;
 
         if (query?._id && updates?.name) {
           const ownerId = query._id;
