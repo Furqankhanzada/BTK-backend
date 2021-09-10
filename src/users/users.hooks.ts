@@ -7,6 +7,8 @@ export class UsersHooks {
   async hooks(businessService: BusinessesService) {
     UserSchema.post('updateOne', async () => {
       try {
+        // TODO: both below functions not exposed not, so it's a hacky solution, could break soon by any module update
+        //  remove it and find good solution from official mongoose types
         // @ts-ignore
         const query: { _id: string } = this.getQuery();
         // @ts-ignore
