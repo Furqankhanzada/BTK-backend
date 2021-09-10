@@ -3,8 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from './users.schema';
-import { AuthNewUserDto, PasswordUpdateDto, ProfileUpdateDto } from '../auth/auth-credentials.dto';
+import { AuthNewUserDto, PasswordUpdateDto, ProfileUpdateDto,  } from '../auth/auth-credentials.dto';
 import { VerificationCodeDto } from '../auth/dto/verification-code.dto';
+import { UpdateWriteOpResult } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -18,19 +19,19 @@ export class UsersService {
         return this.userModel.findOne({ $or: [{ email: emailOrNumber }, { phone: emailOrNumber }] });
     }
 
-    async update(_id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
+    async update(_id: string, profileUpdateDto: ProfileUpdateDto): Promise<UpdateWriteOpResult> {
         return this.userModel.updateOne({ _id }, profileUpdateDto).exec();
     }
 
-    async setVerificationCode(_id: string, verificationCodeDto: VerificationCodeDto): Promise<User> {
+    async setVerificationCode(_id: string, verificationCodeDto: VerificationCodeDto): Promise<UpdateWriteOpResult> {
         return this.userModel.updateOne({ _id }, verificationCodeDto).exec();
     }
 
-    async removeVerificationCode(_id: string): Promise<User> {
+    async removeVerificationCode(_id: string): Promise<UpdateWriteOpResult> {
         return this.userModel.updateOne({ _id }, { $set: {verification: null}}).exec();
     }
 
-    async setPassword(_id: string, passwordUpdateDto: PasswordUpdateDto): Promise<User> {
+    async setPassword(_id: string, passwordUpdateDto: PasswordUpdateDto): Promise<UpdateWriteOpResult> {
         return this.userModel.updateOne({ _id }, passwordUpdateDto).exec();
     }
 

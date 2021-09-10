@@ -4,6 +4,7 @@ import { Category } from './category.schema';
 import { Model } from 'mongoose';
 import { CreateCategoryDto, UpdateCategoryDto } from './create-category.dto';
 import { BusinessesService } from '../businesses/businesses.service';
+import { UpdateWriteOpResult } from 'mongoose';
 
 @Injectable()
 export class CategoriesService {
@@ -34,7 +35,7 @@ export class CategoriesService {
         return this.categoryModel.findOne({ _id }).exec();
     }
 
-    async update(_id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
+    async update(_id: string, updateCategoryDto: UpdateCategoryDto): Promise<UpdateWriteOpResult> {
         try {
             const category = await this.findOne(_id);
         

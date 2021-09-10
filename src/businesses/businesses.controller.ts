@@ -24,6 +24,7 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { BusinessAbilities, SUBJECT } from './business.abilities'
 import { Action } from '../casl/casl-ability.factory';
+import { UpdateWriteOpResult } from 'mongoose';
 
 @Controller('businesses')
 export class BusinessesController {
@@ -172,21 +173,21 @@ export class BusinessesController {
 
   @Post('/:id/review')
   @UseGuards(JwtAuthGuard)
-  createReview(@Param('id') id: string, @Request() req, @Body(ValidationPipe) createReviewDTO: CreateReviewDTO): Promise<Business> {
+  createReview(@Param('id') id: string, @Request() req, @Body(ValidationPipe) createReviewDTO: CreateReviewDTO): Promise<UpdateWriteOpResult> {
     const { _id, name, avatar } = req.user;
     return this.businessesService.createReview(id, { _id, name, avatar }, createReviewDTO);
   }
 
   @Post('/:id/favorite')
   @UseGuards(JwtAuthGuard)
-  createFavorite(@Param('id') id: string, @Request() req): Promise<Business> {
+  createFavorite(@Param('id') id: string, @Request() req): Promise<UpdateWriteOpResult> {
     const { _id } = req.user;
     return this.businessesService.createFavorite(id, _id);
   }
 
   @Delete('/:id/favorite')
   @UseGuards(JwtAuthGuard)
-  removeFavorite(@Param('id') id: string, @Request() req): Promise<Business> {
+  removeFavorite(@Param('id') id: string, @Request() req): Promise<UpdateWriteOpResult> {
     const { _id } = req.user;
     return this.businessesService.removeFavorite(id, _id);
   }
