@@ -2,14 +2,31 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model, Types, UpdateWriteOpResult } from 'mongoose';
-import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateReviewUserDTO, UpdateOwnerDTO } from './business.dto';
+import {
+  CreateBusinessDTO,
+  UpdateBusinessDTO,
+  CreateReviewDTO,
+  UpdateReviewUserDTO,
+  UpdateOwnerDTO
+} from './business.dto';
+import { User } from '../users/users.schema';
+import { OnEvent } from '@nestjs/event-emitter';
+import { MongoPostUpdateOneEvent } from '../mongoose-events/mongoose.events.module';
 
 @Injectable()
 export class BusinessesService {
-  constructor(@InjectModel(Business.name) private businessModel: Model<Business>) {}
+  constructor(
+    @InjectModel(Business.name) private businessModel: Model<Business>
+  ) {}
 
-  async create(createBusinessDTO: CreateBusinessDTO, ownerId): Promise<Business> {
-    const createdBusiness = new this.businessModel({ ...createBusinessDTO, ownerId });
+  async create(
+    createBusinessDTO: CreateBusinessDTO,
+    ownerId
+  ): Promise<Business> {
+    const createdBusiness = new this.businessModel({
+      ...createBusinessDTO,
+      ownerId
+    });
     try {
       return await createdBusiness.save();
     } catch (error) {
@@ -18,36 +35,41 @@ export class BusinessesService {
     }
   }
 
-  async findAll({ query = {}, projection = {}, options = {} }: any = {}): Promise<Business[]> {
+  async findAll({
+    query = {},
+    projection = {},
+    options = {}
+  }: any = {}): Promise<Business[]> {
     const pipelines: any = [
       { $match: { ...query } },
-      { $addFields: {
+      {
+        $addFields: {
           averageRatings: { $avg: '$reviews.rating' },
-          favorites: { $size: { "$ifNull": [ "$favorites", [] ] } },
+          favorites: { $size: { $ifNull: ['$favorites', []] } }
         }
       },
       { $sort: { 'dist.calculated': 1 } },
       { $skip: options.skip || 0 },
-      { $limit: options.limit || 20}
+      { $limit: options.limit || 20 }
     ];
 
-    if(options?.geoLocation?.coordinates){
+    if (options?.geoLocation?.coordinates) {
       pipelines.splice(0, 0, {
         $geoNear: {
-          near: { type: "Point", coordinates: options.geoLocation.coordinates },
-          includeLocs: "dist.location",
-          distanceField: "dist.calculated",
-          maxDistance: options.geoLocation.maxDistance,
+          near: { type: 'Point', coordinates: options.geoLocation.coordinates },
+          includeLocs: 'dist.location',
+          distanceField: 'dist.calculated',
+          maxDistance: options.geoLocation.maxDistance
         }
-      })
+      });
     }
 
     if (Object.keys(projection).length) {
-      pipelines.push({ $project : projection })
+      pipelines.push({ $project: projection });
     }
 
     // Default sort is location. If location does not exist, sort by views and ratings.
-    if(!options?.geoLocation?.coordinates){
+    if (!options?.geoLocation?.coordinates) {
       const sortPipeline = pipelines.find((pipeline) => !!pipeline.$sort);
       sortPipeline && (sortPipeline.$sort = { averageRatings: -1, views: -1 }); // Order matters.
     }
@@ -67,90 +89,96 @@ export class BusinessesService {
     // Query Single
     const pipelines: any = [
       { $match: { _id: new Types.ObjectId(_id) } },
-      { $addFields: {
+      {
+        $addFields: {
           reviewStats: {
             averageRatings: { $avg: '$reviews.rating' },
             oneStarCount: {
               $sum: {
-                $map:
-                  {
-                    input: "$reviews",
-                    as: "review",
-                    in: {
-                      $cond: [
-                        {
-                          $eq: [{ $floor: '$$review.rating' }, 1 ]
-                        }, 1, 0
-                      ]
-                    }
+                $map: {
+                  input: '$reviews',
+                  as: 'review',
+                  in: {
+                    $cond: [
+                      {
+                        $eq: [{ $floor: '$$review.rating' }, 1]
+                      },
+                      1,
+                      0
+                    ]
                   }
+                }
               }
             },
             twoStarCount: {
               $sum: {
-                $map:
-                  {
-                    input: "$reviews",
-                    as: "review",
-                    in: {
-                      $cond: [
-                        {
-                          $eq: [{ $floor: '$$review.rating' }, 2 ]
-                        }, 1, 0
-                      ]
-                    }
+                $map: {
+                  input: '$reviews',
+                  as: 'review',
+                  in: {
+                    $cond: [
+                      {
+                        $eq: [{ $floor: '$$review.rating' }, 2]
+                      },
+                      1,
+                      0
+                    ]
                   }
+                }
               }
             },
             threeStarCount: {
               $sum: {
-                $map:
-                  {
-                    input: "$reviews",
-                    as: "review",
-                    in: {
-                      $cond: [
-                        {
-                          $eq: [{ $floor: '$$review.rating' }, 3 ]
-                        }, 1, 0
-                      ]
-                    }
+                $map: {
+                  input: '$reviews',
+                  as: 'review',
+                  in: {
+                    $cond: [
+                      {
+                        $eq: [{ $floor: '$$review.rating' }, 3]
+                      },
+                      1,
+                      0
+                    ]
                   }
+                }
               }
             },
             fourStarCount: {
               $sum: {
-                $map:
-                  {
-                    input: "$reviews",
-                    as: "review",
-                    in: {
-                      $cond: [
-                        {
-                          $eq: [{ $floor: '$$review.rating' }, 4 ]
-                        }, 1, 0
-                      ]
-                    }
+                $map: {
+                  input: '$reviews',
+                  as: 'review',
+                  in: {
+                    $cond: [
+                      {
+                        $eq: [{ $floor: '$$review.rating' }, 4]
+                      },
+                      1,
+                      0
+                    ]
                   }
+                }
               }
             },
             fiveStarCount: {
               $sum: {
-                $map:
-                  {
-                    input: "$reviews",
-                    as: "review",
-                    in: {
-                      $cond: [
-                        {
-                          $eq: [{ $floor: '$$review.rating' }, 5 ]
-                        }, 1, 0
-                      ]
-                    }
+                $map: {
+                  input: '$reviews',
+                  as: 'review',
+                  in: {
+                    $cond: [
+                      {
+                        $eq: [{ $floor: '$$review.rating' }, 5]
+                      },
+                      1,
+                      0
+                    ]
                   }
+                }
               }
             }
-          },
+          }
         }
       }
     ];
@@ -163,16 +191,27 @@ export class BusinessesService {
     return this.businessModel.findOne({ _id }).exec();
   }
 
-  async update({ _id }: { _id: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<UpdateWriteOpResult> {
+  async update(
+    { _id }: { _id: string },
+    updateBusinessDTO: UpdateBusinessDTO
+  ): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateOne({ _id }, updateBusinessDTO).exec();
   }
 
-  async changeOwner({ _id }: { _id: string }, updateOwnerDTO : UpdateOwnerDTO): Promise<UpdateWriteOpResult> {
+  async changeOwner(
+    { _id }: { _id: string },
+    updateOwnerDTO: UpdateOwnerDTO
+  ): Promise<UpdateWriteOpResult> {
     return this.businessModel.updateOne({ _id }, updateOwnerDTO).exec();
   }
 
-  async updateMany({ category }: { category: string }, updateBusinessDTO: UpdateBusinessDTO): Promise<UpdateWriteOpResult> {
-    return this.businessModel.updateMany({ category }, updateBusinessDTO).exec();
+  async updateMany(
+    { category }: { category: string },
+    updateBusinessDTO: UpdateBusinessDTO
+  ): Promise<UpdateWriteOpResult> {
+    return this.businessModel
+      .updateMany({ category }, updateBusinessDTO)
+      .exec();
   }
 
   async remove(_id: string): Promise<{ deletedCount?: number }> {
@@ -181,32 +220,58 @@ export class BusinessesService {
 
   // Favorites
   async createFavorite(_id, ownerId): Promise<UpdateWriteOpResult> {
-    return this.businessModel.updateOne({ _id }, { $addToSet: { favorites: { ownerId }} }).exec();
+    return this.businessModel
+      .updateOne({ _id }, { $addToSet: { favorites: { ownerId } } })
+      .exec();
   }
 
   async removeFavorite(_id, ownerId): Promise<UpdateWriteOpResult> {
-    return this.businessModel.updateOne({ _id }, { $pull: { favorites: { ownerId }} }).exec();
+    return this.businessModel
+      .updateOne({ _id }, { $pull: { favorites: { ownerId } } })
+      .exec();
   }
 
-  async createReview(_id, owner, createReviewDTO: CreateReviewDTO): Promise<UpdateWriteOpResult> {
-    return this.businessModel.updateOne({ _id }, { $push: { reviews: { ...createReviewDTO, owner }} }).exec();
+  async createReview(
+    _id,
+    owner,
+    createReviewDTO: CreateReviewDTO
+  ): Promise<UpdateWriteOpResult> {
+    return this.businessModel
+      .updateOne({ _id }, { $push: { reviews: { ...createReviewDTO, owner } } })
+      .exec();
   }
 
-  async updateReview(owner, updateReviewDTO: UpdateReviewUserDTO): Promise<UpdateWriteOpResult> {
+  async updateReview(
+    owner,
+    updateReviewDTO: UpdateReviewUserDTO
+  ): Promise<UpdateWriteOpResult> {
     const updates = {};
 
     Object.entries(updateReviewDTO).forEach(([key, value]) => {
       updates[`reviews.$.${key}`] = value;
-    })
+    });
 
-    if(owner.avatar){
+    if (owner.avatar) {
       updates[`reviews.$.owner.avatar`] = owner.avatar;
     }
 
-    if(owner.name){
+    if (owner.name) {
       updates[`reviews.$.owner.name`] = owner.name;
     }
 
-    return this.businessModel.updateMany({ 'reviews.owner._id': owner._id }, { $set: updates}).exec();
+    return this.businessModel
+      .updateMany({ 'reviews.owner._id': owner._id }, { $set: updates })
+      .exec();
+  }
+
+  // After update user should update inside review also.
+  @OnEvent(`${User.name}.post.updateOne`)
+  async onUserUpdate({ query }: MongoPostUpdateOneEvent<User>) {
+    const { _id } = query.getQuery();
+    const { $set }: any = query.getUpdate();
+    const { avatar, name } = $set;
+    if (_id && name) {
+      await this.updateReview({ _id, name, avatar }, {});
+    }
   }
 }

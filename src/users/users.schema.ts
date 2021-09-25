@@ -6,24 +6,23 @@ export enum AddressTypes {
   TOWER = 'TOWER',
   SCHOOL = 'SCHOOL',
   HOSPITAL = 'HOSPITAL',
-  MOSQUE = 'MOSQUE',
+  MOSQUE = 'MOSQUE'
 }
 
 export enum Roles {
   ADMIN = 'ADMIN',
-  USER = 'USER',
+  USER = 'USER'
 }
 
 export enum UserStatus {
   VERIFIED = 'VERIFIED',
   ACTIVE = 'ACTIVE',
   PENDING = 'PENDING',
-  BLOCKED = 'BLOCKED',
+  BLOCKED = 'BLOCKED'
 }
 
-
 @Schema() // _id for watermelon DB
-export class Location  {
+export class Location {
   @Prop({ required: true, enum: ['Point'] })
   type: string;
 
@@ -33,7 +32,7 @@ export class Location  {
 export const locationSchema = SchemaFactory.createForClass(Location);
 
 @Schema() // _id for watermelon DB
-export class Address  {
+export class Address {
   @Prop({ required: true, enum: [AddressTypes.VILLA, AddressTypes.TOWER] })
   type: string;
 
@@ -53,14 +52,13 @@ const addressSchema = SchemaFactory.createForClass(Address);
 
 // verification code object
 @Schema()
-export class verificationCode  {
-  @Prop({ required: true})
+export class verificationCode {
+  @Prop({ required: true })
   code: string;
 
   @Prop({ required: true })
   createdAt: Date;
 }
-
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -85,10 +83,22 @@ export class User extends Document {
   @Prop({ type: [addressSchema] })
   addresses: Address[];
 
-  @Prop({ default: UserStatus.PENDING, enum: [UserStatus.PENDING, UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.VERIFIED] })
+  @Prop({
+    default: UserStatus.PENDING,
+    enum: [
+      UserStatus.PENDING,
+      UserStatus.ACTIVE,
+      UserStatus.BLOCKED,
+      UserStatus.VERIFIED
+    ]
+  })
   status: string;
 
-  @Prop({ type: [String], default: [ Roles.USER ], enum: [Roles.ADMIN, Roles.USER] })
+  @Prop({
+    type: [String],
+    default: [Roles.USER],
+    enum: [Roles.ADMIN, Roles.USER]
+  })
   roles: string[];
 
   @Prop({ type: verificationCode })

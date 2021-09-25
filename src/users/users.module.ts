@@ -1,28 +1,31 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { BusinessesModule } from '../businesses/businesses.module';
-import { BusinessesService } from '../businesses/businesses.service';
 import { CaslModule } from '../casl/casl.module';
 import { UsersAbilities } from './users.abilities';
 import { UsersController } from './users.controller';
-import { UsersHooks } from './users.hooks';
-import { User } from './users.schema';
+import { User, UserSchema } from './users.schema';
 import { UsersService } from './users.service';
+import {
+  MongoEvents,
+  MongoEventsModule
+} from '../mongoose-events/mongoose.events.module';
 
 @Module({
   imports: [
     MongooseModule.forFeatureAsync([
       {
         name: User.name,
-        imports: [BusinessesModule],
-        useFactory: new UsersHooks().hooks,
-        inject: [BusinessesService],
-      },
+        useFactory: function (events: MongoEvents) {
+          return events.forSchema(User.name, UserSchema);
+        }, // register events on schema
+        inject: [MongoEvents],
+        imports: [MongoEventsModule]
+      }
     ]),
     CaslModule
   ],
-  providers: [UsersService, UsersHooks, UsersAbilities],
+  providers: [UsersService, UsersAbilities],
   exports: [UsersService],
-  controllers: [UsersController],
+  controllers: [UsersController]
 })
 export class UsersModule {}
