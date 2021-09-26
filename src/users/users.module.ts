@@ -5,21 +5,17 @@ import { UsersAbilities } from './users.abilities';
 import { UsersController } from './users.controller';
 import { User, UserSchema } from './users.schema';
 import { UsersService } from './users.service';
-import {
-  MongoEvents,
-  MongoEventsModule
-} from '../mongoose-events/mongoose.events.module';
+import { MongoEventsService } from '../mongo-events/mongo-events.service';
 
 @Module({
   imports: [
     MongooseModule.forFeatureAsync([
       {
         name: User.name,
-        useFactory: function (events: MongoEvents) {
+        useFactory: function (events: MongoEventsService) {
           return events.forSchema(User.name, UserSchema);
-        }, // register events on schema
-        inject: [MongoEvents],
-        imports: [MongoEventsModule]
+        },
+        inject: [MongoEventsService]
       }
     ]),
     CaslModule

@@ -13,6 +13,7 @@ import { FilesModule } from './files/files.module';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MongoEventsModule } from './mongo-events/mongo-events.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         from: process.env.FROM
       }
     }),
+    MongoEventsModule,
     CategoriesModule,
     AuthModule,
     UsersModule,

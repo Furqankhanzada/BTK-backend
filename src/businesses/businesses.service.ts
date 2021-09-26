@@ -11,7 +11,7 @@ import {
 } from './business.dto';
 import { User } from '../users/users.schema';
 import { OnEvent } from '@nestjs/event-emitter';
-import { MongoPostUpdateOneEvent } from '../mongoose-events/mongoose.events.module';
+import { MongoPostUpdateOneEvent } from '../mongo-events/mongo-post-update-one-event';
 
 @Injectable()
 export class BusinessesService {
