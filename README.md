@@ -1,4 +1,4 @@
-<h1 align="center">Explore BTK</h1>
+<h1 align="center">Explore BTK Backend</h1>
 
 
 [travis-image]: https://api.travis-ci.org/nestjs/nest.svg?branch=master
