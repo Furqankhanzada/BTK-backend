@@ -12,25 +12,38 @@ import {
   Query,
   Request,
   UseGuards,
-  ValidationPipe, ParseBoolPipe, UnauthorizedException
+  ValidationPipe,
+  ParseBoolPipe,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { JwtAuthGuardOptional } from '../auth/jwt-auth-optional.guard';
-import { CreateBusinessDTO, UpdateBusinessDTO, CreateReviewDTO, UpdateOwnerDTO } from './business.dto';
+import {
+  CreateBusinessDTO,
+  UpdateBusinessDTO,
+  CreateReviewDTO,
+  UpdateOwnerDTO,
+} from './business.dto';
 import { Business } from './business.schema';
 import { BusinessesService } from './businesses.service';
 import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { BusinessAbilities, SUBJECT } from './business.abilities'
+import { BusinessAbilities, SUBJECT } from './business.abilities';
 import { Action } from '../casl/casl-ability.factory';
 
 @Controller('businesses')
 export class BusinessesController {
-  constructor(private readonly businessesService: BusinessesService, private readonly businessAbility: BusinessAbilities ) {}
+  constructor(
+    private readonly businessesService: BusinessesService,
+    private readonly businessAbility: BusinessAbilities,
+  ) {}
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Request() req, @Body(ValidationPipe) createBusinessDTO: CreateBusinessDTO): Promise<Business> {
+  create(
+    @Request() req,
+    @Body(ValidationPipe) createBusinessDTO: CreateBusinessDTO,
+  ): Promise<Business> {
     const ability = this.businessAbility.get(req.user);
 
     if (!ability.can(Action.Create, SUBJECT)) {
@@ -54,78 +67,86 @@ export class BusinessesController {
     @Query('radius', new DefaultValuePipe(5000), ParseIntPipe) radius: number, // meters, default: 5 km
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
-    @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe) favorite: boolean,
-    @Query('popular', new DefaultValuePipe(false), ParseBoolPipe) popular: boolean,
-    @Query('recent', new DefaultValuePipe(false), ParseBoolPipe) recent: boolean,
-    @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: [string]
+    @Query('favorite', new DefaultValuePipe(false), ParseBoolPipe)
+    favorite: boolean,
+    @Query('popular', new DefaultValuePipe(false), ParseBoolPipe)
+    popular: boolean,
+    @Query('recent', new DefaultValuePipe(false), ParseBoolPipe)
+    recent: boolean,
+    @Query('fields', new DefaultValuePipe([]), ParseArrayPipe) fields: string[],
   ): Promise<Business[]> {
     const { user } = req;
 
     const projection: Record<string, number> = {};
     const options: Record<string, any> = { skip, limit };
-    const query: Record<string, any> = { name: { $regex: search || '', $options: 'i' } };
+    const query: Record<string, any> = {
+      name: { $regex: search || '', $options: 'i' },
+    };
     // Bring only required fields
-    if(fields.length) {
-      fields.forEach((key) => {
+    if (fields.length) {
+      fields.forEach(key => {
         projection[key.trim()] = 1;
-      })
+      });
     }
 
     // Sort by popular
-    if(popular) {
+    if (popular) {
       options.sort = { views: -1 };
     }
 
     // Sort by recent
-    if(recent) {
+    if (recent) {
       options.sort = { createdAt: -1 };
     }
 
     // Filter By Category
-    if(category) {
+    if (category) {
       category = Array.isArray(category) ? category : [category];
       query.category = { $in: category };
     }
 
-     // Filter By Tags
-     if(tags) {
+    // Filter By Tags
+    if (tags) {
       tags = Array.isArray(tags) ? tags : [tags];
       query.tags = { $in: tags };
     }
 
     // Filter By Facility
-    if(facilities) {
+    if (facilities) {
       facilities = Array.isArray(facilities) ? facilities : [facilities];
-      query["facilities.name"] = { $in: facilities };
+      query['facilities.name'] = { $in: facilities };
     }
 
     // Filter By Owner
-    if(ownerId) {
+    if (ownerId) {
       query.ownerId = ownerId;
     }
 
     // Filter by favorite - only for logged in user
-    if(favorite && user) {
+    if (favorite && user) {
       query['favorites.ownerId'] = user._id.toString();
     }
 
     // Use user's geo location. Using the first address. Overrides general location.
-    if(user?.addresses?.length && user.addresses[0].location?.coordinates?.length){
+    if (
+      user?.addresses?.length &&
+      user.addresses[0].location?.coordinates?.length
+    ) {
       [longitude, latitude] = user.addresses[0].location.coordinates;
     }
 
     // Use the provided coordinates, overrides others coordinates.
-    if(latitude && longitude) {
+    if (latitude && longitude) {
       options.geoLocation = {
         coordinates: [Number(longitude), Number(latitude)],
-        maxDistance: radius
-      }
+        maxDistance: radius,
+      };
     }
 
     return this.businessesService.findAll({
       query,
       projection,
-      options
+      options,
     });
   }
 
@@ -136,7 +157,11 @@ export class BusinessesController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  async update(@Param('id') id: string, @Request() req, @Body(ValidationPipe) updateBusinessDTO: UpdateBusinessDTO) {
+  async update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body(ValidationPipe) updateBusinessDTO: UpdateBusinessDTO,
+  ) {
     const ability = this.businessAbility.get(req.user);
     const business = await this.businessesService.getOne({ _id: id });
 
@@ -151,7 +176,11 @@ export class BusinessesController {
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  async updateOwnerId(@Param('id') id: string, @Request() req, @Body(ValidationPipe) updateOwnerDTO: UpdateOwnerDTO) {
+  async updateOwnerId(
+    @Param('id') id: string,
+    @Request() req,
+    @Body(ValidationPipe) updateOwnerDTO: UpdateOwnerDTO,
+  ) {
     return this.businessesService.changeOwner({ _id: id }, updateOwnerDTO);
   }
 
@@ -172,9 +201,17 @@ export class BusinessesController {
 
   @Post('/:id/review')
   @UseGuards(JwtAuthGuard)
-  createReview(@Param('id') id: string, @Request() req, @Body(ValidationPipe) createReviewDTO: CreateReviewDTO): Promise<Business> {
+  createReview(
+    @Param('id') id: string,
+    @Request() req,
+    @Body(ValidationPipe) createReviewDTO: CreateReviewDTO,
+  ): Promise<Business> {
     const { _id, name, avatar } = req.user;
-    return this.businessesService.createReview(id, { _id, name, avatar }, createReviewDTO);
+    return this.businessesService.createReview(
+      id,
+      { _id, name, avatar },
+      createReviewDTO,
+    );
   }
 
   @Post('/:id/favorite')
