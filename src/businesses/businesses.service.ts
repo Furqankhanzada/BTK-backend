@@ -10,6 +10,12 @@ import {
   UpdateOwnerDTO,
 } from './business.dto';
 
+interface FindAllArgs {
+  query: Partial<Business>;
+  projection: Partial<Record<keyof Business | string, number>>;
+  options?: Record<any, any>;
+}
+
 @Injectable()
 export class BusinessesService {
   constructor(
@@ -32,11 +38,13 @@ export class BusinessesService {
     }
   }
 
-  async findAll({
-    query = {},
-    projection = {},
-    options = {},
-  }: any = {}): Promise<Business[]> {
+  async findAll(
+    { query, projection, options }: FindAllArgs = {
+      query: {},
+      projection: {},
+      options: {},
+    },
+  ): Promise<Business[]> {
     const pipelines: any = [
       { $match: { ...query } },
       {
@@ -80,7 +88,7 @@ export class BusinessesService {
     return this.businessModel.aggregate(pipelines);
   }
 
-  async findOne(_id: string, projection = {}): Promise<Business> {
+  async findOne(_id: string): Promise<Business> {
     // Increment Views
     await this.businessModel.updateOne({ _id }, { $inc: { views: 1 } }).exec();
     // Query Single
@@ -213,6 +221,10 @@ export class BusinessesService {
 
   async remove(_id: string): Promise<{ deletedCount?: number }> {
     return this.businessModel.deleteOne({ _id }).exec();
+  }
+
+  async removeManyByUser(userId: string): Promise<{ deletedCount?: number }> {
+    return this.businessModel.deleteMany({ ownerId: userId }).exec();
   }
 
   // Favorites
