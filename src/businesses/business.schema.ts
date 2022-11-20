@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Location, locationSchema, UserStatus } from '../users/users.schema';
+import { Location, locationSchema } from '../users/users.schema';
 
 export enum BusinessStatus {
   VERIFIED = 'VERIFIED',
@@ -139,18 +139,26 @@ export class Business extends Document {
   facilities: Facilities[];
 
   @Prop({ required: true })
-  ownerId: string
+  ownerId: string;
 
   @Prop({ default: 0 })
-  views: number
+  views: number;
 
   @Prop()
-  thumbnail: string
+  thumbnail: string;
 
   @Prop({ type: [gallerySchema] })
   gallery: Gallery[];
 
-  @Prop({ default: BusinessStatus.PENDING, enum: [BusinessStatus.PENDING, BusinessStatus.ACTIVE, BusinessStatus.BLOCKED, BusinessStatus.VERIFIED] })
+  @Prop({
+    default: BusinessStatus.PENDING,
+    enum: [
+      BusinessStatus.PENDING,
+      BusinessStatus.ACTIVE,
+      BusinessStatus.BLOCKED,
+      BusinessStatus.VERIFIED,
+    ],
+  })
   status: string;
 }
 
