@@ -11,7 +11,7 @@ import {
 } from './business.dto';
 
 interface FindAllArgs {
-  query: Partial<Business>;
+  query: Partial<Business | { 'reviews.owner._id': string }>;
   projection: Partial<Record<keyof Business | string, number>>;
   options?: Record<any, any>;
 }
@@ -273,6 +273,19 @@ export class BusinessesService {
 
     return this.businessModel
       .updateMany({ 'reviews.owner._id': owner._id }, { $set: updates })
+      .exec();
+  }
+
+  async removeUserReviewsFromAllBusinesses(user): Promise<Business> {
+    return this.businessModel
+      .updateMany(
+        { 'reviews.owner._id': user._id.toString() },
+        {
+          $pull: {
+            reviews: { owner: user },
+          },
+        },
+      )
       .exec();
   }
 }

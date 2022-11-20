@@ -96,24 +96,35 @@ export class UsersController {
     const { _id: userId } = req.user;
 
     if (confirm) {
+      await this.businessesService.removeUserReviewsFromAllBusinesses(req.user);
       await this.businessesService.removeManyByUser(userId.toString());
       await this.usersService.remove(userId);
       return { success: true };
     }
 
-    const businesses = await this.businessesService.findAll({
+    const ownerOfBusinesses = await this.businessesService.findAll({
       query: { ownerId: userId.toString() },
       projection: { name: 1, reviews: 1 },
       options: {},
     });
 
-    const reviewsCount = businesses.reduce((total, business) => {
-      return total + (business.reviews ? business.reviews.length : 0);
-    }, 0);
+    const businessesWhereGaveReviews = await this.businessesService.findAll({
+      query: { 'reviews.owner._id': userId.toString() },
+      projection: { reviews: 1 },
+      options: {},
+    });
+
+    const reviewsOnYourBusinessesCount = ownerOfBusinesses.reduce(
+      (total, business) => {
+        return total + (business.reviews ? business.reviews.length : 0);
+      },
+      0,
+    );
 
     return {
-      businessesCount: businesses.length,
-      reviewsCount,
+      ownerOfBusinessesCount: ownerOfBusinesses.length,
+      businessesWhereGaveReviewsCount: businessesWhereGaveReviews.length,
+      reviewsOnYourBusinessesCount,
     };
   }
 }
