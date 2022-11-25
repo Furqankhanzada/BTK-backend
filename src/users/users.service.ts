@@ -27,7 +27,8 @@ export class UsersService {
   }
 
   async update(_id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
-    return this.userModel.updateOne({ _id }, profileUpdateDto).exec();
+    await this.userModel.updateOne({ _id }, profileUpdateDto).exec();
+    return this.findOne(_id);
   }
 
   async setVerificationCode(
