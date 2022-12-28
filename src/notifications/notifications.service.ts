@@ -1,15 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { Notification } from './notification.schema';
 
 @Injectable()
 export class NotificationsService {
-  create(createNotificationDto: CreateNotificationDto) {
-    return 'This action adds a new notification';
+  constructor(
+    @InjectModel(Notification.name) private notificationModel: Model<Notification>,
+  ) { }
+
+  async create(createNotificationDto: CreateNotificationDto): Promise<Notification> {
+    const createdNotification = new this.notificationModel(createNotificationDto);
+    try {
+      return await createdNotification.save();
+    } catch (error) {
+      console.log('notification create error', error);
+      return error;
+    }
   }
 
-  findAll() {
-    return [];
+  async findAll() {
+    return this.notificationModel.find();
   }
 
   findOne(id: number) {
