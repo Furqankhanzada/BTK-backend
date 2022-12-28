@@ -12,6 +12,7 @@ import { TagsModule } from './tags/tags.module';
 import { FilesModule } from './files/files.module';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
     BusinessesModule,
     TagsModule,
     FilesModule,
-    EmailModule
+    EmailModule,
+    NotificationsModule
   ],
   controllers: [AppController],
   providers: [AppService],
