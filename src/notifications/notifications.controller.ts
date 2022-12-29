@@ -23,7 +23,7 @@ export class NotificationsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(+id);
+    return this.notificationsService.findOne(id);
   }
 
   @Put(':id')

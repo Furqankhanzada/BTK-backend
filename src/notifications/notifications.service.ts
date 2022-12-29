@@ -25,8 +25,8 @@ export class NotificationsService {
     return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
+  findOne(id: string) {
+    return this.notificationModel.findOne({ _id: id }).exec();
   }
 
   update(id: number, updateNotificationDto: UpdateNotificationDto) {
