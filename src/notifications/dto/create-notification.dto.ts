@@ -14,10 +14,6 @@ export class CreateNotificationDto {
     image: string;
 
     @IsString()
-    @IsOptional()
-    date: string;
-
-    @IsString()
     @IsUrl({ require_protocol: true })
     @IsOptional()
     link: string;
