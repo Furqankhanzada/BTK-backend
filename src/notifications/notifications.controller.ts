@@ -13,6 +13,14 @@ export class NotificationsController {
     return this.notificationsService.create(createNotificationDto);
   }
 
+  @Post(':id')
+  @UseGuards(JwtAuthGuard)
+  createWithOwner(
+    @Request() req,
+    @Body() createNotificationDto: CreateNotificationDto) {
+    return this.notificationsService.createWithOwner(createNotificationDto, req.user._id);
+  }
+
   @Get()
   @UseGuards(JwtAuthGuard)
   findAll(

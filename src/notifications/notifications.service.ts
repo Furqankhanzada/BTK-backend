@@ -21,6 +21,16 @@ export class NotificationsService {
     }
   }
 
+  async createWithOwner(createNotificationDto: CreateNotificationDto, id): Promise<Notification> {
+    const createdNotification = new this.notificationModel({...createNotificationDto, ownerId: id});
+    try {
+      return await createdNotification.save();
+    } catch (error) {
+      console.log('notification create error', error);
+      return error;
+    }
+  }
+
   async findAll(ownerId) {
     return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
   }
