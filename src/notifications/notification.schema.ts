@@ -3,17 +3,14 @@ import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Notification extends Document {
-  @Prop()
+  @Prop({ required: true })
   title: string;
 
-  @Prop()
+  @Prop({ required: true })
   description: string;
 
   @Prop()
   image: string;
-
-  @Prop()
-  date: string;
 
   @Prop()
   link: string;
@@ -23,6 +20,9 @@ export class Notification extends Document {
 
   @Prop()
   read: boolean;
+
+  @Prop()
+  ownerId: string;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
