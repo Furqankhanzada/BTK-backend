@@ -21,8 +21,8 @@ export class NotificationsService {
     }
   }
 
-  async findAll() {
-    return this.notificationModel.find();
+  async findAll(ownerId) {
+    return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
   }
 
   findOne(id: number) {
