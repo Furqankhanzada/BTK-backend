@@ -11,7 +11,7 @@ export class NotificationsService {
     @InjectModel(Notification.name) private notificationModel: Model<Notification>,
   ) { }
 
-  async create(createNotificationDto: CreateNotificationDto, id): Promise<Notification> {
+  async create(createNotificationDto: CreateNotificationDto, id: string): Promise<Notification> {
     const createdNotification = new this.notificationModel({...createNotificationDto, ownerId: id});
     try {
       return await createdNotification.save();
