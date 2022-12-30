@@ -42,7 +42,10 @@ export class NotificationsController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
-    return this.notificationsService.remove(+id);
+    return this.notificationsService.remove(id);
   }
 }

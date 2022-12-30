@@ -33,7 +33,7 @@ export class NotificationsService {
     return this.notificationModel.updateOne({ _id: id }, updateNotificationDto).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+  remove(id: string): Promise<{ deletedCount?: number }> {
+    return this.notificationModel.deleteOne({ _id: id }).exec();
   }
 }
