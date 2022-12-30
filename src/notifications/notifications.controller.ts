@@ -2,27 +2,22 @@ import { Controller, Get, Post, Body, Put, Param, Delete, Request, UseGuards } f
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('notifications')
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
   
   @Post()
-  create(@Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.create(createNotificationDto);
-  }
-
-  @Post(':id')
-  @UseGuards(JwtAuthGuard)
-  createWithOwner(
+  @UseGuards(OptionalJwtAuthGuard)
+  create(
     @Request() req,
     @Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.createWithOwner(createNotificationDto, req.user._id);
+    return this.notificationsService.create(createNotificationDto, req.user._id);
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   findAll(
     @Request() req,
   ) {
