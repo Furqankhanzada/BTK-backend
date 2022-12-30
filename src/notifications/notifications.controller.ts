@@ -3,6 +3,8 @@ import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
+import { RolesGuard } from 'src/auth/roles.guard';
 
 @Controller('notifications')
 export class NotificationsController {
@@ -30,6 +32,9 @@ export class NotificationsController {
   }
 
   @Put(':id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
   update(
     @Param('id') id: string, 
     @Body() updateNotificationDto: UpdateNotificationDto) {
