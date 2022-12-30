@@ -29,8 +29,8 @@ export class NotificationsService {
     return this.notificationModel.findOne({ _id: id }).exec();
   }
 
-  update(id: number, updateNotificationDto: UpdateNotificationDto) {
-    return `This action updates a #${id} notification`;
+  update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<Notification> {
+    return this.notificationModel.updateOne({ _id: id }, updateNotificationDto).exec();
   }
 
   remove(id: number) {

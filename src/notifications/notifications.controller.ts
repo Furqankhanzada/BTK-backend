@@ -30,8 +30,10 @@ export class NotificationsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateNotificationDto: UpdateNotificationDto) {
-    return this.notificationsService.update(+id, updateNotificationDto);
+  update(
+    @Param('id') id: string, 
+    @Body() updateNotificationDto: UpdateNotificationDto) {
+    return this.notificationsService.update(id, updateNotificationDto);
   }
 
   @Delete(':id')
