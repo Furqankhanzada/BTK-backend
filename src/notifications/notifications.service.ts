@@ -12,7 +12,7 @@ export class NotificationsService {
   ) { }
 
   async create(createNotificationDto: CreateNotificationDto, id: string): Promise<Notification> {
-    const createdNotification = new this.notificationModel({...createNotificationDto, ownerId: id});
+    const createdNotification = new this.notificationModel({ ...createNotificationDto, ownerId: id });
     try {
       return await createdNotification.save();
     } catch (error) {
@@ -25,8 +25,15 @@ export class NotificationsService {
     return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
   }
 
-  findOne(id: string) {
-    return this.notificationModel.findOne({ _id: id }).exec();
+  async findOne(id: string, ownerId: string) {
+    const notification = await this.notificationModel.findOne({ _id: id }).exec();
+    if (notification.ownerId && notification.ownerId == ownerId) {
+      return notification;
+    }
+
+    if (!notification.ownerId) {
+      return notification;
+    }
   }
 
   update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<Notification> {

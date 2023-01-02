@@ -27,8 +27,12 @@ export class NotificationsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.notificationsService.findOne(id);
+  @UseGuards(OptionalJwtAuthGuard)
+  findOne(
+    @Param('id') id: string,
+    @Request() req,
+    ) {
+    return this.notificationsService.findOne(id, req.user._id);
   }
 
   @Put(':id')
