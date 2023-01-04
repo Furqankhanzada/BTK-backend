@@ -13,6 +13,7 @@ import { FilesModule } from './files/files.module';
 import { EmailModule } from './email/email.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { NotificationsModule } from './notifications/notifications.module';
+import { NotificationUsersModule } from './notification-users/notification-users.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     TagsModule,
     FilesModule,
     EmailModule,
-    NotificationsModule
+    NotificationsModule,
+    NotificationUsersModule
   ],
   controllers: [AppController],
   providers: [AppService],
