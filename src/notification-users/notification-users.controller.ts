@@ -18,13 +18,13 @@ export class NotificationUsersController {
     return this.notificationUsersService.create(createNotificationUserDto, req.user._id);
   }
 
-  // @Get()
-  // @UseGuards(JwtAuthGuard)
-  // findAll(
-  //   @Request() req,
-  // ) {
-  //   return this.notificationUsersService.findAll(req.user._id);
-  // }
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  findAll(
+    @Request() req,
+  ) {
+    return this.notificationUsersService.findAll(req.user._id);
+  }
 
   // @Get(':id')
   // @UseGuards(JwtAuthGuard)

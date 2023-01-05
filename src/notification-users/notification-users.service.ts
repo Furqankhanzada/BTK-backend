@@ -21,9 +21,9 @@ export class NotificationUsersService {
     }
   }
 
-  // async findAll(ownerId) {
-  //   return this.notificationUserModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
-  // }
+  async findAll(userId: string) {
+    return this.notificationUserModel.find({ $or: [{ userId }, { userId: { $exists: false } }] });
+  }
 
   // async findOne(id: string, ownerId: string) {
   //   const notification = await this.notificationUserModel.findOne({ _id: id }).exec();
