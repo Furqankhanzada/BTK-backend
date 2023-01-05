@@ -22,7 +22,34 @@ export class NotificationsService {
   }
 
   async findAll(ownerId) {
-    return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
+    const pipelines: any = [
+      // { $match: { ownerId: ownerId } },
+      {
+        $lookup: {
+          from: 'notificationusers',
+          let: { nId: '$_id', nOwnerId: '$ownerId' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$notificationId", "$$nId"] },
+                    // { $eq: ["$userId", "$$nOwnerId"] }
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'new',
+        }
+      },
+      // {
+      //   $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ["$new", 0] }, "$$ROOT"] } }
+      // },
+      // { $project: { new: 0 } }
+    ];
+    return this.notificationModel.aggregate(pipelines);
+    // return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
   }
 
   async findOne(id: string, ownerId: string) {
