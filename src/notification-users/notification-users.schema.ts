@@ -6,8 +6,11 @@ export class NotificationUser extends Document {
   @Prop({ required: true })
   notificationId: string;
 
-  @Prop({ required: true })
+  @Prop()
   userId: string;
+
+  @Prop()
+  deviceUniqueId: string;
 
   @Prop()
   read: boolean;
