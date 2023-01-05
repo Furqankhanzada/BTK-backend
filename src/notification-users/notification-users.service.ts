@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateNotificationUserDto } from './dto/create-notification-user.dto';
 import { UpdateNotificationUserDto } from './dto/update-notification-user.dto';
 import { NotificationUser } from './notification-users.schema';
@@ -12,7 +12,7 @@ export class NotificationUsersService {
   ) { }
 
   async create(createNotificationUserDto: CreateNotificationUserDto, id: string): Promise<NotificationUser> {
-    const createdNotificationUser = new this.notificationUserModel({ ...createNotificationUserDto, userId: id });
+    const createdNotificationUser = new this.notificationUserModel({ ...createNotificationUserDto, userId: id, notificationId: new Types.ObjectId(createNotificationUserDto.notificationId) });
     try {
       return await createdNotificationUser.save();
     } catch (error) {
