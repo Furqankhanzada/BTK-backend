@@ -9,7 +9,6 @@ export class CreateNotificationUserDto {
     @IsOptional()
     deviceUniqueId: string;
 
-    @IsString()
     @IsOptional()
     read: boolean;
 }
