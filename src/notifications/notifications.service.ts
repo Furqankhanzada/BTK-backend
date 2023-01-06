@@ -23,7 +23,7 @@ export class NotificationsService {
 
   async findAll(ownerId) {
     const pipelines: any = [
-      // { $match: { ownerId: ownerId } },
+      { $match: { $or: [{ ownerId }, { ownerId: { $exists: false } }] } },
       {
         $lookup: {
           from: 'notificationusers',
@@ -34,7 +34,7 @@ export class NotificationsService {
                 $expr: {
                   $and: [
                     { $eq: ["$notificationId", "$$nId"] },
-                    // { $eq: ["$userId", "$$nOwnerId"] }
+                    { $eq: ["$userId", "$$nOwnerId"] }
                   ]
                 }
               }

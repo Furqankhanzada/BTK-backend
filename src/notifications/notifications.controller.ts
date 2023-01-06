@@ -23,7 +23,7 @@ export class NotificationsController {
   findAll(
     @Request() req,
   ) {
-    return this.notificationsService.findAll(req.user._id);
+    return this.notificationsService.findAll(req.user._id?.toString());
   }
 
   @Get(':id')
