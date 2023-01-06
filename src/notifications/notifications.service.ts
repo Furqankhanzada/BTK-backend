@@ -43,10 +43,10 @@ export class NotificationsService {
           as: 'new',
         }
       },
-      // {
-      //   $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ["$new", 0] }, "$$ROOT"] } }
-      // },
-      // { $project: { new: 0 } }
+      {
+        $replaceRoot: { newRoot: { $mergeObjects: [{ read: { $arrayElemAt: ["$new.read", 0] } }, "$$ROOT"] } }
+      },
+      { $project: { new: 0 } }
     ];
     return this.notificationModel.aggregate(pipelines);
     // return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
