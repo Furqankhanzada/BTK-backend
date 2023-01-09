@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Request, UseGuards, Query } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -22,8 +22,9 @@ export class NotificationsController {
   @UseGuards(OptionalJwtAuthGuard)
   findAll(
     @Request() req,
+    @Query('deviceUniqueId') deviceUniqueId: any,
   ) {
-    return this.notificationsService.findAll(req.user._id?.toString());
+    return this.notificationsService.findAll(req.user._id?.toString(), deviceUniqueId);
   }
 
   @Get(':id')

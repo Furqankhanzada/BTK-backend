@@ -21,25 +21,44 @@ export class NotificationsService {
     }
   }
 
-  async findAll(ownerId) {
+  async findAll(ownerId, deviceUniqueId) {
+    let pipeline = {};
+
+    if (ownerId) {
+      pipeline = [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$notificationId", "$$nId"] },
+                { $eq: ["$userId", ownerId] }
+              ]
+            }
+          }
+        }
+      ]
+    } else {
+      pipeline = [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$notificationId", "$$nId"] },
+                { $eq: ["$deviceUniqueId", deviceUniqueId] }
+              ]
+            }
+          }
+        }
+      ]
+    }
+
     const pipelines: any = [
       { $match: { $or: [{ ownerId }, { ownerId: { $exists: false } }] } },
       {
         $lookup: {
           from: 'notificationusers',
           let: { nId: '$_id', nOwnerId: '$ownerId' },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$notificationId", "$$nId"] },
-                    { $eq: ["$userId", "$$nOwnerId"] }
-                  ]
-                }
-              }
-            }
-          ],
+          pipeline: pipeline,
           as: 'new',
         }
       },
