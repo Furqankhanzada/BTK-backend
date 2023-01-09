@@ -6,14 +6,14 @@ export class NotificationUser extends Document {
   @Prop({ required: true, type: SchemaTypes.ObjectId })
   notificationId: Types.ObjectId;
 
-  @Prop()
-  userId: string;
-
-  @Prop()
+  @Prop({ required: true})
   deviceUniqueId: string;
 
-  @Prop()
+  @Prop({ required: true})
   read: boolean;
+
+  @Prop()
+  userId: string;
 }
 
 export const NotificationUserSchema = SchemaFactory.createForClass(NotificationUser);
