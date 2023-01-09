@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseGuards, Request } f
 import { NotificationUsersService } from './notification-users.service';
 import { CreateNotificationUserDto } from './dto/create-notification-user.dto';
 import { UpdateNotificationUserDto } from './dto/update-notification-user.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 
@@ -11,7 +11,7 @@ export class NotificationUsersController {
   constructor(private readonly notificationUsersService: NotificationUsersService) {}
   
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(OptionalJwtAuthGuard)
   create(
     @Request() req,
     @Body() createNotificationUserDto: CreateNotificationUserDto) {
