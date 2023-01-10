@@ -31,7 +31,7 @@ export class NotificationsService {
             $expr: {
               $and: [
                 { $eq: ["$notificationId", "$$nId"] },
-                { $eq: ["$userId", ownerId] },
+                { $or: [{ $eq: ["$userId", ownerId] }, { $eq: ["$deviceUniqueId", deviceUniqueId] }] },
               ]
             }
           }
