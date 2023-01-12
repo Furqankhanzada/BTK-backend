@@ -20,11 +20,21 @@ export class NotificationsController {
 
   @Get()
   @UseGuards(OptionalJwtAuthGuard)
-  findAll(
+  async findAll(
     @Request() req,
     @Query('deviceUniqueId') deviceUniqueId: any,
+    @Query('unreadCount') unreadCount: boolean,
   ) {
-    return this.notificationsService.findAll(req.user._id?.toString(), deviceUniqueId);
+    const notifications = this.notificationsService.findAll(req.user._id?.toString(), deviceUniqueId);
+    const unreadNotifications = (await notifications).filter((notification) => {
+      return !notification?.read;
+    })
+
+    if (unreadCount) {
+      return { unread: unreadNotifications.length };
+    }
+
+    return await notifications;
   }
 
   @Get(':id')
