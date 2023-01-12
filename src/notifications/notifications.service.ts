@@ -21,7 +21,7 @@ export class NotificationsService {
     }
   }
 
-  async findAll(ownerId, deviceUniqueId) {
+  async findAll(ownerId: string, deviceUniqueId: string) {
     let pipeline = {};
 
     if (ownerId) {
@@ -73,12 +73,15 @@ export class NotificationsService {
 
   async findOne(id: string, ownerId: string) {
     const notification = await this.notificationModel.findOne({ _id: id }).exec();
-    if (notification.ownerId && notification.ownerId == ownerId) {
+    if (!notification.ownerId) {
       return notification;
     }
 
-    if (!notification.ownerId) {
+    if (notification.ownerId && notification.ownerId == ownerId) {
       return notification;
+    } else return {
+      "statusCode": 401,
+      "message": "Unauthorized"
     }
   }
 
