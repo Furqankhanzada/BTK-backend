@@ -12,7 +12,7 @@ export class NotificationsGateway {
 
   @SubscribeMessage('createNotification')
   async create(@MessageBody() createNotificationsliveDto: CreateNotificationDto) {
-    const notification = await this.notificationsService.create(createNotificationsliveDto, '63ad4d42fc59a73638458de0');
+    const notification = await this.notificationsService.create(createNotificationsliveDto);
 
     this.server.emit('notification', { added: notification });
 
