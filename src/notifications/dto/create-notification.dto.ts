@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateNotificationDto {
     @IsString()
@@ -14,7 +14,6 @@ export class CreateNotificationDto {
     image: string;
 
     @IsString()
-    @IsUrl({ require_protocol: true })
     @IsOptional()
     link: string;
 
