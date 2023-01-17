@@ -1,6 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+export enum NotificationType {
+  ANNOUNCEMENT = 'Announcement',
+  BUSINESS = 'Business',
+  REVIEW = 'Review',
+  USER = 'User',
+}
+
 @Schema({ timestamps: true })
 export class Notification extends Document {
   @Prop({ required: true })
@@ -15,7 +22,17 @@ export class Notification extends Document {
   @Prop()
   link: string;
 
-  @Prop()
+  @Prop(
+    {
+      default: NotificationType.ANNOUNCEMENT,
+      enum: [
+        NotificationType.ANNOUNCEMENT,
+        NotificationType.BUSINESS,
+        NotificationType.REVIEW,
+        NotificationType.USER,
+      ],
+    }
+  )
   type: string;
 
   @Prop()
