@@ -11,5 +11,9 @@ export class CreateDeviceDto {
 
     @IsString()
     @IsNotEmpty()
-    OS: string;
+    os: string;
+
+    @IsString()
+    @IsNotEmpty()
+    osVersion: string;
 }

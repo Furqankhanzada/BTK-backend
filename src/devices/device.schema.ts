@@ -10,7 +10,10 @@ export class Device extends Document {
   fcmToken: string;
 
   @Prop({ required: true })
-  OS: string;
+  os: string;
+
+  @Prop({ required: true })
+  osVersion: string;
 
   @Prop()
   userId: string;
