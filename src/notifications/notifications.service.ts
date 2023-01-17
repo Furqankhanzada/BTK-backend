@@ -21,7 +21,7 @@ export class NotificationsService {
     }
   }
 
-  async findAll(ownerId: string, deviceUniqueId: string) {
+  async findAll(ownerId: string, options: Record<any, any>) {
     let pipeline = {};
 
     if (ownerId) {
@@ -31,7 +31,7 @@ export class NotificationsService {
             $expr: {
               $and: [
                 { $eq: ["$notificationId", "$$nId"] },
-                { $or: [{ $eq: ["$userId", ownerId] }, { $eq: ["$deviceUniqueId", deviceUniqueId] }] },
+                { $or: [{ $eq: ["$userId", ownerId] }, { $eq: ["$deviceUniqueId", options.deviceUniqueId] }] },
               ]
             }
           }
@@ -44,7 +44,7 @@ export class NotificationsService {
             $expr: {
               $and: [
                 { $eq: ["$notificationId", "$$nId"] },
-                { $eq: ["$deviceUniqueId", deviceUniqueId] }
+                { $eq: ["$deviceUniqueId", options.deviceUniqueId] }
               ]
             }
           }
@@ -67,8 +67,12 @@ export class NotificationsService {
       },
       { $project: { new: 0 } }
     ];
+
+    if (options?.sort) {
+      pipelines.push({ $sort: options?.sort });
+    }
+
     return this.notificationModel.aggregate(pipelines);
-    // return this.notificationModel.find({ $or: [{ ownerId }, { ownerId: { $exists: false } }] });
   }
 
   async findOne(id: string, ownerId: string) {

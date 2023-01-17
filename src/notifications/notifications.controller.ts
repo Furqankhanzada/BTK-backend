@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Request, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Request, UseGuards, Query, DefaultValuePipe, ParseBoolPipe } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
@@ -24,8 +24,17 @@ export class NotificationsController {
     @Request() req,
     @Query('deviceUniqueId') deviceUniqueId: any,
     @Query('unreadCount') unreadCount: boolean,
+    @Query('recent', new DefaultValuePipe(false), ParseBoolPipe)
+    recent: boolean,
   ) {
-    const notifications = this.notificationsService.findAll(req.user._id?.toString(), deviceUniqueId);
+    const options: Record<string, any> = { deviceUniqueId };
+
+    // Sort by recent
+    if (recent) {
+      options.sort = { createdAt: -1 };
+    }
+
+    const notifications = this.notificationsService.findAll(req.user._id?.toString(), options);
     const unreadNotifications = (await notifications).filter((notification) => {
       return !notification?.read;
     })
