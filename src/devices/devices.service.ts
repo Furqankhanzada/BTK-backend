@@ -12,7 +12,13 @@ export class DevicesService {
 
 
   async create(createDeviceDto: CreateDeviceDto, id?: string): Promise<Device> {
+    const isExistingDevice = await this.deviceModel.findOne({ deviceUniqueId: createDeviceDto.deviceUniqueId }).exec()
     const createdDevice = new this.deviceModel({ ...createDeviceDto, userId: id });
+
+    if (isExistingDevice) {
+      return isExistingDevice;
+    }
+
     try {
       return await createdDevice.save();
     } catch (error) {
