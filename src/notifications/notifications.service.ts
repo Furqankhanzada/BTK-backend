@@ -5,6 +5,11 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Notification } from './notification.schema';
 
+export interface findAllNotificationsOptions {
+  deviceUniqueId: string;
+  sort?: { createdAt: number }
+}
+
 @Injectable()
 export class NotificationsService {
   constructor(
@@ -21,7 +26,7 @@ export class NotificationsService {
     }
   }
 
-  async findAll(ownerId: string, options: Record<any, any>) {
+  async findAll(ownerId: string, options: findAllNotificationsOptions) {
     let pipeline = {};
 
     if (ownerId) {
