@@ -32,11 +32,11 @@ export class NotificationsService {
   ) {
     initializeApp({
       credential: cert({
-        "projectId": "explore-btk",
-        "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC64iCrXbJyzYYM\nTS3sokn8vO4OZ4uHokH5ft7L5a2SGid016zO0Rq0nuXdSJpfBJ4cRKfDt8M4IsSL\nUgwqXzUtPEb57vGVdC3XE4pCZyGXXLJz+9Y0z3vOFQvHNkVNhzF9jHJ+fAKPa+Ml\nDr+f1mp0RstCDIoHm8NW3GL2gc6ZnV/kZl7/eAhkZohG5ux798YWOi5wZ1cJYOj1\nVRxWQVGaU2uajBrA7PSJq+wzoJzGnVN5wFI1zUsOd1/ftUfRK4BYSFYX0VZK6dqu\nGp1S76HofxFhh+m/NWCNCYrMPum+C/U5SHKhuUhMDhXdWSmI+7SaSU/WeEOM0fTp\ngyIgN0R7AgMBAAECggEAPqixxnNAcTCKuNYpxzT0tKpN8QNzq3LSRwpsPhYQl7Nw\nNkNX+/HtT9EVBhghNimQr66vRzZ2XHx/xKyqSoyogjW7IHKminMtKXcyPKhigWMB\nrFSsUgGdI5A35j/ChceF5u/vtYvzuc21F4g15KwZ/kl8PfWBVCK8IIP9JGSKdkNU\nbCObMXTSjKBCM/6khfM7t/3VS+WhbdiQpSEPHPwE9aynOpxGJIMOoTQbnWQOJvDW\n7m23kCTinVY8W78P1O+HDaE9zBhV4nPH5iou1kKDPeN2LCm+L/PgJID9SMFsDbTt\nxkw4FZLpzFiwXQ1k0VUSPdNd9yHBPB4n1x6zAToVZQKBgQDnP1z/NdtNzYBUKonm\nQiwZmsvCR0QU3S/sFjqEvCEblA0zLYcvrjwSsHXfKzYNmkemW1xMDbSKwe3mOw0S\nL1jPumzpbWeVxd7Bp8TGkjIfO6LIDIW/eR6RHJ+9Kr05PTeJ85YAvsk8AHEfSujJ\n6uVRAIm6gQFE/WOzVLgGWOq+NQKBgQDO4xkTNXE56VJ7/aSgoJz6HKkbp11j4iE+\nDCFaOK+pu+cVmwbO+YkQugUveLHpYF2Nq9GpA2kB+zgPVt/GcNWwpNgL9SeYcd7l\n21mnhFunJeBqcmXHG/FsTqqX9GQVC29LNqsJXgqotefa9TDIBRn/9LgfqjOQPQLf\n/QvoFKsN7wKBgHoCMnzs24KXVIgT0aJNc5sm0y70DvW7Jhe4OrPh1s4INVa1RMhh\nc4yg0fAnimNu7TLWrUHrUUCMxYpdya24kXE4eVJHyQl61ubyL55dcFiOTHqkMMUv\nkHMb2SQjsqbKp8z/WjuWbfJcgVLzYRN3/fnZANIIUrUlxD7QCjA/JcupAoGBAKce\nJSQyGEtKYRnNUs150DPtMOEoubS0dlvTmqFxhtxZ75mxR7erNH/xc7zcBwLYl9mX\nwF2BZrJ2BtvFNi/q94KgNfC60IhA+2e7X1mE/jAv1W7HB9XliYgOp5jljm69dOJR\nv6lqcLvFbQue4g/ApzbtrEnPx6Us04SxuIt5Ho+7AoGAOvGW2uo6YEv69iQXSuGR\nnkMFNpxVU1r7rScUrYUsy5wSfHGLO9l5NMOf8NC1LbWe0UvovQKbnzw94fPmvqo/\nDarlj3ssZ8bxZRAchCz5Xu6KHb3xQVScXUodxadcxE9SF381Tz9sG9jzfOpAeaUm\nWuzqgqkuI6y56rVenJcG+JA=\n-----END PRIVATE KEY-----\n",
-        "clientEmail": "firebase-adminsdk-upt6q@explore-btk.iam.gserviceaccount.com",
+        "projectId": `${process.env.FIREBASE_PROJECT_ID}`,
+        "privateKey": `${process.env.FIREBASE_PRIVATE_KEY}`,
+        "clientEmail": `${process.env.FIREBASE_CLIENT_EMAIL}`,
       }),
-      databaseURL: "https://explore-btk-default-rtdb.asia-southeast1.firebasedatabase.app",
+      databaseURL: `${process.env.FIREBASE_DATABASE_URL}`,
     });
   }
 
