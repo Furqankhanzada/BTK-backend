@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
 import { BatchResponse } from 'firebase-admin/lib/messaging/messaging-api';
+import { messaging } from 'firebase-admin/lib/messaging/messaging-namespace';
 import { chunk } from 'lodash';
 import { mapLimit } from 'async';
 import * as shell from 'shelljs';
@@ -50,7 +51,7 @@ export class NotificationsService {
       3, // 3 is a good place to start
       async (groupedFirebaseMessages: ISendFirebaseMessages[]): Promise<BatchResponse> => {
         try {
-          const tokenMessages: any = groupedFirebaseMessages.map(({ message, title, token }) => ({
+          const tokenMessages: messaging.TokenMessage[] = groupedFirebaseMessages.map(({ message, title, token }) => ({
             notification: { body: message, title },
             token,
             apns: {
@@ -92,7 +93,7 @@ export class NotificationsService {
     );
   }
 
-  public async sendAll(messages: any, dryRun?: boolean): Promise<BatchResponse> {
+  public async sendAll(messages: messaging.TokenMessage[], dryRun?: boolean): Promise<BatchResponse> {
     if (process.env.NODE_ENV === 'local') {
       for (const { notification, token } of messages) {
         shell.exec(
