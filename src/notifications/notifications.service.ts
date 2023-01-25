@@ -24,6 +24,7 @@ export interface ISendFirebaseMessages {
   title?: string;
   message: string;
   data?: { link: string };
+  type?: string;
 }
 
 @Injectable()
@@ -52,10 +53,11 @@ export class NotificationsService {
       3, // 3 is a good place to start
       async (groupedFirebaseMessages: ISendFirebaseMessages[]): Promise<BatchResponse> => {
         try {
-          const tokenMessages: messaging.TokenMessage[] = groupedFirebaseMessages.map(({ message, title, token, data }) => ({
+          const tokenMessages: messaging.TokenMessage[] = groupedFirebaseMessages.map(({ message, title, token, data, type }) => ({
             notification: { body: message, title },
             token,
             data: data,
+            android: { notification: { channelId: type ?? 'Announcement' } },
             apns: {
               payload: {
                 aps: {
@@ -118,6 +120,7 @@ export class NotificationsService {
         title: createNotificationDto.title,
         message: createNotificationDto.description,
         data: { link: createNotificationDto?.link ?? '' },
+        type: createNotificationDto?.type
       })
     })
 
