@@ -12,19 +12,25 @@ export class DevicesService {
 
 
   async create(createDeviceDto: CreateDeviceDto, id?: string): Promise<Device> {
-    const isExistingDevice = await this.deviceModel.findOne({ deviceUniqueId: createDeviceDto.deviceUniqueId }).exec()
-    const createdDevice = new this.deviceModel({ ...createDeviceDto, userId: id });
-
-    if (isExistingDevice) {
-      return isExistingDevice;
+    const existingDevice = await this.deviceModel.findOne({ deviceUniqueId: createDeviceDto.deviceUniqueId }).exec();
+    let device: Device;
+    if (existingDevice) {
+      if (existingDevice.fcmToken !== createDeviceDto.fcmToken) {
+        existingDevice.fcmToken = createDeviceDto.fcmToken;
+        device = await existingDevice.save();
+      } else {
+        device = existingDevice;
+      }
+    } else {
+      device = new this.deviceModel({ ...createDeviceDto, userId: id });
+      try {
+        await device.save();
+      } catch (error) {
+        console.log('device create error', error);
+        return error;
+      }
     }
-
-    try {
-      return await createdDevice.save();
-    } catch (error) {
-      console.log('device create error', error);
-      return error;
-    }
+    return device;
   }
 
   findAll() {
