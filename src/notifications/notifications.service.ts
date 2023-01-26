@@ -125,8 +125,9 @@ export class NotificationsService {
     })
 
     try {
+      const notification = await createdNotification.save();
       this.sendFirebaseMessages(notificationDevices)
-      return await createdNotification.save();
+      return notification;
     } catch (error) {
       console.log('notification create error', error);
       return error;
