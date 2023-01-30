@@ -11,7 +11,7 @@ export class DevicesService {
   ) { }
 
 
-  async create(createDeviceDto: CreateDeviceDto, id?: string): Promise<Device> {
+  async create(createDeviceDto: CreateDeviceDto, userId?: string): Promise<Device> {
     const existingDevice = await this.deviceModel.findOne({ deviceUniqueId: createDeviceDto.deviceUniqueId }).exec();
     let device: Device;
     if (existingDevice) {
@@ -22,7 +22,7 @@ export class DevicesService {
         device = existingDevice;
       }
     } else {
-      device = new this.deviceModel({ ...createDeviceDto, userId: id });
+      device = new this.deviceModel({ ...createDeviceDto, userId: userId });
       try {
         await device.save();
       } catch (error) {

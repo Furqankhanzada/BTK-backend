@@ -11,8 +11,8 @@ export class DevicesController {
   @UseGuards(OptionalJwtAuthGuard)
   create(
     @Request() req,
-    @Body() createNotificationDto: CreateDeviceDto) {
-    return this.devicesService.create(createNotificationDto, req.user._id);
+    @Body() createDeviceDto: CreateDeviceDto) {
+    return this.devicesService.create(createDeviceDto, req.user._id);
   }
 
   @Get()
