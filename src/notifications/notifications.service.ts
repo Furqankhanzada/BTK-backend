@@ -13,11 +13,6 @@ import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification
 import { Notification } from './notification.schema';
 import { Device } from 'src/devices/device.schema';
 
-export interface FindAllNotificationsOptions {
-  deviceUniqueId: string;
-  sort?: { createdAt: number }
-}
-
 export interface PushNotificationMessage {
   token: string;
   title?: string;
@@ -135,7 +130,7 @@ export class NotificationsService {
     }
   }
 
-  async findAll(ownerId: string, options: FindAllNotificationsOptions) {
+  findAll(ownerId: string, deviceUniqueId: string, recent: boolean) {
     const pipeline = [
       {
         $match: {
@@ -147,10 +142,10 @@ export class NotificationsService {
                   ? {
                       $or: [
                         { $eq: ['$userId', ownerId] },
-                        { $eq: ['$deviceUniqueId', options.deviceUniqueId] },
+                        { $eq: ['$deviceUniqueId', deviceUniqueId] },
                       ],
                     }
-                  : { $eq: ['$deviceUniqueId', options.deviceUniqueId] }),
+                  : { $eq: ['$deviceUniqueId', deviceUniqueId] }),
               },
             ],
           },
@@ -174,8 +169,8 @@ export class NotificationsService {
       { $project: { notificationUsers: 0 } }
     ];
 
-    if (options?.sort) {
-      pipelines.push({ $sort: options?.sort });
+    if (recent) {
+      pipelines.push({ $sort: { createdAt: -1 } });
     }
 
     return this.notificationModel.aggregate(pipelines);
