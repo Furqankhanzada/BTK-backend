@@ -19,8 +19,4 @@ export class NotificationUsersService {
       return error;
     }
   }
-
-  async findAll(userId: string) {
-    return this.notificationUserModel.find({ $or: [{ userId }, { userId: { $exists: false } }] });
-  }
 }

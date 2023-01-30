@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { NotificationUsersService } from './notification-users.service';
 import { CreateNotificationUserDto } from './dto/notification-user.dto';
-import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('notification-users')
 export class NotificationUsersController {
@@ -13,13 +13,5 @@ export class NotificationUsersController {
     @Request() req,
     @Body() createNotificationUserDto: CreateNotificationUserDto) {
     return this.notificationUsersService.create(createNotificationUserDto, req.user._id);
-  }
-
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  findAll(
-    @Request() req,
-  ) {
-    return this.notificationUsersService.findAll(req.user._id);
   }
 }
