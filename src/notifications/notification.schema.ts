@@ -36,9 +36,6 @@ export class Notification extends Document {
   type: string;
 
   @Prop()
-  read: boolean;
-
-  @Prop()
   ownerId: string;
 }
 

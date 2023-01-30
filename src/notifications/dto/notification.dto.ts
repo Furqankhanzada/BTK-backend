@@ -21,10 +21,6 @@ export class CreateNotificationDto {
     @IsString()
     @IsOptional()
     type: string;
-
-    @IsString()
-    @IsOptional()
-    read: boolean;
 }
 
 export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {}
