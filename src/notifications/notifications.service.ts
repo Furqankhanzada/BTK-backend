@@ -198,4 +198,3 @@ export class NotificationsService {
     return this.notificationModel.deleteOne({ _id: id }).exec();
   }
 }
-
