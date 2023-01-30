@@ -10,8 +10,8 @@ export class NotificationUsersService {
     @InjectModel(NotificationUser.name) private notificationUserModel: Model<NotificationUser>,
   ) { }
 
-  async create(createNotificationUserDto: CreateNotificationUserDto, id: string): Promise<NotificationUser> {
-    const createdNotificationUser = new this.notificationUserModel({ ...createNotificationUserDto, userId: id, notificationId: new Types.ObjectId(createNotificationUserDto.notificationId) });
+  async create(createNotificationUserDto: CreateNotificationUserDto, userId: string): Promise<NotificationUser> {
+    const createdNotificationUser = new this.notificationUserModel({ ...createNotificationUserDto, userId: userId, notificationId: new Types.ObjectId(createNotificationUserDto.notificationId) });
     try {
       return await createdNotificationUser.save();
     } catch (error) {
