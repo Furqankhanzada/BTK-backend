@@ -14,12 +14,12 @@ import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { Notification } from './notification.schema';
 import { Device } from 'src/devices/device.schema';
 
-export interface findAllNotificationsOptions {
+export interface FindAllNotificationsOptions {
   deviceUniqueId: string;
   sort?: { createdAt: number }
 }
 
-export interface ISendFirebaseMessages {
+export interface PushNotificationMessage {
   token: string;
   title?: string;
   message: string;
@@ -45,19 +45,21 @@ export class NotificationsService {
     });
   }
 
-  public async sendFirebaseMessages(firebaseMessages: ISendFirebaseMessages[], dryRun?: boolean): Promise<BatchResponse> {
-    const batchedFirebaseMessages = chunk(firebaseMessages, 500);
+  public async sendFirebaseMessages(messages: PushNotificationMessage[], dryRun?: boolean): Promise<BatchResponse> {
+    const batchesOfMessages = chunk(messages, 500);
 
-    const batchResponses = await mapLimit<ISendFirebaseMessages[], BatchResponse>(
-      batchedFirebaseMessages,
+    const batchResponses = await mapLimit<PushNotificationMessage[], BatchResponse>(
+      batchesOfMessages,
       3, // 3 is a good place to start
-      async (groupedFirebaseMessages: ISendFirebaseMessages[]): Promise<BatchResponse> => {
+      async (batchesOfMessages: PushNotificationMessage[]): Promise<BatchResponse> => {
         try {
-          const tokenMessages: messaging.TokenMessage[] = groupedFirebaseMessages.map(({ message, title, token, data, type }) => ({
+          const fcmMessages: messaging.TokenMessage[] = batchesOfMessages.map(({ message, title, token, data, type }) => ({
             notification: { body: message, title },
             token,
-            data: data,
-            android: { notification: { channelId: type ?? 'Announcement' } },
+            data: data as {
+              [key: string]: string;
+            },
+            android: { notification: { channelId: type || 'Announcement' } },
             apns: {
               payload: {
                 aps: {
@@ -67,15 +69,15 @@ export class NotificationsService {
             },
           }));
 
-          return await this.sendAll(tokenMessages, dryRun);
+          return await this.sendAll(fcmMessages, dryRun);
         } catch (error) {
           return {
-            responses: groupedFirebaseMessages.map(() => ({
+            responses: batchesOfMessages.map(() => ({
               success: false,
               error,
             })),
             successCount: 0,
-            failureCount: groupedFirebaseMessages.length,
+            failureCount: batchesOfMessages.length,
           };
         }
       },
@@ -101,7 +103,7 @@ export class NotificationsService {
     if (process.env.NODE_ENV === 'local') {
       for (const { notification, token } of messages) {
         shell.exec(
-          `echo '{ "aps": { "alert": ${JSON.stringify(notification)}, "token": "${token}" } }' | xcrun simctl push booted com.company.appname -`,
+          `echo '{ "aps": { "alert": ${JSON.stringify(notification)}, "token": "${token}" } }' | xcrun simctl push booted com.explore.btk -`,
         );
       }
     }
@@ -134,36 +136,28 @@ export class NotificationsService {
     }
   }
 
-  async findAll(ownerId: string, options: findAllNotificationsOptions) {
-    let pipeline = {};
-
-    if (ownerId) {
-      pipeline = [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: ["$notificationId", "$$nId"] },
-                { $or: [{ $eq: ["$userId", ownerId] }, { $eq: ["$deviceUniqueId", options.deviceUniqueId] }] },
-              ]
-            }
-          }
-        }
-      ]
-    } else {
-      pipeline = [
-        {
-          $match: {
-            $expr: {
-              $and: [
-                { $eq: ["$notificationId", "$$nId"] },
-                { $eq: ["$deviceUniqueId", options.deviceUniqueId] }
-              ]
-            }
-          }
-        }
-      ]
-    }
+  async findAll(ownerId: string, options: FindAllNotificationsOptions) {
+    const pipeline = [
+      {
+        $match: {
+          $expr: {
+            $and: [
+              { $eq: ['$notificationId', '$$nId'] },
+              {
+                ...(ownerId
+                  ? {
+                      $or: [
+                        { $eq: ['$userId', ownerId] },
+                        { $eq: ['$deviceUniqueId', options.deviceUniqueId] },
+                      ],
+                    }
+                  : { $eq: ['$deviceUniqueId', options.deviceUniqueId] }),
+              },
+            ],
+          },
+        },
+      },
+    ]
 
     const pipelines: any = [
       { $match: { $or: [{ ownerId }, { ownerId: { $exists: false } }] } },
@@ -172,13 +166,13 @@ export class NotificationsService {
           from: 'notificationusers',
           let: { nId: '$_id', nOwnerId: '$ownerId' },
           pipeline: pipeline,
-          as: 'new',
+          as: 'notificationUsers',
         }
       },
       {
-        $replaceRoot: { newRoot: { $mergeObjects: [{ read: { $arrayElemAt: ["$new.read", 0] } }, "$$ROOT"] } }
+        $replaceRoot: { newRoot: { $mergeObjects: [{ read: { $arrayElemAt: ["$notificationUsers.read", 0] } }, "$$ROOT"] } }
       },
-      { $project: { new: 0 } }
+      { $project: { notificationUsers: 0 } }
     ];
 
     if (options?.sort) {

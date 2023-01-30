@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Request, UseGuards, Query, DefaultValuePipe, ParseBoolPipe } from '@nestjs/common';
-import { findAllNotificationsOptions, NotificationsService } from './notifications.service';
+import { FindAllNotificationsOptions, NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateNotificationDto } from './dto/update-notification.dto';
 import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -27,7 +27,7 @@ export class NotificationsController {
     @Query('recent', new DefaultValuePipe(false), ParseBoolPipe)
     recent: boolean,
   ) {
-    const options: findAllNotificationsOptions = { deviceUniqueId };
+    const options: FindAllNotificationsOptions = { deviceUniqueId };
 
     // Sort by recent
     if (recent) {
