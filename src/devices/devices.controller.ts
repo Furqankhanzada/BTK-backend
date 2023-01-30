@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { DevicesService } from './devices.service';
-import { CreateDeviceDto } from './dto/create-device.dto';
+import { CreateDeviceDto } from './dto/device.dto';
 
 @Controller('devices')
 export class DevicesController {

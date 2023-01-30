@@ -1,3 +1,4 @@
+import { PartialType } from "@nestjs/mapped-types";
 import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateDeviceDto {
@@ -17,3 +18,5 @@ export class CreateDeviceDto {
     @IsNotEmpty()
     osVersion: string;
 }
+
+export class UpdateDeviceDto extends PartialType(CreateDeviceDto) {}
