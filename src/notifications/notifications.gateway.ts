@@ -1,5 +1,5 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer } from '@nestjs/websockets';
-import { CreateNotificationDto } from './dto/create-notification.dto';
+import { CreateNotificationDto } from './dto/notification.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 import { Server } from 'socket.io';
 

@@ -9,8 +9,7 @@ import { chunk } from 'lodash';
 import { mapLimit } from 'async';
 import * as shell from 'shelljs';
 
-import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateNotificationDto } from './dto/update-notification.dto';
+import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification.dto';
 import { Notification } from './notification.schema';
 import { Device } from 'src/devices/device.schema';
 

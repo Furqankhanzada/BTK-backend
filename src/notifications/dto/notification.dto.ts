@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { PartialType } from "@nestjs/mapped-types";
 
 export class CreateNotificationDto {
     @IsString()
@@ -25,3 +26,5 @@ export class CreateNotificationDto {
     @IsOptional()
     read: boolean;
 }
+
+export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {}
