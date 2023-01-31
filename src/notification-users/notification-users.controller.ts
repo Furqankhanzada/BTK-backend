@@ -12,6 +12,6 @@ export class NotificationUsersController {
   create(
     @Request() req,
     @Body() createNotificationUserDto: CreateNotificationUserDto) {
-    return this.notificationUsersService.create(createNotificationUserDto, req.user._id);
+    return this.notificationUsersService.create(createNotificationUserDto, req?.user?._id);
   }
 }

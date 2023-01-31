@@ -12,7 +12,7 @@ export class DevicesController {
   create(
     @Request() req,
     @Body() createDeviceDto: CreateDeviceDto) {
-    return this.devicesService.create(createDeviceDto, req.user._id);
+    return this.devicesService.create(createDeviceDto, req?.user?._id);
   }
 
   @Get()
