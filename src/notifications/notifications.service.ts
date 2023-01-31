@@ -5,15 +5,20 @@ import { Model } from 'mongoose';
 import { PushNotificationsService } from './push-notifications.service';
 import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification.dto';
 import { Notification } from './notification.schema';
+import { NotificationAbilities, SUBJECT } from './notification.abilities';
 import { Device } from 'src/devices/device.schema';
+import { User } from 'src/users/users.schema';
+import { Action } from 'src/casl/casl-ability.factory';
+import { UnauthorizedException } from '@nestjs/common/exceptions';
 
 @Injectable()
 export class NotificationsService {
   constructor(
     @InjectModel(Notification.name) private notificationModel: Model<Notification>,
     @InjectModel(Device.name) private deviceModel: Model<Device>,
-    private readonly pushNotificationsService: PushNotificationsService
-  ) {}
+    private readonly pushNotificationsService: PushNotificationsService,
+    private readonly notificationAbility: NotificationAbilities,
+  ) { }
 
   async create(createNotificationDto: CreateNotificationDto, id?: string): Promise<Notification> {
     const createdNotification = new this.notificationModel({ ...createNotificationDto, ownerId: id });
@@ -50,11 +55,11 @@ export class NotificationsService {
               {
                 ...(ownerId
                   ? {
-                      $or: [
-                        { $eq: ['$userId', ownerId] },
-                        { $eq: ['$deviceUniqueId', deviceUniqueId] },
-                      ],
-                    }
+                    $or: [
+                      { $eq: ['$userId', ownerId] },
+                      { $eq: ['$deviceUniqueId', deviceUniqueId] },
+                    ],
+                  }
                   : { $eq: ['$deviceUniqueId', deviceUniqueId] }),
               },
             ],
@@ -86,17 +91,21 @@ export class NotificationsService {
     return this.notificationModel.aggregate(pipelines);
   }
 
-  async findOne(id: string, ownerId: string) {
+  async findOne(id: string, user: User) {
     const notification = await this.notificationModel.findOne({ _id: id }).exec();
+  
     if (!notification.ownerId) {
       return notification;
-    }
+    } else if (notification.ownerId && user?._id) {
+      const ability = this.notificationAbility.get(user);
 
-    if (notification.ownerId && notification.ownerId == ownerId) {
+      if (!ability.can(Action.Read, SUBJECT)) {
+        throw new UnauthorizedException();
+      }
+
       return notification;
-    } else return {
-      "statusCode": 401,
-      "message": "Unauthorized"
+    } else {
+      throw new UnauthorizedException();
     }
   }
 

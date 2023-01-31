@@ -45,7 +45,7 @@ export class NotificationsController {
     @Param('id') id: string,
     @Request() req,
     ) {
-    return this.notificationsService.findOne(id, req.user._id);
+    return this.notificationsService.findOne(id, req.user);
   }
 
   @Put(':id')
