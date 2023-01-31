@@ -26,12 +26,10 @@ export class PushNotificationsService {
           : undefined}`,
         "clientEmail": `${process.env.FIREBASE_CLIENT_EMAIL}`,
       }),
-      databaseURL: `${process.env.FIREBASE_DATABASE_URL}`,
     });
   }
 
   public async sendFirebaseMessages(messages: PushNotificationMessage[], dryRun?: boolean): Promise<BatchResponse> {
-    console.log('@sendFirebaseMessages');
     const batchesOfMessages = chunk(messages, 500);
 
     const batchResponses = await mapLimit<PushNotificationMessage[], BatchResponse>(
