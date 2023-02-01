@@ -36,7 +36,7 @@ export class Notification extends Document {
   type: string;
 
   @Prop()
-  ownerId: string;
+  userId: string;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);
