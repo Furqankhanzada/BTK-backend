@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { PushNotificationsService } from './push-notifications.service';
 import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification.dto';
 import { Notification } from './notification.schema';
-import { NotificationAbilities, SUBJECT } from './notification.abilities';
+import { NotificationAbilities } from './notification.abilities';
 import { Device } from 'src/devices/device.schema';
 import { User } from 'src/users/users.schema';
 import { Action } from 'src/casl/casl-ability.factory';
@@ -20,8 +20,8 @@ export class NotificationsService {
     private readonly notificationAbility: NotificationAbilities,
   ) { }
 
-  async create(createNotificationDto: CreateNotificationDto, id?: string): Promise<Notification> {
-    const createdNotification = new this.notificationModel({ ...createNotificationDto, ownerId: id });
+  async create(createNotificationDto: CreateNotificationDto, ownerId?: string): Promise<Notification> {
+    const createdNotification = new this.notificationModel({ ...createNotificationDto, userId: ownerId });
     const devices = await this.deviceModel.find();
     const notificationDevices = [];
 
@@ -45,7 +45,7 @@ export class NotificationsService {
     }
   }
 
-  findAll(ownerId: string, deviceUniqueId: string, recent: boolean) {
+  findAll(userId: string, deviceUniqueId: string, recent: boolean) {
     const pipeline = [
       {
         $match: {
@@ -53,10 +53,10 @@ export class NotificationsService {
             $and: [
               { $eq: ['$notificationId', '$$nId'] },
               {
-                ...(ownerId
+                ...(userId
                   ? {
                     $or: [
-                      { $eq: ['$userId', ownerId] },
+                      { $eq: ['$userId', userId] },
                       { $eq: ['$deviceUniqueId', deviceUniqueId] },
                     ],
                   }
@@ -69,11 +69,11 @@ export class NotificationsService {
     ]
 
     const pipelines: any = [
-      { $match: { $or: [{ ownerId }, { ownerId: { $exists: false } }] } },
+      { $match: { $or: [{ userId }, { userId: { $exists: false } }] } },
       {
         $lookup: {
           from: 'notificationusers',
-          let: { nId: '$_id', nOwnerId: '$ownerId' },
+          let: { nId: '$_id', nUserId: '$userId' },
           pipeline: pipeline,
           as: 'notificationUsers',
         }
@@ -93,20 +93,20 @@ export class NotificationsService {
 
   async findOne(id: string, user: User) {
     const notification = await this.notificationModel.findOne({ _id: id }).exec();
-  
-    if (!notification.ownerId) {
-      return notification;
-    } else if (notification.ownerId && user?._id) {
-      const ability = this.notificationAbility.get(user);
 
-      if (!ability.can(Action.Read, SUBJECT)) {
-        throw new UnauthorizedException();
-      }
-
+    if (!notification.userId) {
       return notification;
-    } else {
+    }
+
+    if (!user) throw new UnauthorizedException();
+
+    const ability = this.notificationAbility.get(user);
+
+    if (!ability.can(Action.Read, notification)) {
       throw new UnauthorizedException();
     }
+
+    return notification;
   }
 
   update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<Notification> {
