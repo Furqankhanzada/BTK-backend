@@ -6,13 +6,19 @@ import { messaging } from 'firebase-admin/lib/messaging/messaging-namespace';
 import { chunk } from 'lodash';
 import { mapLimit } from 'async';
 import * as shell from 'shelljs';
+import { NotificationType } from "./notification.schema";
+
+export interface PushNotificationMessageData {
+  link?: string;
+  deeplink?: string;
+}
 
 export interface PushNotificationMessage {
-    token: string;
-    title?: string;
-    message: string;
-    data?: { link: string };
-    type?: string;
+  token: string;
+  title: string;
+  message: string;
+  data?: PushNotificationMessageData;
+  type?: NotificationType;
 }
 
 @Injectable()
@@ -35,15 +41,15 @@ export class PushNotificationsService {
     const batchResponses = await mapLimit<PushNotificationMessage[], BatchResponse>(
       batchesOfMessages,
       3, // 3 is a good place to start
-      async (batchesOfMessages: PushNotificationMessage[]): Promise<BatchResponse> => {
+      async (batchOfMessages: PushNotificationMessage[]): Promise<BatchResponse> => {
         try {
-          const fcmMessages: messaging.TokenMessage[] = batchesOfMessages.map(({ message, title, token, data, type }) => ({
+          const fcmMessages: messaging.TokenMessage[] = batchOfMessages.map(({ message, title, token, data, type }) => ({
             notification: { body: message, title },
             token,
             data: data as {
               [key: string]: string;
             },
-            android: { notification: { channelId: type || 'Announcement' } },
+            android: { notification: { channelId: type || NotificationType.ANNOUNCEMENT } },
             apns: {
               payload: {
                 aps: {
