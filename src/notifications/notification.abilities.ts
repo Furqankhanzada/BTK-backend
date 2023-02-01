@@ -11,9 +11,9 @@ export class NotificationAbilities {
   get(user: User) {
     const abilities = [
       [Action.Create, SUBJECT],
-      [Action.Read, SUBJECT, { ownerId: user._id }],
-      [Action.Update, SUBJECT, { ownerId: user._id }],
-      [Action.Delete, SUBJECT, { ownerId: user._id }],
+      [Action.Read, SUBJECT, { userId: user._id }],
+      [Action.Update, SUBJECT, { userId: user._id }],
+      [Action.Delete, SUBJECT, { userId: user._id }],
     ];
 
     return this.abilityFactory.createForUser(user, abilities);
