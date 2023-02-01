@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Body, Put, Param, Delete, Request, UseGuards, Query, DefaultValuePipe, ParseBoolPipe } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification.dto';
-import { JwtAuthGuard, OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuardOptional } from 'src/auth/jwt-auth-optional.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 
@@ -10,15 +11,16 @@ export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
   
   @Post()
-  @UseGuards(OptionalJwtAuthGuard)
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
   create(
-    @Request() req,
     @Body() createNotificationDto: CreateNotificationDto) {
-    return this.notificationsService.create(createNotificationDto, req?.user?._id);
+    return this.notificationsService.create(createNotificationDto);
   }
 
   @Get()
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(JwtAuthGuardOptional)
   async findAll(
     @Request() req,
     @Query('deviceUniqueId') deviceUniqueId: string,
@@ -40,12 +42,12 @@ export class NotificationsController {
   }
 
   @Get(':id')
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(JwtAuthGuardOptional)
   findOne(
     @Param('id') id: string,
     @Request() req,
     ) {
-    return this.notificationsService.findOne(id, req.user);
+    return this.notificationsService.findOne(id, req?.user);
   }
 
   @Put(':id')
