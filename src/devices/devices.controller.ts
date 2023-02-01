@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Request } from '@nestjs/common';
-import { OptionalJwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuardOptional } from 'src/auth/jwt-auth-optional.guard';
 import { DevicesService } from './devices.service';
 import { CreateDeviceDto } from './dto/device.dto';
 
@@ -8,7 +8,7 @@ export class DevicesController {
   constructor(private readonly devicesService: DevicesService) {}
   
   @Post()
-  @UseGuards(OptionalJwtAuthGuard)
+  @UseGuards(JwtAuthGuardOptional)
   create(
     @Request() req,
     @Body() createDeviceDto: CreateDeviceDto) {
