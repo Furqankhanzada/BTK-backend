@@ -62,12 +62,12 @@ export class PushNotificationsService {
           return await this.sendAll(fcmMessages, dryRun);
         } catch (error) {
           return {
-            responses: batchesOfMessages.map(() => ({
+            responses: batchOfMessages.map(() => ({
               success: false,
               error,
             })),
             successCount: 0,
-            failureCount: batchesOfMessages.length,
+            failureCount: batchOfMessages.length,
           };
         }
       },
