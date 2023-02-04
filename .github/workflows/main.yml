@@ -77,7 +77,7 @@ jobs:
             export FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
             export FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }}
             export FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}
-            npm install --only=prod
+            yarn
             pm2 delete "btk"
             pm2 start dist/main.js --name "btk"
 
