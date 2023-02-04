@@ -74,6 +74,9 @@ jobs:
             export SESUSER=${{ secrets.SESUSER }}
             export SESPASSWORD=${{ secrets.SESPASSWORD }}
             export FROM=${{ secrets.FROM }}
+            export FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+            export FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }}
+            export FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}
             npm install --only=prod
             pm2 delete "btk"
             pm2 start dist/main.js --name "btk"
@@ -104,6 +107,9 @@ jobs:
             export SESUSER=${{ secrets.SESUSER }}
             export SESPASSWORD=${{ secrets.SESPASSWORD }}
             export FROM=${{ secrets.FROM }}
+            export FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}
+            export FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }}
+            export FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}
             npm install --only=prod
             pm2 delete "explore-btk"
             pm2 start dist/main.js --name "explore-btk"
