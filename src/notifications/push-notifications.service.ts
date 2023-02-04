@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
 import { BatchResponse } from 'firebase-admin/lib/messaging/messaging-api';
@@ -6,7 +6,7 @@ import { messaging } from 'firebase-admin/lib/messaging/messaging-namespace';
 import { chunk } from 'lodash';
 import { mapLimit } from 'async';
 import * as shell from 'shelljs';
-import { NotificationType } from "./notification.schema";
+import { NotificationType } from './notification.schema';
 
 export interface PushNotificationMessageData {
   link?: string;
@@ -26,38 +26,50 @@ export class PushNotificationsService {
   constructor() {
     initializeApp({
       credential: cert({
-        "projectId": `${process.env.FIREBASE_PROJECT_ID}`,
-        "privateKey": `${process.env.FIREBASE_PRIVATE_KEY
-          ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/gm, "\n")
-          : undefined}`,
-        "clientEmail": `${process.env.FIREBASE_CLIENT_EMAIL}`,
+        projectId: `${process.env.FIREBASE_PROJECT_ID}`,
+        privateKey: `${process.env.FIREBASE_PRIVATE_KEY}`,
+        clientEmail: `${process.env.FIREBASE_CLIENT_EMAIL}`,
       }),
     });
   }
 
-  public async sendFirebaseMessages(messages: PushNotificationMessage[], dryRun?: boolean): Promise<BatchResponse> {
+  public async sendFirebaseMessages(
+    messages: PushNotificationMessage[],
+    dryRun?: boolean,
+  ): Promise<BatchResponse> {
     const batchesOfMessages = chunk(messages, 500);
 
-    const batchResponses = await mapLimit<PushNotificationMessage[], BatchResponse>(
+    const batchResponses = await mapLimit<
+      PushNotificationMessage[],
+      BatchResponse
+    >(
       batchesOfMessages,
       3, // 3 is a good place to start
-      async (batchOfMessages: PushNotificationMessage[]): Promise<BatchResponse> => {
+      async (
+        batchOfMessages: PushNotificationMessage[],
+      ): Promise<BatchResponse> => {
         try {
-          const fcmMessages: messaging.TokenMessage[] = batchOfMessages.map(({ message, title, token, data, type }) => ({
-            notification: { body: message, title },
-            token,
-            data: data as {
-              [key: string]: string;
-            },
-            android: { notification: { channelId: type || NotificationType.ANNOUNCEMENT } },
-            apns: {
-              payload: {
-                aps: {
-                  'content-available': 1,
+          const fcmMessages: messaging.TokenMessage[] = batchOfMessages.map(
+            ({ message, title, token, data, type }) => ({
+              notification: { body: message, title },
+              token,
+              data: data as {
+                [key: string]: string;
+              },
+              android: {
+                notification: {
+                  channelId: type || NotificationType.ANNOUNCEMENT,
                 },
               },
-            },
-          }));
+              apns: {
+                payload: {
+                  aps: {
+                    'content-available': 1,
+                  },
+                },
+              },
+            }),
+          );
 
           return await this.sendAll(fcmMessages, dryRun);
         } catch (error) {
@@ -89,11 +101,16 @@ export class PushNotificationsService {
     );
   }
 
-  public async sendAll(messages: messaging.TokenMessage[], dryRun?: boolean): Promise<BatchResponse> {
+  public async sendAll(
+    messages: messaging.TokenMessage[],
+    dryRun?: boolean,
+  ): Promise<BatchResponse> {
     if (process.env.NODE_ENV === 'local') {
       for (const { notification, token } of messages) {
         shell.exec(
-          `echo '{ "aps": { "alert": ${JSON.stringify(notification)}, "token": "${token}" } }' | xcrun simctl push booted com.explore.btk -`,
+          `echo '{ "aps": { "alert": ${JSON.stringify(
+            notification,
+          )}, "token": "${token}" } }' | xcrun simctl push booted com.explore.btk -`,
         );
       }
     }
