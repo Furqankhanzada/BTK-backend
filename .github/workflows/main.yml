@@ -106,6 +106,6 @@ jobs:
             export SESPASSWORD=${{ secrets.SESPASSWORD }}
             export FROM=${{ secrets.FROM }}
             export GOOGLE_ACCOUNT_CREDENTIALS=${{ secrets.GOOGLE_ACCOUNT_CREDENTIALS }}
-            npm install --only=prod
+            yarn --prod
             pm2 delete "explore-btk"
             pm2 start dist/main.js --name "explore-btk"
