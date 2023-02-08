@@ -6,7 +6,7 @@ import { ConfigService } from '@nestjs/config';
 export class FilesService {
   constructor(
     private readonly configService: ConfigService
-  ) {}
+  ) { }
 
   async uploadPublicFile(dataBuffer: Buffer, filename: string) {
     const s3 = new S3();
@@ -17,11 +17,11 @@ export class FilesService {
     }).promise();
   }
 
-  async deletePublicFile(filename: string) {
+  async deletePublicFile(pathname: string) {
     const s3 = new S3();
     return s3.deleteObject({
       Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
-      Key: filename
+      Key: pathname
     }).promise();
   }
 }

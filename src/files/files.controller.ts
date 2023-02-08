@@ -27,8 +27,8 @@ export class FilesController {
   @UseGuards(JwtAuthGuard)
   delete(
     @Request() req,
-    @Query('filename') filename: string
+    @Query('pathname') pathname: string
   ): Promise<any> {
-    return this.filesService.deletePublicFile(filename);
+    return this.filesService.deletePublicFile(pathname);
   }
 }
