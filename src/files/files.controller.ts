@@ -10,7 +10,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('files')
 export class FilesController {
-  constructor(private readonly filesService: FilesService) {}
+  constructor(private readonly filesService: FilesService) { }
   @Post('/upload')
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(JwtAuthGuard)
@@ -21,5 +21,14 @@ export class FilesController {
       filename = `${folder}/${filename}`;
     }
     return this.filesService.uploadPublicFile(file.buffer, filename);
+  }
+
+  @Post('/delete')
+  @UseGuards(JwtAuthGuard)
+  delete(
+    @Request() req,
+    @Query('filename') filename: string
+  ): Promise<any> {
+    return this.filesService.deletePublicFile(filename);
   }
 }
