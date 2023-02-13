@@ -11,12 +11,18 @@ export class NotificationUsersService {
   ) { }
 
   async create(createNotificationUserDto: CreateNotificationUserDto, userId: string): Promise<NotificationUser> {
+    const existingReadNotification = await this.notificationUserModel.findOne({ deviceUniqueId: createNotificationUserDto.deviceUniqueId }).exec();
     const createdNotificationUser = new this.notificationUserModel({ ...createNotificationUserDto, userId: userId, notificationId: new Types.ObjectId(createNotificationUserDto.notificationId) });
-    try {
-      return await createdNotificationUser.save();
-    } catch (error) {
-      console.log('notification create error', error);
-      return error;
+
+    if (existingReadNotification) {
+      return existingReadNotification;
+    } else {
+      try {
+        return await createdNotificationUser.save();
+      } catch (error) {
+        console.log('notification read error', error);
+        return error;
+      }
     }
   }
 }
