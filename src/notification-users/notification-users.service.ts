@@ -11,7 +11,10 @@ export class NotificationUsersService {
   ) { }
 
   async create(createNotificationUserDto: CreateNotificationUserDto, userId: string): Promise<NotificationUser> {
-    const existingReadNotification = await this.notificationUserModel.findOne({ deviceUniqueId: createNotificationUserDto.deviceUniqueId }).exec();
+    const existingReadNotification = await this.notificationUserModel.findOne({
+      deviceUniqueId: createNotificationUserDto.deviceUniqueId,
+      notificationId: createNotificationUserDto.notificationId
+    }).exec();
     const createdNotificationUser = new this.notificationUserModel({ ...createNotificationUserDto, userId: userId, notificationId: new Types.ObjectId(createNotificationUserDto.notificationId) });
 
     if (existingReadNotification) {
