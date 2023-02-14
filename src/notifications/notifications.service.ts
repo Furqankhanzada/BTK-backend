@@ -25,18 +25,19 @@ export class NotificationsService {
     const devices = await this.deviceModel.find();
     const notificationDevices = [];
 
-    devices.forEach((userDevice: Device) => {
-      notificationDevices.push({
-        token: userDevice.fcmToken,
-        title: createNotificationDto.title,
-        message: createNotificationDto.description,
-        data: { link: createNotificationDto?.link ?? '' },
-        type: createNotificationDto?.type
-      })
-    })
-
     try {
       const notification = await createdNotification.save();
+
+      devices.forEach((userDevice: Device) => {
+        notificationDevices.push({
+          token: userDevice.fcmToken,
+          title: createNotificationDto.title,
+          message: createNotificationDto.description,
+          data: { deeplink: `explorebtk://notifications/${notification.id}` },
+          type: createNotificationDto?.type
+        })
+      })
+
       this.pushNotificationsService.sendFirebaseMessages(notificationDevices)
       return notification;
     } catch (error) {
