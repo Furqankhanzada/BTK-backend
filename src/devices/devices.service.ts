@@ -17,9 +17,14 @@ export class DevicesService {
       if (existingDevice.fcmToken !== createDeviceDto.fcmToken) {
         existingDevice.fcmToken = createDeviceDto.fcmToken;
         device = await existingDevice.save();
-      } else {
-        device = existingDevice;
       }
+
+      if (!existingDevice.userId) {
+        existingDevice.userId = userId;
+        device = await existingDevice.save();
+      }
+
+      device = existingDevice;
     } else {
       device = new this.deviceModel({ ...createDeviceDto, userId: userId });
       try {
