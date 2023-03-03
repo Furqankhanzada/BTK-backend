@@ -4,11 +4,16 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class FilesService {
-  constructor(private readonly configService: ConfigService) {}
+  private s3: S3;
+  constructor(private readonly configService: ConfigService) {
+    this.s3 = new S3({
+      accessKeyId: configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY'),
+    });
+  }
 
   async uploadPublicFile(dataBuffer: Buffer, filename: string) {
-    const s3 = new S3();
-    return s3
+    return this.s3
       .upload({
         Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
         Body: dataBuffer,
@@ -18,8 +23,7 @@ export class FilesService {
   }
 
   async deletePublicFile(pathname: string) {
-    const s3 = new S3();
-    return s3
+    return this.s3
       .deleteObject({
         Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
         Key: pathname,
