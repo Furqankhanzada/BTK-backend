@@ -2020,19 +2020,20 @@ aws-sdk@*:
     uuid "8.0.0"
     xml2js "0.4.19"
 
-aws-sdk@^2.809.0:
-  version "2.809.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.809.0.tgz#6cef1ca55d623bdd389cf9b0f9f83b6268c4c5b5"
-  integrity sha512-wPmb3DbS2+jXzj3aBV9nbRY/rsTqceriXZBsLM9VOGknkULfcnM0vCpm9psgAR87DvevO+NhPoc2kNAEdFkvzg==
+aws-sdk@^2.1327.0:
+  version "2.1327.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1327.0.tgz#14a5b1b919072b310b16d27e02d59d69e8e70ba1"
+  integrity sha512-adyoVv5MGGyq6Gm2k/W2h1dqmtMw+td5IW86vomKtMTT0S0eI2iYNABCk9G2EBqZOq8nx6RYuEyhascN7eaaig==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
     ieee754 "1.1.13"
-    jmespath "0.15.0"
+    jmespath "0.16.0"
     querystring "0.2.0"
     sax "1.2.1"
     url "0.10.3"
-    uuid "3.3.2"
+    util "^0.12.4"
+    uuid "8.0.0"
     xml2js "0.4.19"
 
 aws-sign2@~0.7.0:
@@ -5785,11 +5786,6 @@ jest@26.4.2:
     "@jest/core" "^26.4.2"
     import-local "^3.0.2"
     jest-cli "^26.4.2"
-
-jmespath@0.15.0:
-  version "0.15.0"
-  resolved "https://registry.yarnpkg.com/jmespath/-/jmespath-0.15.0.tgz#a3f222a9aae9f966f5d27c796510e28091764217"
-  integrity sha1-o/Iiqarp+Wb10nx5ZRDigJF2Qhc=
 
 jmespath@0.16.0:
   version "0.16.0"
@@ -9721,11 +9717,6 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
-
-uuid@3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
-  integrity sha512-yXJmeNaw3DnnKAOKJE51sL/ZaYfWJRl1pK9dr19YFCu0ObS231AB1/LbqTKRAQ5kw8A90rA6fr4riOUpTZvQZA==
 
 uuid@8.0.0:
   version "8.0.0"
