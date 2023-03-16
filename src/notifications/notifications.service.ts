@@ -33,7 +33,7 @@ export class NotificationsService {
           token: userDevice.fcmToken,
           title: createNotificationDto.title,
           message: createNotificationDto.description,
-          data: { deeplink: `explorebtk://notifications/${notification.id}` },
+          data: { deeplink: createNotificationDto.link ? createNotificationDto.link : `explorebtk://notifications/${notification.id}` },
           type: createNotificationDto?.type
         })
       })
