@@ -9,6 +9,7 @@ import {
   UpdateReviewUserDTO,
   UpdateOwnerDTO,
 } from './business.dto';
+import { FilesService } from 'src/files/files.service';
 
 interface FindAllArgs {
   query: Partial<Business | { 'reviews.owner._id': string }>;
@@ -20,7 +21,8 @@ interface FindAllArgs {
 export class BusinessesService {
   constructor(
     @InjectModel(Business.name) private businessModel: Model<Business>,
-  ) {}
+    private readonly filesService: FilesService,
+  ) { }
 
   async create(
     createBusinessDTO: CreateBusinessDTO,
@@ -219,7 +221,21 @@ export class BusinessesService {
       .exec();
   }
 
-  async remove(_id: string): Promise<{ deletedCount?: number }> {
+  async remove(_id: string) {
+    const business = await this.businessModel.findOne({ _id }).exec();
+
+    if (business.thumbnail) {
+      const thumbnailURL = new URL(business.thumbnail);
+      this.filesService.deletePublicFile(thumbnailURL.pathname.replace(/^\/|\/$/g, ''));
+    }
+
+    if (business.gallery.length) {
+      business.gallery.forEach(image => {
+        const galleryImageURL = new URL(image.image);
+        this.filesService.deletePublicFile(galleryImageURL.pathname.replace(/^\/|\/$/g, ''));
+      });
+    }
+
     return this.businessModel.deleteOne({ _id }).exec();
   }
 
