@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { initializeApp, cert } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
 import { BatchResponse } from 'firebase-admin/lib/messaging/messaging-api';
 import { messaging } from 'firebase-admin/lib/messaging/messaging-namespace';
@@ -23,10 +22,38 @@ export interface PushNotificationMessage {
 
 @Injectable()
 export class PushNotificationsService {
-  constructor() {
-    initializeApp({
-      credential: cert(JSON.parse(process.env.GOOGLE_ACCOUNT_CREDENTIALS)),
-    });
+
+  public async sendFirebaseMessage(
+    token: string,
+    message: PushNotificationMessage,
+    dryRun?: boolean,
+  ): Promise<string> {
+    try {
+      const fcmMessage: messaging.TokenMessage = {
+        notification: { body: message.message, title: message.title },
+        token,
+        data: message.data as { [key: string]: string },
+        android: {
+          notification: {
+            channelId: message.type || NotificationType.ANNOUNCEMENT,
+          },
+        },
+        apns: {
+          payload: {
+            aps: {
+              'content-available': 1,
+            },
+          },
+        },
+      };
+
+      const response = await getMessaging().send(fcmMessage, dryRun);
+
+      return response;
+    } catch (error) {
+      console.log('notification send error', error);
+      return error;
+    }
   }
 
   public async sendFirebaseMessages(
