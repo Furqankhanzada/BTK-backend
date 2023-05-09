@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+
 import { CreateDeviceDto } from './dto/device.dto';
 import { Device } from './device.schema';
+
+import { PushNotificationsService } from '../notifications/push-notifications.service';
+import { NotificationType, Notification } from '../notifications/notification.schema';
 
 @Injectable()
 export class DevicesService {
   constructor(
     @InjectModel(Device.name) private deviceModel: Model<Device>,
+    @InjectModel(Notification.name) private notificationModel: Model<Notification>,
+    private readonly pushNotificationsService: PushNotificationsService,
   ) { }
 
   async create(createDeviceDto: CreateDeviceDto, userId?: string): Promise<Device> {
@@ -27,8 +33,25 @@ export class DevicesService {
       device = existingDevice;
     } else {
       device = new this.deviceModel({ ...createDeviceDto, userId: userId });
+
+      const notificationData = {
+        title: 'Welcome To ExploreBTK',
+        description: 'Please Enjoy your Journey, And Contact us if you have any queries/questions',
+        link: 'https://explorebtk.com',
+        type: NotificationType.USER
+      }
+      const createdNotification = new this.notificationModel({ ...notificationData, userId: userId });
+
       try {
         await device.save();
+        await createdNotification.save();
+        this.pushNotificationsService.sendFirebaseMessage(createDeviceDto.fcmToken, {
+          token: createDeviceDto.fcmToken,
+          title: notificationData.title,
+          message: notificationData.description,
+          data: { link: notificationData.link },
+          type: notificationData.type
+        });
       } catch (error) {
         console.log('device create error', error);
         return error;
