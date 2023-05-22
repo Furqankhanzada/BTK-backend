@@ -9,10 +9,14 @@ import {
   ProfileUpdateDto,
 } from '../auth/auth-credentials.dto';
 import { VerificationCodeDto } from '../auth/dto/verification-code.dto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private emailService: EmailService
+    ) {}
 
   async findOne(_id: string): Promise<User | undefined> {
     return this.userModel.findOne({ _id }, { password: 0 });
@@ -68,7 +72,19 @@ export class UsersService {
     });
 
     try {
-      return await createdUser.save();
+      const user = await createdUser.save();
+
+      await this.emailService.sendRawEmail({
+        from: process.env.FROM,
+        to: user.email,
+        subject: 'Welcome to Explore BTK',
+        html: `
+            <h3>Welcome ${user.name}!</h3>
+            <p>You have successfully registered your account.</p>
+            `,
+      });
+
+      return user;
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException(
