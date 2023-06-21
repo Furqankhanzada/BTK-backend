@@ -185,8 +185,6 @@ export class BusinessesController {
   }
 
   @Delete(':id')
-  @Roles('ADMIN')
-  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: string, @Request() req) {
     const ability = this.businessAbility.get(req.user);
