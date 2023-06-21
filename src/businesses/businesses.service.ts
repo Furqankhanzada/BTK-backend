@@ -256,10 +256,11 @@ export class BusinessesService {
         }
 
         if (business.gallery.length) {
-          business.gallery.forEach(image => {
+          const files = business.gallery.map((image) => {
             const galleryImageURL = new URL(image.image);
-            this.filesService.deletePublicFile(galleryImageURL.pathname.replace(/^\/|\/$/g, ''));
+            return { Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '') };
           });
+          this.filesService.deletePublicFiles(files);
         }
       })
     }
