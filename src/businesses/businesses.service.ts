@@ -9,7 +9,7 @@ import {
   UpdateReviewUserDTO,
   UpdateOwnerDTO,
 } from './business.dto';
-import { FilesService } from 'src/files/files.service';
+import { FilesService } from '../files/files.service';
 
 interface FindAllArgs {
   query: Partial<Business | { 'reviews.owner._id': string }>;
@@ -241,6 +241,30 @@ export class BusinessesService {
   }
 
   async removeManyByUser(userId: string): Promise<{ deletedCount?: number }> {
+
+    const businesses = await this.findAll({
+      query: { ownerId: userId.toString() },
+      projection: {},
+      options: {},
+    });
+
+    if (businesses?.length) {
+      businesses.forEach(business => {
+        if (business.thumbnail) {
+          const thumbnailURL = new URL(business.thumbnail);
+          this.filesService.deletePublicFile(thumbnailURL.pathname.replace(/^\/|\/$/g, ''));
+        }
+
+        if (business.gallery.length) {
+          const files = business.gallery.map((image) => {
+            const galleryImageURL = new URL(image.image);
+            return { Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '') };
+          });
+          this.filesService.deletePublicFiles(files);
+        }
+      })
+    }
+
     return this.businessModel.deleteMany({ ownerId: userId }).exec();
   }
 

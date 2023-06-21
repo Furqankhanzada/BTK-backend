@@ -8,6 +8,7 @@ import { UsersController } from './users.controller';
 import { UsersHooks } from './users.hooks';
 import { User } from './users.schema';
 import { UsersService } from './users.service';
+import { FilesService } from '../files/files.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { UsersService } from './users.service';
     CaslModule,
     BusinessesModule,
   ],
-  providers: [UsersService, UsersHooks, UsersAbilities],
+  providers: [UsersService, UsersHooks, UsersAbilities, FilesService],
   exports: [UsersService],
   controllers: [UsersController],
 })
