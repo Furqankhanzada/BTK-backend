@@ -230,10 +230,9 @@ export class BusinessesService {
     }
 
     if (business.gallery.length) {
-      const files = [];
-      business.gallery.forEach(image => {
+      const files = business.gallery.map((image) => {
         const galleryImageURL = new URL(image.image);
-        files.push({Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '')})
+        return { Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '') };
       });
       this.filesService.deletePublicFiles(files);
     }
