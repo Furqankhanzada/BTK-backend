@@ -9,6 +9,7 @@ import {
   UpdateReviewUserDTO,
   UpdateOwnerDTO,
 } from './business.dto';
+import { FilesService } from '../files/files.service';
 
 interface FindAllArgs {
   query: Partial<Business | { 'reviews.owner._id': string }>;
@@ -20,7 +21,8 @@ interface FindAllArgs {
 export class BusinessesService {
   constructor(
     @InjectModel(Business.name) private businessModel: Model<Business>,
-  ) {}
+    private readonly filesService: FilesService,
+  ) { }
 
   async create(
     createBusinessDTO: CreateBusinessDTO,
@@ -219,11 +221,50 @@ export class BusinessesService {
       .exec();
   }
 
-  async remove(_id: string): Promise<{ deletedCount?: number }> {
+  async remove(_id: string) {
+    const business = await this.businessModel.findOne({ _id }).exec();
+
+    if (business.thumbnail) {
+      const thumbnailURL = new URL(business.thumbnail);
+      this.filesService.deletePublicFile(thumbnailURL.pathname.replace(/^\/|\/$/g, ''));
+    }
+
+    if (business.gallery.length) {
+      const files = business.gallery.map((image) => {
+        const galleryImageURL = new URL(image.image);
+        return { Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '') };
+      });
+      this.filesService.deletePublicFiles(files);
+    }
+
     return this.businessModel.deleteOne({ _id }).exec();
   }
 
   async removeManyByUser(userId: string): Promise<{ deletedCount?: number }> {
+
+    const businesses = await this.findAll({
+      query: { ownerId: userId.toString() },
+      projection: {},
+      options: {},
+    });
+
+    if (businesses?.length) {
+      businesses.forEach(business => {
+        if (business.thumbnail) {
+          const thumbnailURL = new URL(business.thumbnail);
+          this.filesService.deletePublicFile(thumbnailURL.pathname.replace(/^\/|\/$/g, ''));
+        }
+
+        if (business.gallery.length) {
+          const files = business.gallery.map((image) => {
+            const galleryImageURL = new URL(image.image);
+            return { Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '') };
+          });
+          this.filesService.deletePublicFiles(files);
+        }
+      })
+    }
+
     return this.businessModel.deleteMany({ ownerId: userId }).exec();
   }
 

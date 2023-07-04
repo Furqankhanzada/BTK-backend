@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
+import { ObjectIdentifier } from 'aws-sdk/clients/s3';
 
 @Injectable()
 export class FilesService {
@@ -27,6 +28,17 @@ export class FilesService {
       .deleteObject({
         Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
         Key: pathname,
+      })
+      .promise();
+  }
+
+  async deletePublicFiles(files: ObjectIdentifier[]) {
+    return this.s3
+      .deleteObjects({
+        Bucket: this.configService.get('AWS_PUBLIC_BUCKET_NAME'),
+        Delete: {
+          Objects: files,
+        },
       })
       .promise();
   }
