@@ -6,6 +6,7 @@ import {
   MinLength,
   IsOptional,
 } from 'class-validator';
+import { Membership } from 'src/users/users.schema';
 
 export class AuthNewUserDto {
   @IsString()
@@ -42,6 +43,11 @@ export class ProfileUpdateDto {
   @IsString()
   @IsOptional()
   avatar: string;
+}
+
+export class CreateMembershipDto {
+  @IsNotEmpty()
+  membership: Membership[];
 }
 
 export class AuthCredentialsDto {

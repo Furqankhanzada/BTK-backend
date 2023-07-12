@@ -61,6 +61,19 @@ export class verificationCode  {
   createdAt: Date;
 }
 
+@Schema({ _id: false })
+export class Membership {
+  @Prop({ required: true})
+  businessId: string;
+
+  @Prop({ required: true})
+  package: string;
+
+  @Prop({ required: true })
+  billingDate: Date;
+}
+const membershipSchema = SchemaFactory.createForClass(Membership);
+
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -84,6 +97,9 @@ export class User extends Document {
 
   @Prop({ type: [addressSchema] })
   addresses: Address[];
+
+  @Prop({ type: [membershipSchema] })
+  membership: Membership[];
 
   @Prop({ default: UserStatus.PENDING, enum: [UserStatus.PENDING, UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.VERIFIED] })
   status: string;

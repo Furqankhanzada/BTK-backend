@@ -10,6 +10,8 @@ import {
   UpdateOwnerDTO,
 } from './business.dto';
 import { FilesService } from '../files/files.service';
+import { CreateMembershipDto } from 'src/auth/auth-credentials.dto';
+import { User } from 'src/users/users.schema';
 
 interface FindAllArgs {
   query: Partial<Business | { 'reviews.owner._id': string }>;
@@ -21,6 +23,7 @@ interface FindAllArgs {
 export class BusinessesService {
   constructor(
     @InjectModel(Business.name) private businessModel: Model<Business>,
+    @InjectModel(User.name) private userModel: Model<User>,
     private readonly filesService: FilesService,
   ) { }
 
@@ -266,6 +269,28 @@ export class BusinessesService {
     }
 
     return this.businessModel.deleteMany({ ownerId: userId }).exec();
+  }
+
+  // Member
+  async createMember(
+    id: string,
+    userId: string,
+    createMembershipDto: CreateMembershipDto
+  ) {
+    // Add business Id
+    const updateMembers = createMembershipDto.membership.map((membership) => {
+      return { ...membership, businessId: id }
+    })
+    const membership = { membership: updateMembers } as CreateMembershipDto;
+  
+    await this.userModel.updateOne({ _id: userId }, membership).exec();
+
+    try {
+      return membership;
+    } catch (error) {
+      console.log('member create error', error);
+      return error;
+    }
   }
 
   // Favorites

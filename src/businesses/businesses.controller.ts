@@ -31,6 +31,7 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { BusinessAbilities, SUBJECT } from './business.abilities';
 import { Action } from '../casl/casl-ability.factory';
+import { CreateMembershipDto } from 'src/auth/auth-credentials.dto';
 
 @Controller('businesses')
 export class BusinessesController {
@@ -210,6 +211,23 @@ export class BusinessesController {
       { _id, name, avatar },
       createReviewDTO,
     );
+  }
+
+  @Post('/:id/member')
+  @UseGuards(JwtAuthGuard)
+  async createMember(
+    @Request() req,
+    @Param('id') id: string,
+    @Query('userId') userId: string,
+    @Body(ValidationPipe) createMembershipDto: CreateMembershipDto,
+  ) {
+    const business = await this.businessesService.findOne(id);
+
+    if (req.user._id.toString() !== business.ownerId) {
+      throw new UnauthorizedException();
+    }
+
+    return this.businessesService.createMember(id, userId, createMembershipDto);
   }
 
   @Post('/:id/favorite')
