@@ -16,6 +16,8 @@ import {
   ParseBoolPipe,
   UnauthorizedException,
 } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { JwtAuthGuardOptional } from '../auth/jwt-auth-optional.guard';
@@ -31,13 +33,18 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { BusinessAbilities, SUBJECT } from './business.abilities';
 import { Action } from '../casl/casl-ability.factory';
-import { CreateMembershipDto, UpdateMembershipDto } from 'src/auth/auth-credentials.dto';
+import { CreateMembershipDto, UpdateMembershipDto } from '../auth/auth-credentials.dto';
+import { Invitation, User } from '../users/users.schema';
+import { EmailService } from '../email/email.service';
 
 @Controller('businesses')
 export class BusinessesController {
   constructor(
     private readonly businessesService: BusinessesService,
     private readonly businessAbility: BusinessAbilities,
+    private emailService: EmailService,
+    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Invitation.name) private invitaionModel: Model<Invitation>,
   ) {}
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -227,7 +234,33 @@ export class BusinessesController {
       throw new UnauthorizedException();
     }
 
-    return this.businessesService.createMember(id, userEmail, createMembershipDto);
+    const user = await this.userModel.findOne({ email: userEmail }).exec();
+
+    if (user) {
+      // User is registered, proceed with adding the membership
+      return this.businessesService.createMember(id, userEmail, createMembershipDto);
+    } else {
+      // User is not registered, handle the invitation logic here
+      await this.emailService.sendRawEmail({
+        from: process.env.FROM,
+        to: userEmail,
+        subject: 'Invitation to Explore BTK',
+        html: `
+            <h3>Hi, ${userEmail}</h3>
+            <p>You were added as a member of ${business.name} by ${req.user.email}.</p>
+            <p><a href="http://onelink.to/xwhffr">Download the Explore BTK</a> App now, To see your membership details.</p>
+            `,
+      });
+
+      // Create an invitation object and save it in the invitations collection
+      const invitation = new this.invitaionModel({
+        email: userEmail,
+        businessId: id,
+        package: createMembershipDto.package,
+      });
+
+      return await invitation.save();
+    }
   }
 
   @Put('/:id/member')
