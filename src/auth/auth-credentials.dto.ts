@@ -47,7 +47,10 @@ export class ProfileUpdateDto {
 
 export class CreateMembershipDto {
   @IsNotEmpty()
-  membership: Membership;
+  package: string;
+
+  @IsNotEmpty()
+  billingDate: Date;
 }
 
 export class UpdateMembershipDto {
