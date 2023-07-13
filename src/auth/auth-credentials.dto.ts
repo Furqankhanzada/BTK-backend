@@ -50,6 +50,14 @@ export class CreateMembershipDto {
   membership: Membership;
 }
 
+export class UpdateMembershipDto {
+  @IsNotEmpty()
+  package: string;
+
+  @IsNotEmpty()
+  billingDate: Date;
+}
+
 export class AuthCredentialsDto {
   @IsNotEmpty()
   emailOrNumber: string;

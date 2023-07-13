@@ -10,7 +10,7 @@ import {
   UpdateOwnerDTO,
 } from './business.dto';
 import { FilesService } from '../files/files.service';
-import { CreateMembershipDto } from 'src/auth/auth-credentials.dto';
+import { CreateMembershipDto, UpdateMembershipDto } from 'src/auth/auth-credentials.dto';
 import { User } from 'src/users/users.schema';
 
 interface FindAllArgs {
@@ -299,6 +299,33 @@ export class BusinessesService {
       billingDate: createMembershipDto.membership.billingDate,
     };
     user.membership.push(newMembership);
+  
+    await user.save();
+  
+    return user.membership;
+  }
+
+  async updateMember(
+    id: string,
+    userId: string,
+    updateMemberDto: UpdateMembershipDto
+  ) {
+    const user = await this.userModel.findById(userId).exec();
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    const membershipIndex = user.membership.findIndex(
+      (membership) => membership.businessId === id
+    );
+  
+    if (membershipIndex === -1) {
+      throw new NotFoundException('Membership not found');
+    }
+  
+    user.membership[membershipIndex].package = updateMemberDto.package;
+    user.membership[membershipIndex].billingDate = updateMemberDto.billingDate;
   
     await user.save();
   
