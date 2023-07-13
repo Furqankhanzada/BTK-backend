@@ -295,8 +295,8 @@ export class BusinessesService {
   
     const newMembership = {
       businessId: id,
-      package: createMembershipDto.membership[0].package,
-      billingDate: createMembershipDto.membership[0].billingDate,
+      package: createMembershipDto.membership.package,
+      billingDate: createMembershipDto.membership.billingDate,
     };
     user.membership.push(newMembership);
   

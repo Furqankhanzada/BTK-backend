@@ -47,7 +47,7 @@ export class ProfileUpdateDto {
 
 export class CreateMembershipDto {
   @IsNotEmpty()
-  membership: Membership[];
+  membership: Membership;
 }
 
 export class AuthCredentialsDto {
