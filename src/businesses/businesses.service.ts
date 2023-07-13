@@ -332,6 +332,28 @@ export class BusinessesService {
     return user.membership;
   }
 
+  async getBusinessMembers(id: string) {
+    const members = await this.userModel
+      .find({ 'membership.businessId': id })
+      .select('name email membership')
+      .exec();
+  
+    // Filter the membership array to include only the current business
+    const filteredMembers = members.map((member) => {
+      const filteredMembership = member.membership.filter(
+        (membership) => membership.businessId === id
+      );
+      return {
+        _id: member._id,
+        name: member.name,
+        email: member.email,
+        membership: filteredMembership.length > 0 ? filteredMembership[0] : null,
+      };
+    });
+  
+    return filteredMembers;
+  }
+
   // Favorites
   async createFavorite(_id, ownerId): Promise<Business> {
     await this.businessModel

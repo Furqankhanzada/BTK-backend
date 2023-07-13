@@ -247,6 +247,13 @@ export class BusinessesController {
     return this.businessesService.updateMember(id, userId, updateMemberDto);
   }
 
+  @Get('/:id/members')
+  async getBusinessMembers(
+    @Param('id') id: string,
+  ) {
+    return this.businessesService.getBusinessMembers(id);
+  }
+
   @Post('/:id/favorite')
   @UseGuards(JwtAuthGuard)
   createFavorite(@Param('id') id: string, @Request() req): Promise<Business> {
