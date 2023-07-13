@@ -274,10 +274,10 @@ export class BusinessesService {
   // Member
   async createMember(
     id: string,
-    userId: string,
+    userEmail: string,
     createMembershipDto: CreateMembershipDto
   ) {
-    const user = await this.userModel.findById(userId).exec();
+    const user = await this.userModel.findOne({ email: userEmail }).exec();
   
     if (!user) {
       // Handle the case where the user is not found
@@ -293,6 +293,7 @@ export class BusinessesService {
       return 'User is already a member of this business.';
     }
   
+    // Create the new membership object
     const newMembership = {
       businessId: id,
       package: createMembershipDto.package,
@@ -302,15 +303,15 @@ export class BusinessesService {
   
     await user.save();
   
-    return user.membership;
+    return newMembership;
   }
 
   async updateMember(
     id: string,
-    userId: string,
+    userEmail: string,
     updateMemberDto: UpdateMembershipDto
   ) {
-    const user = await this.userModel.findById(userId).exec();
+    const user = await this.userModel.findOne({ email: userEmail }).exec();
   
     if (!user) {
       throw new NotFoundException('User not found');
@@ -329,7 +330,7 @@ export class BusinessesService {
   
     await user.save();
   
-    return user.membership;
+    return { businessId: id, ...updateMemberDto };
   }
 
   async getBusinessMembers(id: string) {

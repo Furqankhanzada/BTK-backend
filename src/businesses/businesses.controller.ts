@@ -218,7 +218,7 @@ export class BusinessesController {
   async createMember(
     @Request() req,
     @Param('id') id: string,
-    @Query('userId') userId: string,
+    @Query('userEmail') userEmail: string,
     @Body(ValidationPipe) createMembershipDto: CreateMembershipDto,
   ) {
     const business = await this.businessesService.findOne(id);
@@ -227,7 +227,7 @@ export class BusinessesController {
       throw new UnauthorizedException();
     }
 
-    return this.businessesService.createMember(id, userId, createMembershipDto);
+    return this.businessesService.createMember(id, userEmail, createMembershipDto);
   }
 
   @Put('/:id/member')
@@ -235,7 +235,7 @@ export class BusinessesController {
   async updateMember(
     @Request() req,
     @Param('id') id: string,
-    @Query('userId') userId: string,
+    @Query('userEmail') userEmail: string,
     @Body(ValidationPipe) updateMemberDto: UpdateMembershipDto,
   ) {
     const business = await this.businessesService.findOne(id);
@@ -244,7 +244,7 @@ export class BusinessesController {
       throw new UnauthorizedException();
     }
 
-    return this.businessesService.updateMember(id, userId, updateMemberDto);
+    return this.businessesService.updateMember(id, userEmail, updateMemberDto);
   }
 
   @Get('/:id/members')
