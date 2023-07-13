@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model, Types } from 'mongoose';
@@ -277,20 +277,32 @@ export class BusinessesService {
     userId: string,
     createMembershipDto: CreateMembershipDto
   ) {
-    // Add business Id
-    const updateMembers = createMembershipDto.membership.map((membership) => {
-      return { ...membership, businessId: id }
-    })
-    const membership = { membership: updateMembers } as CreateMembershipDto;
+    const user = await this.userModel.findById(userId).exec();
   
-    await this.userModel.updateOne({ _id: userId }, membership).exec();
-
-    try {
-      return membership;
-    } catch (error) {
-      console.log('member create error', error);
-      return error;
+    if (!user) {
+      // Handle the case where the user is not found
+      throw new NotFoundException('User not found');
     }
+  
+    const businessMembershipIndex = user.membership.findIndex(
+      (membership) => membership.businessId === id
+    );
+  
+    if (businessMembershipIndex !== -1) {
+      // Handle the case where the user is already a member of the business
+      return 'User is already a member of this business.';
+    }
+  
+    const newMembership = {
+      businessId: id,
+      package: createMembershipDto.membership[0].package,
+      billingDate: createMembershipDto.membership[0].billingDate,
+    };
+    user.membership.push(newMembership);
+  
+    await user.save();
+  
+    return user.membership;
   }
 
   // Favorites
