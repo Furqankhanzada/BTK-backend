@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User } from './users.schema';
+import { Invitation, User } from './users.schema';
 import {
   AuthNewUserDto,
   PasswordUpdateDto,
@@ -15,6 +15,7 @@ import { FilesService } from '../files/files.service';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Invitation.name) private invitationModel: Model<Invitation>,
     private readonly filesService: FilesService,
   ) { }
 
@@ -64,12 +65,27 @@ export class UsersService {
   }
 
   async register(authNewUserDto: AuthNewUserDto) {
-    const { password } = authNewUserDto;
+    const { password, email } = authNewUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     const createdUser = new this.userModel({
       ...authNewUserDto,
       password: hashedPassword,
     });
+
+    // Check if the user's email address exists in the invitations collection
+    const invitation = await this.invitationModel.findOne({ email }).exec();
+
+    if (invitation) {
+      // Invitation found, add the membership to the user
+
+      const membership = {
+        businessId: invitation.businessId,
+        package: invitation.package,
+        billingDate: new Date(),
+      };
+
+      createdUser.membership.push(membership);
+    }
 
     try {
       return await createdUser.save();

@@ -6,7 +6,7 @@ import { CaslModule } from '../casl/casl.module';
 import { UsersAbilities } from './users.abilities';
 import { UsersController } from './users.controller';
 import { UsersHooks } from './users.hooks';
-import { User } from './users.schema';
+import { Invitation, InvitationSchema, User } from './users.schema';
 import { UsersService } from './users.service';
 import { FilesService } from '../files/files.service';
 
@@ -19,6 +19,9 @@ import { FilesService } from '../files/files.service';
         useFactory: new UsersHooks().hooks,
         inject: [BusinessesService],
       },
+    ]),
+    MongooseModule.forFeature([
+      { name: Invitation.name, schema: InvitationSchema },
     ]),
     CaslModule,
     BusinessesModule,
