@@ -112,3 +112,18 @@ export class User extends Document {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+
+@Schema({ timestamps: true })
+export class Invitation extends Document {
+  @Prop({ required: true })
+  email: string;
+
+  @Prop({ required: true })
+  businessId: string;
+
+  @Prop({ required: true })
+  package: string;
+}
+
+export const InvitationSchema = SchemaFactory.createForClass(Invitation);

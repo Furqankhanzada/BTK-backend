@@ -6,7 +6,6 @@ import {
   MinLength,
   IsOptional,
 } from 'class-validator';
-import { Membership } from 'src/users/users.schema';
 
 export class AuthNewUserDto {
   @IsString()
