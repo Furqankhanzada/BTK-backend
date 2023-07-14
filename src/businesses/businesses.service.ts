@@ -279,11 +279,6 @@ export class BusinessesService {
   ) {
     const user = await this.userModel.findOne({ email: userEmail }).exec();
   
-    if (!user) {
-      // Handle the case where the user is not found
-      throw new NotFoundException('User not found');
-    }
-  
     const businessMembershipIndex = user.membership.findIndex(
       (membership) => membership.businessId === id
     );
