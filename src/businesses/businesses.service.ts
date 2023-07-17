@@ -274,10 +274,10 @@ export class BusinessesService {
   // Member
   async createMember(
     id: string,
-    userEmail: string,
     createMembershipDto: CreateMembershipDto
   ) {
-    const user = await this.userModel.findOne({ email: userEmail }).exec();
+    const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
+    console.log('user', user);
   
     const businessMembershipIndex = user.membership.findIndex(
       (membership) => membership.businessId === id
@@ -285,14 +285,19 @@ export class BusinessesService {
   
     if (businessMembershipIndex !== -1) {
       // Handle the case where the user is already a member of the business
-      return 'User is already a member of this business.';
+      return {
+        status: 'error',
+        message: 'User is already a member of this business.',
+      };
     }
   
     // Create the new membership object
     const newMembership = {
       businessId: id,
+      email: createMembershipDto.email,
       package: createMembershipDto.package,
       billingDate: createMembershipDto.billingDate,
+      status: createMembershipDto.status
     };
     user.membership.push(newMembership);
   
@@ -303,10 +308,9 @@ export class BusinessesService {
 
   async updateMember(
     id: string,
-    userEmail: string,
     updateMemberDto: UpdateMembershipDto
   ) {
-    const user = await this.userModel.findOne({ email: userEmail }).exec();
+    const user = await this.userModel.findOne({ email: updateMemberDto.email }).exec();
   
     if (!user) {
       throw new NotFoundException('User not found');

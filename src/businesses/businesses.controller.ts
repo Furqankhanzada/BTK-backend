@@ -225,7 +225,6 @@ export class BusinessesController {
   async createMember(
     @Request() req,
     @Param('id') id: string,
-    @Query('userEmail') userEmail: string,
     @Body(ValidationPipe) createMembershipDto: CreateMembershipDto,
   ) {
     const business = await this.businessesService.findOne(id);
@@ -234,19 +233,19 @@ export class BusinessesController {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userModel.findOne({ email: userEmail }).exec();
+    const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
 
     if (user) {
       // User is registered, proceed with adding the membership
-      return this.businessesService.createMember(id, userEmail, createMembershipDto);
+      return this.businessesService.createMember(id, createMembershipDto);
     } else {
       // User is not registered, handle the invitation logic here
       await this.emailService.sendRawEmail({
         from: process.env.FROM,
-        to: userEmail,
+        to: createMembershipDto.email,
         subject: 'Invitation to Explore BTK',
         html: `
-            <h3>Hi, ${userEmail}</h3>
+            <h3>Hi, ${createMembershipDto.email}</h3>
             <p>You were added as a member of ${business.name} by ${req.user.email}.</p>
             <p><a href="http://onelink.to/xwhffr">Download the Explore BTK</a> App now, To see your membership details.</p>
             `,
@@ -254,7 +253,7 @@ export class BusinessesController {
 
       // Create an invitation object and save it in the invitations collection
       const invitation = new this.invitaionModel({
-        email: userEmail,
+        email: createMembershipDto.email,
         businessId: id,
         package: createMembershipDto.package,
       });
@@ -268,7 +267,6 @@ export class BusinessesController {
   async updateMember(
     @Request() req,
     @Param('id') id: string,
-    @Query('userEmail') userEmail: string,
     @Body(ValidationPipe) updateMemberDto: UpdateMembershipDto,
   ) {
     const business = await this.businessesService.findOne(id);
@@ -277,7 +275,7 @@ export class BusinessesController {
       throw new UnauthorizedException();
     }
 
-    return this.businessesService.updateMember(id, userEmail, updateMemberDto);
+    return this.businessesService.updateMember(id, updateMemberDto);
   }
 
   @Get('/:id/members')
