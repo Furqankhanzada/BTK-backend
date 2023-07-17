@@ -89,7 +89,9 @@ export class UsersService {
     }
 
     try {
-      return await createdUser.save();
+      const createUser = await createdUser.save();
+      await this.invitationModel.remove({ _id: invitation._id }).exec();
+      return createUser;
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException(
