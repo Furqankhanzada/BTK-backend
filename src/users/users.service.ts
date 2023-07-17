@@ -80,6 +80,7 @@ export class UsersService {
 
       const membership = {
         businessId: invitation.businessId,
+        email: invitation.email,
         package: invitation.package,
         billingDate: new Date(),
       };
