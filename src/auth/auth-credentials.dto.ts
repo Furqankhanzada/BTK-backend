@@ -1,3 +1,4 @@
+import { PartialType } from '@nestjs/mapped-types';
 import {
   IsString,
   IsNotEmpty,
@@ -45,20 +46,24 @@ export class ProfileUpdateDto {
 }
 
 export class CreateMembershipDto {
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
   @IsNotEmpty()
   package: string;
 
+  @IsString()
   @IsNotEmpty()
   billingDate: Date;
+
+  @IsString()
+  @IsOptional()
+  status: string;
 }
 
-export class UpdateMembershipDto {
-  @IsNotEmpty()
-  package: string;
-
-  @IsNotEmpty()
-  billingDate: Date;
-}
+export class UpdateMembershipDto extends PartialType(CreateMembershipDto) {}
 
 export class AuthCredentialsDto {
   @IsNotEmpty()

@@ -21,6 +21,11 @@ export enum UserStatus {
   BLOCKED = 'BLOCKED',
 }
 
+export enum MembershipStatus {
+  ACTIVE = 'active',
+  ARCHIEVE = 'archieve',
+}
+
 
 @Schema() // _id for watermelon DB
 export class Location  {
@@ -67,10 +72,16 @@ export class Membership {
   businessId: string;
 
   @Prop({ required: true})
+  email: string;
+
+  @Prop({ required: true})
   package: string;
 
   @Prop({ required: true })
   billingDate: Date;
+
+  @Prop({ type: String, default: MembershipStatus.ACTIVE, enum: [MembershipStatus.ACTIVE, MembershipStatus.ARCHIEVE] })
+  status?: string;
 }
 const membershipSchema = SchemaFactory.createForClass(Membership);
 
