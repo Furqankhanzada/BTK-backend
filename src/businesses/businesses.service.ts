@@ -326,6 +326,7 @@ export class BusinessesService {
   
     user.membership[membershipIndex].package = updateMemberDto.package;
     user.membership[membershipIndex].billingDate = updateMemberDto.billingDate;
+    user.membership[membershipIndex].status = updateMemberDto.status;
   
     await user.save();
   
