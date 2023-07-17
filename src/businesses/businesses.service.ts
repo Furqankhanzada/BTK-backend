@@ -336,7 +336,7 @@ export class BusinessesService {
   async getBusinessMembers(id: string) {
     const members = await this.userModel
       .find({ 'membership.businessId': id })
-      .select('name email membership')
+      .select('name email membership avatar')
       .exec();
   
     // Filter the membership array to include only the current business
