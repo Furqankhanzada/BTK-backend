@@ -15,6 +15,7 @@ import {
   ValidationPipe,
   ParseBoolPipe,
   UnauthorizedException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -239,6 +240,16 @@ export class BusinessesController {
       // User is registered, proceed with adding the membership
       return this.businessesService.createMember(id, createMembershipDto);
     } else {
+      //Check if invitation for current busienss is already exists in collection
+      const invitationExist = await this.invitaionModel.findOne({
+        email: createMembershipDto.email,
+        businessId: id,
+      }).exec();
+
+      if (invitationExist) {
+        throw new ConflictException('Invitation already sent to this user.');
+      }
+
       // User is not registered, handle the invitation logic here
       await this.emailService.sendRawEmail({
         from: process.env.FROM,
