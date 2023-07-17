@@ -256,6 +256,7 @@ export class BusinessesController {
         email: createMembershipDto.email,
         businessId: id,
         package: createMembershipDto.package,
+        billingDate: createMembershipDto.billingDate
       });
 
       return await invitation.save();

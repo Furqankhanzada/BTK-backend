@@ -135,6 +135,9 @@ export class Invitation extends Document {
 
   @Prop({ required: true })
   package: string;
+
+  @Prop({ required: true })
+  billingDate: Date;
 }
 
 export const InvitationSchema = SchemaFactory.createForClass(Invitation);

@@ -82,7 +82,7 @@ export class UsersService {
         businessId: invitation.businessId,
         email: invitation.email,
         package: invitation.package,
-        billingDate: new Date(),
+        billingDate: invitation.billingDate,
       };
 
       createdUser.membership.push(membership);
