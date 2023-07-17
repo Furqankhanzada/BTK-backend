@@ -45,7 +45,7 @@ export class BusinessesController {
     private readonly businessAbility: BusinessAbilities,
     private emailService: EmailService,
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Invitation.name) private invitaionModel: Model<Invitation>,
+    @InjectModel(Invitation.name) private invitationModel: Model<Invitation>,
   ) {}
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -241,7 +241,7 @@ export class BusinessesController {
       return this.businessesService.createMember(id, createMembershipDto);
     } else {
       //Check if invitation for current busienss is already exists in collection
-      const invitationExist = await this.invitaionModel.findOne({
+      const invitationExist = await this.invitationModel.findOne({
         email: createMembershipDto.email,
         businessId: id,
       }).exec();
@@ -263,7 +263,7 @@ export class BusinessesController {
       });
 
       // Create an invitation object and save it in the invitations collection
-      const invitation = new this.invitaionModel({
+      const invitation = new this.invitationModel({
         email: createMembershipDto.email,
         businessId: id,
         package: createMembershipDto.package,
