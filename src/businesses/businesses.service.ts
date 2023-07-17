@@ -346,6 +346,7 @@ export class BusinessesService {
       );
       return {
         _id: member._id,
+        avatar: member.avatar,
         name: member.name,
         email: member.email,
         membership: filteredMembership.length > 0 ? filteredMembership[0] : null,
