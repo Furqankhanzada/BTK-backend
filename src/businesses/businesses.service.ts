@@ -333,6 +333,27 @@ export class BusinessesService {
     return { businessId: id, ...updateMemberDto };
   }
 
+  async deleteMember(id: string, email: string) {
+    const user = await this.userModel.findOne({ email }).exec();
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    const membershipIndex = user.membership.findIndex(
+      (membership) => membership.businessId === id
+    );
+  
+    if (membershipIndex === -1) {
+      throw new NotFoundException('Membership not found');
+    }
+  
+    user.membership.splice(membershipIndex, 1);
+    await user.save();
+  
+    return { message: 'success' };
+  }
+
   async getBusinessMembers(id: string) {
     const members = await this.userModel
       .find({ 'membership.businessId': id })

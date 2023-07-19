@@ -34,7 +34,10 @@ import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import { BusinessAbilities, SUBJECT } from './business.abilities';
 import { Action } from '../casl/casl-ability.factory';
-import { CreateMembershipDto, UpdateMembershipDto } from '../auth/auth-credentials.dto';
+import {
+  CreateMembershipDto,
+  UpdateMembershipDto,
+} from '../auth/auth-credentials.dto';
 import { Invitation, User } from '../users/users.schema';
 import { EmailService } from '../email/email.service';
 
@@ -234,17 +237,21 @@ export class BusinessesController {
       throw new UnauthorizedException();
     }
 
-    const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
+    const user = await this.userModel
+      .findOne({ email: createMembershipDto.email })
+      .exec();
 
     if (user) {
       // User is registered, proceed with adding the membership
       return this.businessesService.createMember(id, createMembershipDto);
     } else {
       //Check if invitation for current busienss is already exists in collection
-      const invitationExist = await this.invitationModel.findOne({
-        email: createMembershipDto.email,
-        businessId: id,
-      }).exec();
+      const invitationExist = await this.invitationModel
+        .findOne({
+          email: createMembershipDto.email,
+          businessId: id,
+        })
+        .exec();
 
       if (invitationExist) {
         throw new ConflictException('Invitation already sent to this user.');
@@ -267,11 +274,27 @@ export class BusinessesController {
         email: createMembershipDto.email,
         businessId: id,
         package: createMembershipDto.package,
-        billingDate: createMembershipDto.billingDate
+        billingDate: createMembershipDto.billingDate,
       });
 
       return await invitation.save();
     }
+  }
+
+  @Delete('/:id/member')
+  @UseGuards(JwtAuthGuard)
+  async deleteMember(
+    @Request() req,
+    @Param('id') id: string,
+    @Query('email') email: string,
+  ) {
+    const business = await this.businessesService.findOne(id);
+
+    if (req.user._id.toString() !== business.ownerId) {
+      throw new UnauthorizedException();
+    }
+
+    return this.businessesService.deleteMember(id, email);
   }
 
   @Put('/:id/member')
@@ -291,9 +314,7 @@ export class BusinessesController {
   }
 
   @Get('/:id/members')
-  async getBusinessMembers(
-    @Param('id') id: string,
-  ) {
+  async getBusinessMembers(@Param('id') id: string) {
     return this.businessesService.getBusinessMembers(id);
   }
 
