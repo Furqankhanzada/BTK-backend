@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model, Types } from 'mongoose';
@@ -277,7 +277,6 @@ export class BusinessesService {
     createMembershipDto: CreateMembershipDto
   ) {
     const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
-    console.log('user', user);
   
     const businessMembershipIndex = user.membership.findIndex(
       (membership) => membership.businessId === id
@@ -285,10 +284,7 @@ export class BusinessesService {
   
     if (businessMembershipIndex !== -1) {
       // Handle the case where the user is already a member of the business
-      return {
-        status: 'error',
-        message: 'User is already a member of this business.',
-      };
+      throw new ConflictException('User is already a member of this business.');
     }
   
     // Create the new membership object

@@ -277,7 +277,8 @@ export class BusinessesController {
         billingDate: createMembershipDto.billingDate,
       });
 
-      return await invitation.save();
+      await invitation.save();
+      return { message: 'invitation-sent' };
     }
   }
 
