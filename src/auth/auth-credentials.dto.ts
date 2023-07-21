@@ -6,7 +6,9 @@ import {
   MaxLength,
   MinLength,
   IsOptional,
+  IsObject,
 } from 'class-validator';
+import { Package } from 'src/users/users.schema';
 
 export class AuthNewUserDto {
   @IsString()
@@ -50,9 +52,9 @@ export class CreateMembershipDto {
   @IsNotEmpty()
   email: string;
 
-  @IsString()
+  @IsObject()
   @IsNotEmpty()
-  package: string;
+  package: Package;
 
   @IsString()
   @IsNotEmpty()

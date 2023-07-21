@@ -66,16 +66,26 @@ export class verificationCode  {
   createdAt: Date;
 }
 
+@Schema()
+export class Package {
+  @Prop({ required: true})
+  name: string;
+
+  @Prop({ required: true})
+  id: string;
+}
+const packageSchema = SchemaFactory.createForClass(Package);
+
 @Schema({ _id: false })
 export class Membership {
-  @Prop({ required: true})
+  @Prop({ required: true })
   businessId: string;
 
-  @Prop({ required: true})
+  @Prop({ required: true })
   email: string;
 
-  @Prop({ required: true})
-  package: string;
+  @Prop({ required: true, type: Package })
+  package: Package;
 
   @Prop({ required: true })
   billingDate: Date;
@@ -133,8 +143,8 @@ export class Invitation extends Document {
   @Prop({ required: true })
   businessId: string;
 
-  @Prop({ required: true })
-  package: string;
+  @Prop({ required: true, type: packageSchema })
+  package: Package;
 
   @Prop({ required: true })
   billingDate: Date;
