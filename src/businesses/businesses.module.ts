@@ -5,6 +5,7 @@ import { BusinessAbilities } from './business.abilities';
 import { Business, BusinessSchema } from './business.schema';
 import { BusinessesController } from './businesses.controller';
 import { BusinessesService } from './businesses.service';
+import { FilesService } from '../files/files.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { BusinessesService } from './businesses.service';
     CaslModule,
   ],
   controllers: [BusinessesController],
-  providers: [BusinessesService, BusinessAbilities],
+  providers: [BusinessesService, BusinessAbilities, FilesService],
   exports: [BusinessesService],
 })
-export class BusinessesModule {}
+export class BusinessesModule { }

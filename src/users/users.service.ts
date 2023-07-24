@@ -10,12 +10,14 @@ import {
 } from '../auth/auth-credentials.dto';
 import { VerificationCodeDto } from '../auth/dto/verification-code.dto';
 import { EmailService } from '../email/email.service';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private readonly filesService: FilesService,
     ) {}
 
   async findOne(_id: string): Promise<User | undefined> {
@@ -95,6 +97,13 @@ export class UsersService {
     }
   }
   async remove(id) {
+    const user = await this.findOne(id);
+
+    if (user?.avatar) {
+      const avatarURL = new URL(user.avatar);
+      this.filesService.deletePublicFile(avatarURL.pathname.replace(/^\/|\/$/g, ''));
+    }
+
     return this.userModel.remove({ _id: id });
   }
 }

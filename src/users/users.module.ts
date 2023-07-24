@@ -9,6 +9,7 @@ import { UsersHooks } from './users.hooks';
 import { User } from './users.schema';
 import { UsersService } from './users.service';
 import { EmailService } from '../email/email.service';
+import { FilesService } from '../files/files.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { EmailService } from '../email/email.service';
     CaslModule,
     BusinessesModule,
   ],
-  providers: [UsersService, UsersHooks, UsersAbilities, EmailService],
+  providers: [UsersService, UsersHooks, UsersAbilities, FilesService, EmailService],
   exports: [UsersService],
   controllers: [UsersController],
 })

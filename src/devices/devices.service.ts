@@ -35,7 +35,7 @@ export class DevicesService {
       device = new this.deviceModel({ ...createDeviceDto, userId: userId });
 
       const notificationData = {
-        title: 'Welcome To ExploreBTK',
+        title: 'Welcome To Explore BTK',
         description: 'Please Enjoy your Journey, And Contact us if you have any queries/questions',
         video: 'https://youtu.be/4UvmC7Ftd78',
         type: NotificationType.USER
