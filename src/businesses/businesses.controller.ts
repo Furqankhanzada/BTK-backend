@@ -244,42 +244,42 @@ export class BusinessesController {
     if (user) {
       // User is registered, proceed with adding the membership
       return this.businessesService.createMember(id, createMembershipDto);
-    } else {
-      //Check if invitation for current busienss is already exists in collection
-      const invitationExist = await this.invitationModel
-        .findOne({
-          email: createMembershipDto.email,
-          businessId: id,
-        })
-        .exec();
+    }
 
-      if (invitationExist) {
-        throw new ConflictException('Invitation already sent to this user.');
-      }
-
-      // User is not registered, handle the invitation logic here
-      await this.emailService.sendRawEmail({
-        from: process.env.FROM,
-        to: createMembershipDto.email,
-        subject: 'Invitation to Explore BTK',
-        html: `
-            <h3>Hi, ${createMembershipDto.email}</h3>
-            <p>You were added as a member of ${business.name} by ${req.user.email}.</p>
-            <p><a href="http://onelink.to/xwhffr">Download the Explore BTK</a> App now, To see your membership details.</p>
-            `,
-      });
-
-      // Create an invitation object and save it in the invitations collection
-      const invitation = new this.invitationModel({
+    //Check if invitation for current busienss is already exists in collection
+    const invitationExist = await this.invitationModel
+      .findOne({
         email: createMembershipDto.email,
         businessId: id,
-        package: createMembershipDto.package,
-        billingDate: createMembershipDto.billingDate,
-      });
+      })
+      .exec();
 
-      await invitation.save();
-      return { message: 'invitation-sent' };
+    if (invitationExist) {
+      throw new ConflictException('Invitation already sent to this user.');
     }
+
+    // User is not registered, handle the invitation logic here
+    await this.emailService.sendRawEmail({
+      from: process.env.FROM,
+      to: createMembershipDto.email,
+      subject: 'Invitation to Explore BTK',
+      html: `
+        <h3>Hi, ${createMembershipDto.email}</h3>
+        <p>You were added as a member of ${business.name} by ${req.user.email}.</p>
+        <p><a href="http://onelink.to/xwhffr">Download the Explore BTK</a> App now, To see your membership details.</p>
+        `,
+    });
+
+    // Create an invitation object and save it in the invitations collection
+    const invitation = new this.invitationModel({
+      email: createMembershipDto.email,
+      businessId: id,
+      package: createMembershipDto.package,
+      billingDate: createMembershipDto.billingDate,
+    });
+
+    await invitation.save();
+    return { message: 'invitation-sent' };
   }
 
   @Delete('/:id/member')
