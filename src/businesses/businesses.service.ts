@@ -350,18 +350,18 @@ export class BusinessesService {
 
   async getBusinessMembers(id: string) {
     const members = await this.userModel
-      .find({ 'membership.businessId': id })
-      .select('name email membership avatar')
+      .find({ 'memberships.businessId': id })
+      .select('name email memberships avatar')
       .lean()
       .exec();
   
     return members.map(member => {
-      const membership = member.memberships.find(
+      const memberships = member.memberships.find(
         membership => membership.businessId === id,
       );
       return {
         ...member,
-        membership,
+        memberships,
       };
     });
   }
