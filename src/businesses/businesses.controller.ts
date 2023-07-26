@@ -15,7 +15,6 @@ import {
   ValidationPipe,
   ParseBoolPipe,
   UnauthorizedException,
-  ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -38,17 +37,16 @@ import {
   CreateMembershipDto,
   UpdateMembershipDto,
 } from '../auth/dto/business-member.dto';
-import { Invitation, User } from '../users/users.schema';
-import { EmailService } from '../email/email.service';
+import { User } from '../users/users.schema';
+import { InvitationService } from '../invitation/invitation.service';
 
 @Controller('businesses')
 export class BusinessesController {
   constructor(
     private readonly businessesService: BusinessesService,
     private readonly businessAbility: BusinessAbilities,
-    private emailService: EmailService,
+    private invitationService: InvitationService,
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Invitation.name) private invitationModel: Model<Invitation>,
   ) {}
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -246,39 +244,10 @@ export class BusinessesController {
       return this.businessesService.createMember(id, createMembershipDto);
     }
 
-    //Check if invitation for current busienss is already exists in collection
-    const invitationExist = await this.invitationModel
-      .findOne({
-        email: createMembershipDto.email,
-        businessId: id,
-      })
-      .exec();
-
-    if (invitationExist) {
-      throw new ConflictException('Invitation already sent to this user.');
-    }
-
-    // User is not registered, handle the invitation logic here
-    await this.emailService.sendRawEmail({
-      from: process.env.FROM,
-      to: createMembershipDto.email,
-      subject: `Join ${business.name}`,
-      html: `
-        <h3>Hi, ${createMembershipDto.email}</h3>
-        <p>You are invited to join ${business.name}, Please <a href="http://onelink.to/xwhffr">Download the Explore BTK</a> and register your account with same email: ${createMembershipDto.email}</p>
-        `,
-    });
-
-    // Create an invitation object and save it in the invitations collection
-    const invitation = new this.invitationModel({
-      email: createMembershipDto.email,
+    return this.invitationService.create({
+      ...createMembershipDto,
       businessId: id,
-      package: createMembershipDto.package,
-      billingDate: createMembershipDto.billingDate,
     });
-
-    await invitation.save();
-    return { message: 'invitation-sent' };
   }
 
   @Delete('/:id/member')
