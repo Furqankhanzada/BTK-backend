@@ -10,7 +10,7 @@ import {
   UpdateOwnerDTO,
 } from './business.dto';
 import { FilesService } from '../files/files.service';
-import { CreateMembershipDto, UpdateMembershipDto } from 'src/auth/auth-credentials.dto';
+import { CreateMembershipDto, UpdateMembershipDto } from 'src/auth/dto/business-member.dto';
 import { User } from 'src/users/users.schema';
 
 interface FindAllArgs {

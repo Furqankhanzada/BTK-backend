@@ -1,4 +1,3 @@
-import { PartialType } from '@nestjs/mapped-types';
 import {
   IsString,
   IsNotEmpty,
@@ -6,9 +5,7 @@ import {
   MaxLength,
   MinLength,
   IsOptional,
-  IsObject,
 } from 'class-validator';
-import { Package } from 'src/users/users.schema';
 
 export class AuthNewUserDto {
   @IsString()
@@ -46,26 +43,6 @@ export class ProfileUpdateDto {
   @IsOptional()
   avatar: string;
 }
-
-export class CreateMembershipDto {
-  @IsString()
-  @IsNotEmpty()
-  email: string;
-
-  @IsObject()
-  @IsNotEmpty()
-  package: Package;
-
-  @IsString()
-  @IsNotEmpty()
-  billingDate: Date;
-
-  @IsString()
-  @IsOptional()
-  status: string;
-}
-
-export class UpdateMembershipDto extends PartialType(CreateMembershipDto) {}
 
 export class AuthCredentialsDto {
   @IsNotEmpty()

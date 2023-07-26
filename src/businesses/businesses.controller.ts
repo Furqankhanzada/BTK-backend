@@ -37,7 +37,7 @@ import { Action } from '../casl/casl-ability.factory';
 import {
   CreateMembershipDto,
   UpdateMembershipDto,
-} from '../auth/auth-credentials.dto';
+} from '../auth/dto/business-member.dto';
 import { Invitation, User } from '../users/users.schema';
 import { EmailService } from '../email/email.service';
 
