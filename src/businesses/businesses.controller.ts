@@ -39,12 +39,14 @@ import {
 } from '../auth/dto/business-member.dto';
 import { User } from '../users/users.schema';
 import { InvitationService } from '../invitation/invitation.service';
+import { BusinessMemberAbilities } from './business-member.abilities';
 
 @Controller('businesses')
 export class BusinessesController {
   constructor(
     private readonly businessesService: BusinessesService,
     private readonly businessAbility: BusinessAbilities,
+    private readonly businessMemberAbility: BusinessMemberAbilities,
     private invitationService: InvitationService,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
@@ -229,9 +231,10 @@ export class BusinessesController {
     @Param('id') id: string,
     @Body(ValidationPipe) createMembershipDto: CreateMembershipDto,
   ) {
-    const business = await this.businessesService.findOne(id);
+    const business = await this.businessesService.getOne({ _id: id });
+    const ability = this.businessMemberAbility.get(req.user);
 
-    if (req.user._id.toString() !== business.ownerId) {
+    if (!ability.can(Action.Create, business)) {
       throw new UnauthorizedException();
     }
 
@@ -257,9 +260,10 @@ export class BusinessesController {
     @Param('id') id: string,
     @Query('email') email: string,
   ) {
-    const business = await this.businessesService.findOne(id);
+    const business = await this.businessesService.getOne({ _id: id });
+    const ability = this.businessMemberAbility.get(req.user);
 
-    if (req.user._id.toString() !== business.ownerId) {
+    if (!ability.can(Action.Delete, business)) {
       throw new UnauthorizedException();
     }
 
@@ -273,9 +277,10 @@ export class BusinessesController {
     @Param('id') id: string,
     @Body(ValidationPipe) updateMemberDto: UpdateMembershipDto,
   ) {
-    const business = await this.businessesService.findOne(id);
+    const business = await this.businessesService.getOne({ _id: id });
+    const ability = this.businessMemberAbility.get(req.user);
 
-    if (req.user._id.toString() !== business.ownerId) {
+    if (!ability.can(Action.Update, business)) {
       throw new UnauthorizedException();
     }
 
