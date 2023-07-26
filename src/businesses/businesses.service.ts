@@ -352,23 +352,18 @@ export class BusinessesService {
     const members = await this.userModel
       .find({ 'membership.businessId': id })
       .select('name email membership avatar')
+      .lean()
       .exec();
   
-    // Filter the membership array to include only the current business
-    const filteredMembers = members.map((member) => {
-      const filteredMembership = member.membership.filter(
-        (membership) => membership.businessId === id
+    return members.map(member => {
+      const membership = member.membership.find(
+        membership => membership.businessId === id,
       );
       return {
-        _id: member._id,
-        avatar: member.avatar,
-        name: member.name,
-        email: member.email,
-        membership: filteredMembership.length > 0 ? filteredMembership[0] : null,
+        ...member,
+        membership,
       };
     });
-  
-    return filteredMembers;
   }
 
   // Favorites
