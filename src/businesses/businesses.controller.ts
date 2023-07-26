@@ -262,11 +262,10 @@ export class BusinessesController {
     await this.emailService.sendRawEmail({
       from: process.env.FROM,
       to: createMembershipDto.email,
-      subject: 'Invitation to Explore BTK',
+      subject: `Join ${business.name}`,
       html: `
         <h3>Hi, ${createMembershipDto.email}</h3>
-        <p>You were added as a member of ${business.name} by ${req.user.email}.</p>
-        <p><a href="http://onelink.to/xwhffr">Download the Explore BTK</a> App now, To see your membership details.</p>
+        <p>You are invited to join ${business.name}, Please <a href="http://onelink.to/xwhffr">Download the Explore BTK</a> and register your account with same email: ${createMembershipDto.email}</p>
         `,
     });
 
