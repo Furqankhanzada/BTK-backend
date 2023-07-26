@@ -8,7 +8,9 @@ import { BusinessesController } from './businesses.controller';
 import { BusinessesService } from './businesses.service';
 import { FilesService } from '../files/files.service';
 import { EmailService } from '../email/email.service';
-import { Invitation, InvitationSchema, User, UserSchema } from '../users/users.schema';
+import { User, UserSchema } from '../users/users.schema';
+import { Invitation, InvitationSchema } from '../invitation/invitation.schema';
+import { InvitationService } from '../invitation/invitation.service';
 
 @Module({
   imports: [
@@ -20,7 +22,7 @@ import { Invitation, InvitationSchema, User, UserSchema } from '../users/users.s
     CaslModule,
   ],
   controllers: [BusinessesController],
-  providers: [BusinessesService, BusinessAbilities, FilesService, EmailService],
+  providers: [BusinessesService, BusinessAbilities, FilesService, EmailService, InvitationService],
   exports: [BusinessesService],
 })
-export class BusinessesModule { }
+export class BusinessesModule {}

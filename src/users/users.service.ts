@@ -2,7 +2,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { Invitation, User } from './users.schema';
+import { User } from './users.schema';
 import {
   AuthNewUserDto,
   PasswordUpdateDto,
@@ -10,6 +10,7 @@ import {
 } from '../auth/auth-credentials.dto';
 import { VerificationCodeDto } from '../auth/dto/verification-code.dto';
 import { FilesService } from '../files/files.service';
+import { Invitation } from '../invitation/invitation.schema';
 
 @Injectable()
 export class UsersService {
