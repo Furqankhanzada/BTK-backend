@@ -278,7 +278,7 @@ export class BusinessesService {
   ) {
     const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
 
-    const existingMembership = user.membership.find((membership) => membership.businessId === id);
+    const existingMembership = user.memberships.find((membership) => membership.businessId === id);
   
     if (existingMembership) {
       // Handle the case where the user is already a member of the business
@@ -293,7 +293,7 @@ export class BusinessesService {
       billingDate: createMembershipDto.billingDate,
       status: createMembershipDto.status
     };
-    user.membership.push(newMembership);
+    user.memberships.push(newMembership);
   
     await user.save();
   
@@ -310,7 +310,7 @@ export class BusinessesService {
       throw new NotFoundException('User not found');
     }
   
-    const membershipIndex = user.membership.findIndex(
+    const membershipIndex = user.memberships.findIndex(
       (membership) => membership.businessId === id
     );
   
@@ -318,9 +318,9 @@ export class BusinessesService {
       throw new NotFoundException('Membership not found');
     }
   
-    user.membership[membershipIndex].package = updateMemberDto.package;
-    user.membership[membershipIndex].billingDate = updateMemberDto.billingDate;
-    user.membership[membershipIndex].status = updateMemberDto.status;
+    user.memberships[membershipIndex].package = updateMemberDto.package;
+    user.memberships[membershipIndex].billingDate = updateMemberDto.billingDate;
+    user.memberships[membershipIndex].status = updateMemberDto.status;
   
     await user.save();
   
@@ -334,7 +334,7 @@ export class BusinessesService {
       throw new NotFoundException('User not found');
     }
   
-    const membershipIndex = user.membership.findIndex(
+    const membershipIndex = user.memberships.findIndex(
       (membership) => membership.businessId === id
     );
   
@@ -342,7 +342,7 @@ export class BusinessesService {
       throw new NotFoundException('Membership not found');
     }
   
-    user.membership.splice(membershipIndex, 1);
+    user.memberships.splice(membershipIndex, 1);
     await user.save();
   
     return { message: 'success' };
@@ -356,7 +356,7 @@ export class BusinessesService {
       .exec();
   
     return members.map(member => {
-      const membership = member.membership.find(
+      const membership = member.memberships.find(
         membership => membership.businessId === id,
       );
       return {

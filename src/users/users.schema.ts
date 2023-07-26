@@ -120,7 +120,7 @@ export class User extends Document {
   addresses: Address[];
 
   @Prop({ type: [membershipSchema] })
-  membership: Membership[];
+  memberships: Membership[];
 
   @Prop({ default: UserStatus.PENDING, enum: [UserStatus.PENDING, UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.VERIFIED] })
   status: string;

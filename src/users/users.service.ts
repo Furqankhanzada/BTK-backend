@@ -85,7 +85,7 @@ export class UsersService {
         billingDate: invitation.billingDate,
       };
 
-      createdUser.membership.push(membership);
+      createdUser.memberships.push(membership);
     }
 
     try {
