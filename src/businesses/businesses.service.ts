@@ -277,12 +277,10 @@ export class BusinessesService {
     createMembershipDto: CreateMembershipDto
   ) {
     const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
+
+    const existingMembership = user.membership.find((membership) => membership.businessId === id);
   
-    const businessMembershipIndex = user.membership.findIndex(
-      (membership) => membership.businessId === id
-    );
-  
-    if (businessMembershipIndex !== -1) {
+    if (existingMembership) {
       // Handle the case where the user is already a member of the business
       throw new ConflictException('User is already a member of this business.');
     }
