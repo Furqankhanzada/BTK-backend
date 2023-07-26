@@ -66,7 +66,7 @@ export class verificationCode  {
   createdAt: Date;
 }
 
-@Schema()
+@Schema({ _id: false })
 export class Package {
   @Prop({ required: true})
   name: string;
@@ -84,7 +84,7 @@ export class Membership {
   @Prop({ required: true })
   email: string;
 
-  @Prop({ required: true, type: Package })
+  @Prop({ required: true, type: packageSchema })
   package: Package;
 
   @Prop({ required: true })
