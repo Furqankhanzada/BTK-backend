@@ -9,6 +9,7 @@ import { UsersHooks } from './users.hooks';
 import { User } from './users.schema';
 import { UsersService } from './users.service';
 import { FilesService } from '../files/files.service';
+import { Invitation, InvitationSchema } from '../invitation/invitation.schema';
 
 @Module({
   imports: [
@@ -19,6 +20,9 @@ import { FilesService } from '../files/files.service';
         useFactory: new UsersHooks().hooks,
         inject: [BusinessesService],
       },
+    ]),
+    MongooseModule.forFeature([
+      { name: Invitation.name, schema: InvitationSchema },
     ]),
     CaslModule,
     BusinessesModule,

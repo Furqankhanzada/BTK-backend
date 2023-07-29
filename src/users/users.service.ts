@@ -10,11 +10,13 @@ import {
 } from '../auth/auth-credentials.dto';
 import { VerificationCodeDto } from '../auth/dto/verification-code.dto';
 import { FilesService } from '../files/files.service';
+import { Invitation } from '../invitation/invitation.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Invitation.name) private invitationModel: Model<Invitation>,
     private readonly filesService: FilesService,
   ) { }
 
@@ -64,15 +66,33 @@ export class UsersService {
   }
 
   async register(authNewUserDto: AuthNewUserDto) {
-    const { password } = authNewUserDto;
+    const { password, email } = authNewUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     const createdUser = new this.userModel({
       ...authNewUserDto,
       password: hashedPassword,
     });
 
+    // Check if the user's email address exists in the invitations collection
+    const invitation = await this.invitationModel.findOne({ email }).exec();
+
+    if (invitation) {
+      // Invitation found, add the membership to the user
+
+      const membership = {
+        businessId: invitation.businessId,
+        email: invitation.email,
+        package: invitation.package,
+        billingDate: invitation.billingDate,
+      };
+
+      createdUser.memberships.push(membership);
+    }
+
     try {
-      return await createdUser.save();
+      const createUser = await createdUser.save();
+      await this.invitationModel.remove({ _id: invitation._id }).exec();
+      return createUser;
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException(

@@ -15,6 +15,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationUsersModule } from './notification-users/notification-users.module';
 import { DevicesModule } from './devices/devices.module';
+import { InvitationModule } from './invitation/invitation.module';
 
 @Module({
   imports: [
@@ -47,7 +48,8 @@ import { DevicesModule } from './devices/devices.module';
     EmailModule,
     NotificationsModule,
     NotificationUsersModule,
-    DevicesModule
+    DevicesModule,
+    InvitationModule
   ],
   controllers: [AppController],
   providers: [AppService],

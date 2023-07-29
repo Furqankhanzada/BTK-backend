@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Business } from './business.schema';
 import { Model, Types } from 'mongoose';
@@ -10,6 +10,8 @@ import {
   UpdateOwnerDTO,
 } from './business.dto';
 import { FilesService } from '../files/files.service';
+import { CreateMembershipDto, UpdateMembershipDto } from 'src/auth/dto/business-member.dto';
+import { User } from 'src/users/users.schema';
 
 interface FindAllArgs {
   query: Partial<Business | { 'reviews.owner._id': string }>;
@@ -21,6 +23,7 @@ interface FindAllArgs {
 export class BusinessesService {
   constructor(
     @InjectModel(Business.name) private businessModel: Model<Business>,
+    @InjectModel(User.name) private userModel: Model<User>,
     private readonly filesService: FilesService,
   ) { }
 
@@ -266,6 +269,101 @@ export class BusinessesService {
     }
 
     return this.businessModel.deleteMany({ ownerId: userId }).exec();
+  }
+
+  // Member
+  async createMember(
+    id: string,
+    createMembershipDto: CreateMembershipDto
+  ) {
+    const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
+
+    const existingMembership = user.memberships.find((membership) => membership.businessId === id);
+  
+    if (existingMembership) {
+      // Handle the case where the user is already a member of the business
+      throw new ConflictException('User is already a member of this business.');
+    }
+  
+    // Create the new membership object
+    const newMembership = {
+      businessId: id,
+      email: createMembershipDto.email,
+      package: createMembershipDto.package,
+      billingDate: createMembershipDto.billingDate,
+      status: createMembershipDto.status
+    };
+    user.memberships.push(newMembership);
+  
+    await user.save();
+  
+    return newMembership;
+  }
+
+  async updateMember(
+    id: string,
+    updateMemberDto: UpdateMembershipDto
+  ) {
+    const user = await this.userModel.findOne({ email: updateMemberDto.email }).exec();
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    const membershipIndex = user.memberships.findIndex(
+      (membership) => membership.businessId === id
+    );
+  
+    if (membershipIndex === -1) {
+      throw new NotFoundException('Membership not found');
+    }
+  
+    user.memberships[membershipIndex].package = updateMemberDto.package;
+    user.memberships[membershipIndex].billingDate = updateMemberDto.billingDate;
+    user.memberships[membershipIndex].status = updateMemberDto.status;
+  
+    await user.save();
+  
+    return { businessId: id, ...updateMemberDto };
+  }
+
+  async deleteMember(id: string, email: string) {
+    const user = await this.userModel.findOne({ email }).exec();
+  
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+  
+    const membershipIndex = user.memberships.findIndex(
+      (membership) => membership.businessId === id
+    );
+  
+    if (membershipIndex === -1) {
+      throw new NotFoundException('Membership not found');
+    }
+  
+    user.memberships.splice(membershipIndex, 1);
+    await user.save();
+  
+    return { message: 'success' };
+  }
+
+  async getBusinessMembers(id: string) {
+    const members = await this.userModel
+      .find({ 'memberships.businessId': id })
+      .select('name email memberships avatar')
+      .lean()
+      .exec();
+  
+    return members.map(member => {
+      const memberships = member.memberships.find(
+        membership => membership.businessId === id,
+      );
+      return {
+        ...member,
+        memberships,
+      };
+    });
   }
 
   // Favorites
