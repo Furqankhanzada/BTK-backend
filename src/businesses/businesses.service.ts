@@ -360,8 +360,11 @@ export class BusinessesService {
         membership => membership.businessId === id,
       );
       return {
-        ...member,
-        memberships,
+        _id: member._id,
+        avatar: member.avatar,
+        name: member.name,
+        email: member.email,
+        membership: memberships,
       };
     });
   }
