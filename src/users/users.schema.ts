@@ -23,7 +23,7 @@ export enum UserStatus {
 
 export enum MembershipStatus {
   ACTIVE = 'active',
-  ARCHIEVE = 'archieve',
+  ARCHIVE = 'archive',
 }
 
 
@@ -90,7 +90,7 @@ export class Membership {
   @Prop({ required: true })
   billingDate: Date;
 
-  @Prop({ default: MembershipStatus.ACTIVE, enum: [MembershipStatus.ACTIVE, MembershipStatus.ARCHIEVE] })
+  @Prop({ default: MembershipStatus.ACTIVE, enum: [MembershipStatus.ACTIVE, MembershipStatus.ARCHIVE] })
   status?: MembershipStatus;
 }
 const membershipSchema = SchemaFactory.createForClass(Membership);
