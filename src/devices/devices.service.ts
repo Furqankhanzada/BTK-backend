@@ -37,7 +37,8 @@ export class DevicesService {
       const notificationData = {
         title: 'Welcome To Explore BTK',
         description: 'Please Enjoy your Journey, And Contact us if you have any queries/questions',
-        video: 'https://youtu.be/4UvmC7Ftd78',
+        video: 'https://btk-explore-prod.s3.ap-southeast-1.amazonaws.com/assets/introduction/Introduction-explore-btk.mp4',
+        link: 'explorebtk://contact-us',
         type: NotificationType.USER
       }
       const createdNotification = new this.notificationModel({ ...notificationData, userId: userId });
@@ -49,7 +50,7 @@ export class DevicesService {
           token: createDeviceDto.fcmToken,
           title: notificationData.title,
           message: notificationData.description,
-          data: { deeplink: createdNotification.id },
+          data: { deeplink: `explorebtk://notifications/${createdNotification.id}` },
           type: notificationData.type
         });
       } catch (error) {
