@@ -21,6 +21,11 @@ export enum UserStatus {
   BLOCKED = 'BLOCKED',
 }
 
+export enum MembershipStatus {
+  ACTIVE = 'active',
+  ARCHIVE = 'archive',
+}
+
 
 @Schema() // _id for watermelon DB
 export class Location  {
@@ -61,6 +66,35 @@ export class verificationCode  {
   createdAt: Date;
 }
 
+@Schema({ _id: false })
+export class Package {
+  @Prop({ required: true})
+  name: string;
+
+  @Prop({ required: true})
+  id: string;
+}
+const packageSchema = SchemaFactory.createForClass(Package);
+
+@Schema({ _id: false })
+export class Membership {
+  @Prop({ required: true })
+  businessId: string;
+
+  @Prop({ required: true })
+  email: string;
+
+  @Prop({ required: true, type: packageSchema })
+  package: Package;
+
+  @Prop({ required: true })
+  billingDate: Date;
+
+  @Prop({ default: MembershipStatus.ACTIVE, enum: [MembershipStatus.ACTIVE, MembershipStatus.ARCHIVE] })
+  status?: MembershipStatus;
+}
+const membershipSchema = SchemaFactory.createForClass(Membership);
+
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -84,6 +118,9 @@ export class User extends Document {
 
   @Prop({ type: [addressSchema] })
   addresses: Address[];
+
+  @Prop({ type: [membershipSchema] })
+  memberships: Membership[];
 
   @Prop({ default: UserStatus.PENDING, enum: [UserStatus.PENDING, UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.VERIFIED] })
   status: string;
