@@ -73,6 +73,9 @@ export class Package {
 
   @Prop({ required: true})
   id: string;
+
+  @Prop({ required: true})
+  duration: string;
 }
 const packageSchema = SchemaFactory.createForClass(Package);
 
