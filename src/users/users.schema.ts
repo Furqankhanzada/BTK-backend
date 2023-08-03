@@ -26,9 +26,8 @@ export enum MembershipStatus {
   ARCHIVE = 'archive',
 }
 
-
 @Schema() // _id for watermelon DB
-export class Location  {
+export class Location {
   @Prop({ required: true, enum: ['Point'] })
   type: string;
 
@@ -38,7 +37,7 @@ export class Location  {
 export const locationSchema = SchemaFactory.createForClass(Location);
 
 @Schema() // _id for watermelon DB
-export class Address  {
+export class Address {
   @Prop({ required: true, enum: [AddressTypes.VILLA, AddressTypes.TOWER] })
   type: string;
 
@@ -58,8 +57,8 @@ const addressSchema = SchemaFactory.createForClass(Address);
 
 // verification code object
 @Schema()
-export class verificationCode  {
-  @Prop({ required: true})
+export class verificationCode {
+  @Prop({ required: true })
   code: string;
 
   @Prop({ required: true })
@@ -68,13 +67,13 @@ export class verificationCode  {
 
 @Schema({ _id: false })
 export class Package {
-  @Prop({ required: true})
+  @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true})
+  @Prop({ required: true })
   id: string;
 
-  @Prop({ required: true})
+  @Prop({ required: true, default: 'Monthly' })
   duration: string;
 }
 const packageSchema = SchemaFactory.createForClass(Package);
@@ -93,11 +92,13 @@ export class Membership {
   @Prop({ required: true })
   billingDate: Date;
 
-  @Prop({ default: MembershipStatus.ACTIVE, enum: [MembershipStatus.ACTIVE, MembershipStatus.ARCHIVE] })
+  @Prop({
+    default: MembershipStatus.ACTIVE,
+    enum: [MembershipStatus.ACTIVE, MembershipStatus.ARCHIVE],
+  })
   status?: MembershipStatus;
 }
 const membershipSchema = SchemaFactory.createForClass(Membership);
-
 
 @Schema({ timestamps: true })
 export class User extends Document {
@@ -125,10 +126,22 @@ export class User extends Document {
   @Prop({ type: [membershipSchema] })
   memberships: Membership[];
 
-  @Prop({ default: UserStatus.PENDING, enum: [UserStatus.PENDING, UserStatus.ACTIVE, UserStatus.BLOCKED, UserStatus.VERIFIED] })
+  @Prop({
+    default: UserStatus.PENDING,
+    enum: [
+      UserStatus.PENDING,
+      UserStatus.ACTIVE,
+      UserStatus.BLOCKED,
+      UserStatus.VERIFIED,
+    ],
+  })
   status: string;
 
-  @Prop({ type: [String], default: [ Roles.USER ], enum: [Roles.ADMIN, Roles.USER] })
+  @Prop({
+    type: [String],
+    default: [Roles.USER],
+    enum: [Roles.ADMIN, Roles.USER],
+  })
   roles: string[];
 
   @Prop({ type: verificationCode })
