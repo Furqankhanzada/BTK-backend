@@ -73,7 +73,7 @@ jobs:
             export SESHOST=${{ secrets.SESHOST }}
             export SESUSER=${{ secrets.SESUSER }}
             export SESPASSWORD=${{ secrets.SESPASSWORD }}
-            export FROM=${{ secrets.FROM }}
+            export FROM="${{ secrets.FROM }}"
             export GOOGLE_ACCOUNT_CREDENTIALS=${{ secrets.GOOGLE_ACCOUNT_CREDENTIALS }}
             yarn --prod
             pm2 delete "btk"
@@ -104,7 +104,7 @@ jobs:
             export SESHOST=${{ secrets.SESHOST }}
             export SESUSER=${{ secrets.SESUSER }}
             export SESPASSWORD=${{ secrets.SESPASSWORD }}
-            export FROM=${{ secrets.FROM }}
+            export FROM="${{ secrets.FROM }}"
             export GOOGLE_ACCOUNT_CREDENTIALS=${{ secrets.GOOGLE_ACCOUNT_CREDENTIALS }}
             yarn --prod
             pm2 delete "explore-btk"
