@@ -20,6 +20,9 @@ export class Notification extends Document {
   image: string;
 
   @Prop()
+  video: string;
+
+  @Prop()
   link: string;
 
   @Prop(

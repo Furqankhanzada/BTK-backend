@@ -8,6 +8,7 @@ import { UsersController } from './users.controller';
 import { UsersHooks } from './users.hooks';
 import { User } from './users.schema';
 import { UsersService } from './users.service';
+import { EmailService } from '../email/email.service';
 import { FilesService } from '../files/files.service';
 import { Invitation, InvitationSchema } from '../invitation/invitation.schema';
 
@@ -27,7 +28,7 @@ import { Invitation, InvitationSchema } from '../invitation/invitation.schema';
     CaslModule,
     BusinessesModule,
   ],
-  providers: [UsersService, UsersHooks, UsersAbilities, FilesService],
+  providers: [UsersService, UsersHooks, UsersAbilities, FilesService, EmailService],
   exports: [UsersService],
   controllers: [UsersController],
 })

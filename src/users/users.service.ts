@@ -9,6 +9,7 @@ import {
   ProfileUpdateDto,
 } from '../auth/auth-credentials.dto';
 import { VerificationCodeDto } from '../auth/dto/verification-code.dto';
+import { EmailService } from '../email/email.service';
 import { FilesService } from '../files/files.service';
 import { Invitation } from '../invitation/invitation.schema';
 
@@ -17,8 +18,9 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Invitation.name) private invitationModel: Model<Invitation>,
+    private emailService: EmailService,
     private readonly filesService: FilesService,
-  ) { }
+    ) {}
 
   async findOne(_id: string): Promise<User | undefined> {
     return this.userModel.findOne({ _id }, { password: 0 });
@@ -91,7 +93,19 @@ export class UsersService {
 
     try {
       const createUser = await createdUser.save();
+
+      await this.emailService.sendRawEmail({
+        from: process.env.FROM,
+        to: createUser.email,
+        subject: 'Welcome to Explore BTK',
+        html: `
+            <h3>Welcome ${createUser.name}!</h3>
+            <p>You have successfully registered your account.</p>
+            `,
+      });
+
       await this.invitationModel.remove({ _id: invitation._id }).exec();
+
       return createUser;
     } catch (error) {
       if (error.code === 11000) {

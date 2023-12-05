@@ -16,6 +16,10 @@ export class CreateNotificationDto {
 
     @IsString()
     @IsOptional()
+    video: string;
+
+    @IsString()
+    @IsOptional()
     link: string;
 
     @IsString()
