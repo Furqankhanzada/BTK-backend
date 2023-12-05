@@ -43,15 +43,11 @@ export class InvitationService {
     const business = await this.businessesService.findOne(
       createInvitationDto.businessId,
     );
-    await this.emailService.sendRawEmail({
-      from: process.env.FROM,
-      to: createInvitationDto.email,
-      subject: `Join ${business.name}`,
-      html: `
-        <h3>Hi, ${createInvitationDto.email}</h3>
-        <p>You are invited to join ${business.name}, Please <a href="http://onelink.to/xwhffr">Download the Explore BTK</a> and register your account with same email: ${createInvitationDto.email}</p>
-        `,
-    });
+
+    await this.emailService.sendInvitationToJoinBusiness(
+      business,
+      createInvitationDto.email,
+    );
 
     return { message: 'invitation-sent' };
   }
