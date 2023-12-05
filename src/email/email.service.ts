@@ -1,7 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 import { User } from '../users/users.schema';
+import { Business } from '../businesses/business.schema';
 
 @Injectable()
 export class EmailService {
@@ -17,19 +18,25 @@ export class EmailService {
       },
     });
   }
-
-  async sendRawEmail(options): Promise<void> {
-    console.log(process.env);
-    await this.mailerService
-      .sendMail(options)
-      .then(success => {
-        console.log(success);
-      })
-      .catch(err => {
-        console.log(err);
-        throw new BadRequestException(
-          'sorry, Something went wrong, please try again',
-        );
-      });
+  sendInvitationToJoinBusiness(business: Business, to: string) {
+    return this.mailerService.sendMail({
+      to,
+      subject: `Join ${business.name}`,
+      template: './business-invitation',
+      context: {
+        businessName: business.name,
+        email: to,
+      },
+    });
+  }
+  sendWelcomeMail(name: string, to: string) {
+    return this.mailerService.sendMail({
+      to,
+      subject: `Welcome to Explore BTK`,
+      template: './welcome',
+      context: {
+        name,
+      },
+    });
   }
 }
