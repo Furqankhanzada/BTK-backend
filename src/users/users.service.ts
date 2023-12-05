@@ -20,7 +20,7 @@ export class UsersService {
     @InjectModel(Invitation.name) private invitationModel: Model<Invitation>,
     private emailService: EmailService,
     private readonly filesService: FilesService,
-    ) {}
+  ) {}
 
   async findOne(_id: string): Promise<User | undefined> {
     return this.userModel.findOne({ _id }, { password: 0 });
@@ -94,15 +94,10 @@ export class UsersService {
     try {
       const createUser = await createdUser.save();
 
-      await this.emailService.sendRawEmail({
-        from: process.env.FROM,
-        to: createUser.email,
-        subject: 'Welcome to Explore BTK',
-        html: `
-            <h3>Welcome ${createUser.name}!</h3>
-            <p>You have successfully registered your account.</p>
-            `,
-      });
+      await this.emailService.sendWelcomeMail(
+        createUser.name,
+        createUser.email,
+      );
 
       await this.invitationModel.remove({ _id: invitation._id }).exec();
 
@@ -121,7 +116,9 @@ export class UsersService {
 
     if (user?.avatar) {
       const avatarURL = new URL(user.avatar);
-      this.filesService.deletePublicFile(avatarURL.pathname.replace(/^\/|\/$/g, ''));
+      this.filesService.deletePublicFile(
+        avatarURL.pathname.replace(/^\/|\/$/g, ''),
+      );
     }
 
     return this.userModel.remove({ _id: id });
