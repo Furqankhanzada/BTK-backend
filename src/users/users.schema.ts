@@ -73,6 +73,9 @@ export class Package {
   @Prop({ required: true })
   id: string;
 
+  @Prop({ required: true })
+  amount: number;
+
   @Prop({ required: true, default: 'Monthly' })
   duration: string;
 }
