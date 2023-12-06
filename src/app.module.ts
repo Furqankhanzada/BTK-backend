@@ -16,6 +16,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationUsersModule } from './notification-users/notification-users.module';
 import { DevicesModule } from './devices/devices.module';
 import { InvitationModule } from './invitation/invitation.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { InvitationModule } from './invitation/invitation.module';
     NotificationUsersModule,
     DevicesModule,
     InvitationModule,
+    InvoicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
