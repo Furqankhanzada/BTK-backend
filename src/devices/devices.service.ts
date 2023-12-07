@@ -6,18 +6,37 @@ import { CreateDeviceDto } from './dto/device.dto';
 import { Device } from './device.schema';
 
 import { PushNotificationsService } from '../notifications/push-notifications.service';
-import { NotificationType, Notification } from '../notifications/notification.schema';
+import {
+  NotificationType,
+  Notification,
+} from '../notifications/notification.schema';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class DevicesService {
   constructor(
     @InjectModel(Device.name) private deviceModel: Model<Device>,
-    @InjectModel(Notification.name) private notificationModel: Model<Notification>,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<Notification>,
     private readonly pushNotificationsService: PushNotificationsService,
-  ) { }
+    private readonly usersService: UsersService,
+  ) {}
 
-  async create(createDeviceDto: CreateDeviceDto, userId?: string): Promise<Device> {
-    const existingDevice = await this.deviceModel.findOne({ deviceUniqueId: createDeviceDto.deviceUniqueId }).exec();
+  async create(
+    createDeviceDto: CreateDeviceDto,
+    userId?: string,
+  ): Promise<Device> {
+    if (userId) {
+      await this.usersService.userModel.findOneAndUpdate(
+        { _id: userId },
+        {
+          fcmToken: createDeviceDto.fcmToken,
+        },
+      );
+    }
+    const existingDevice = await this.deviceModel
+      .findOne({ deviceUniqueId: createDeviceDto.deviceUniqueId })
+      .exec();
     let device: Device;
     if (existingDevice) {
       if (existingDevice.fcmToken !== createDeviceDto.fcmToken) {
@@ -36,23 +55,33 @@ export class DevicesService {
 
       const notificationData = {
         title: 'Welcome To Explore BTK',
-        description: 'Please Enjoy your Journey, And Contact us if you have any queries/questions',
-        video: 'https://btk-explore-prod.s3.ap-southeast-1.amazonaws.com/assets/introduction/Introduction-explore-btk.mp4',
+        description:
+          'Please Enjoy your Journey, And Contact us if you have any queries/questions',
+        video:
+          'https://btk-explore-prod.s3.ap-southeast-1.amazonaws.com/assets/introduction/Introduction-explore-btk.mp4',
         link: 'explorebtk://contact-us',
-        type: NotificationType.USER
-      }
-      const createdNotification = new this.notificationModel({ ...notificationData, userId: userId });
+        type: NotificationType.USER,
+      };
+      const createdNotification = new this.notificationModel({
+        ...notificationData,
+        userId: userId,
+      });
 
       try {
         await device.save();
         await createdNotification.save();
-        this.pushNotificationsService.sendFirebaseMessage(createDeviceDto.fcmToken, {
-          token: createDeviceDto.fcmToken,
-          title: notificationData.title,
-          message: notificationData.description,
-          data: { deeplink: `explorebtk://notifications/${createdNotification.id}` },
-          type: notificationData.type
-        });
+        await this.pushNotificationsService.sendFirebaseMessage(
+          createDeviceDto.fcmToken,
+          {
+            token: createDeviceDto.fcmToken,
+            title: notificationData.title,
+            message: notificationData.description,
+            data: {
+              deeplink: `explorebtk://notifications/${createdNotification.id}`,
+            },
+            type: notificationData.type,
+          },
+        );
       } catch (error) {
         console.log('device create error', error);
         return error;
@@ -66,6 +95,6 @@ export class DevicesService {
   }
 
   findOne(id: string) {
-    return this.deviceModel.findOne({ _id: id }).exec()
+    return this.deviceModel.findOne({ _id: id }).exec();
   }
 }

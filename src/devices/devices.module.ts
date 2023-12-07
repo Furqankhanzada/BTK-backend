@@ -4,14 +4,21 @@ import { Device, DeviceSchema } from './device.schema';
 import { DevicesService } from './devices.service';
 import { DevicesController } from './devices.controller';
 import { PushNotificationsService } from 'src/notifications/push-notifications.service';
-import { NotificationSchema, Notification } from '../notifications/notification.schema';
+import {
+  NotificationSchema,
+  Notification,
+} from '../notifications/notification.schema';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
-    MongooseModule.forFeature([{ name: Notification.name, schema: NotificationSchema }]),
+    MongooseModule.forFeature([
+      { name: Notification.name, schema: NotificationSchema },
+    ]),
+    UsersModule,
   ],
   controllers: [DevicesController],
-  providers: [DevicesService, PushNotificationsService]
+  providers: [DevicesService, PushNotificationsService],
 })
 export class DevicesModule {}

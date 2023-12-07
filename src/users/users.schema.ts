@@ -120,6 +120,9 @@ export class User extends Document {
   @Prop()
   avatar: string;
 
+  @Prop()
+  fcmToken: string;
+
   @Prop({ default: true })
   resident: boolean;
 

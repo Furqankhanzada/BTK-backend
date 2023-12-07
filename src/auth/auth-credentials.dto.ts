@@ -42,6 +42,10 @@ export class ProfileUpdateDto {
   @IsString()
   @IsOptional()
   avatar: string;
+
+  @IsString()
+  @IsOptional()
+  fcmToken: string;
 }
 
 export class AuthCredentialsDto {
