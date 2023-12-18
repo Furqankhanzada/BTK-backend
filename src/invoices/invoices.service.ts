@@ -110,7 +110,7 @@ export class InvoicesService {
     });
   }
   //TODO: send notification before 3 days every day till due date
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_DAY_AT_8AM)
   async handleInvoiceAndSendDueDateNotification(date = new Date()) {
     this.logger.debug('Called EVERY_DAY_AT_8AM');
     const users = await this.usersService.getActiveMembershipUsers(date);
