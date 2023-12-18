@@ -1,10 +1,10 @@
+import { Model, Types } from 'mongoose';
 import {
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
 
 import { User } from 'src/users/users.schema';
 import { FilesService } from 'src/files/files.service';
@@ -38,7 +38,7 @@ export class BusinessesService {
 
   async create(
     createBusinessDTO: CreateBusinessDTO,
-    ownerId,
+    ownerId: string,
   ): Promise<Business> {
     const createdBusiness = new this.businessModel({
       ...createBusinessDTO,
@@ -300,7 +300,7 @@ export class BusinessesService {
       businessId: id,
       email: createMembershipDto.email,
       package: createMembershipDto.package,
-      billingDate: createMembershipDto.billingDate,
+      startedAt: createMembershipDto.billingDate,
       status: createMembershipDto.status,
     };
     user.memberships.push(newMembership);
@@ -328,7 +328,7 @@ export class BusinessesService {
     }
 
     user.memberships[membershipIndex].package = updateMemberDto.package;
-    user.memberships[membershipIndex].billingDate = updateMemberDto.billingDate;
+    user.memberships[membershipIndex].startedAt = updateMemberDto.billingDate;
     user.memberships[membershipIndex].status = updateMemberDto.status;
 
     await user.save();

@@ -2,7 +2,6 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { addDays, endOfDay, startOfDay } from 'date-fns';
 
 import { MembershipStatus, User } from './users.schema';
 import {
@@ -86,7 +85,7 @@ export class UsersService {
         businessId: invitation.businessId,
         email: invitation.email,
         package: invitation.package,
-        billingDate: invitation.billingDate,
+        startedAt: invitation.billingDate,
       };
 
       createdUser.memberships.push(membership);
@@ -124,14 +123,12 @@ export class UsersService {
 
     return this.userModel.deleteOne({ _id: id });
   }
-  getActiveMembershipUsersWhichDueSoon(date = new Date(), beforeDays = 3) {
-    const futureDate = addDays(date, beforeDays);
-    return this.userModel.find({
-      'memberships.billingDate': {
-        $gte: startOfDay(date),
-        $lte: endOfDay(futureDate),
-      },
-      'memberships.status': MembershipStatus.ACTIVE,
-    });
+  getActiveMembershipUsers(date: Date) {
+    return this.userModel
+      .find({
+        'memberships.status': MembershipStatus.ACTIVE,
+        // 'memberships.endDate': { $or: [{ $lte: date }, { $exist: false }] },
+      })
+      .exec();
   }
 }

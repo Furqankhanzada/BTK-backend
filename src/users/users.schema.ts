@@ -79,7 +79,17 @@ export class Package {
   @Prop({ required: true, default: 'Monthly' })
   duration: string;
 }
-const packageSchema = SchemaFactory.createForClass(Package);
+export const packageSchema = SchemaFactory.createForClass(Package);
+
+@Schema({ _id: false })
+export class History {
+  @Prop({ required: true })
+  startedAt: Date;
+
+  @Prop()
+  endedAt: Date;
+}
+const historySchema = SchemaFactory.createForClass(History);
 
 @Schema({ _id: false })
 export class Membership {
@@ -93,7 +103,13 @@ export class Membership {
   package: Package;
 
   @Prop({ required: true })
-  billingDate: Date;
+  startedAt: Date;
+
+  @Prop()
+  endedAt?: Date;
+
+  @Prop({ type: [historySchema] })
+  history?: History[];
 
   @Prop({
     default: MembershipStatus.ACTIVE,
