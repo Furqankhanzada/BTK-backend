@@ -50,7 +50,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
             ls
             cd /opt/bitnami/projects/btk
-            nvm use 14.10
+            nvm use 19
             export NODE_ENV=production
             export DATABASE_USER=${{ secrets.DATABASE_USER }}
             export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
