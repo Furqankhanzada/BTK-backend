@@ -60,6 +60,13 @@ export class NotificationsService {
     }
   }
 
+  async createNotification(
+    createNotificationDto: Partial<Notification>,
+  ): Promise<Notification> {
+    return this.notificationModel.create({
+      ...createNotificationDto,
+    });
+  }
   findAll(userId: string, deviceUniqueId: string, recent: boolean) {
     const pipeline = [
       {

@@ -13,7 +13,7 @@ export interface PushNotificationMessageData {
 }
 
 export interface PushNotificationMessage {
-  token: string;
+  token?: string;
   title: string;
   message: string;
   data?: PushNotificationMessageData;

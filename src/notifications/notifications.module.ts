@@ -11,11 +11,19 @@ import { CaslModule } from 'src/casl/casl.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Notification.name, schema: NotificationSchema }]),
-    MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
+    MongooseModule.forFeature([
+      { name: Notification.name, schema: NotificationSchema },
+      { name: Device.name, schema: DeviceSchema },
+    ]),
     CaslModule,
   ],
   controllers: [NotificationsController],
-  providers: [NotificationsService, PushNotificationsService, NotificationAbilities, NotificationsGateway]
+  providers: [
+    NotificationsService,
+    PushNotificationsService,
+    NotificationAbilities,
+    NotificationsGateway,
+  ],
+  exports: [NotificationsService],
 })
 export class NotificationsModule {}
