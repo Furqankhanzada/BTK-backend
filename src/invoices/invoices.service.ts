@@ -1,10 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
-import { UpdateInvoiceDto } from './dto/update-invoice.dto';
-
-import { UsersService } from '../users/users.service';
 import {
   addDays,
   addMonths,
@@ -15,8 +10,12 @@ import {
   startOfDay,
 } from 'date-fns';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model, QueryOptions } from 'mongoose';
 
+import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+
+import { UsersService } from '../users/users.service';
 import { Invoice, InvoiceStatus } from './invoice.schema';
 import { BusinessesService } from '../businesses/businesses.service';
 import { PushNotificationsService } from '../notifications/push-notifications.service';
@@ -36,17 +35,20 @@ export class InvoicesService {
     private readonly pushNotificationsService: PushNotificationsService,
     private readonly notificationsService: NotificationsService,
   ) {}
+
   create(createInvoiceDto: CreateInvoiceDto) {
     const invoice = new this.invoiceModel(createInvoiceDto);
     return invoice.save();
   }
 
-  findAll() {
-    return `This action returns all invoices`;
+  findAll(filter: FilterQuery<Invoice>, options: QueryOptions<Invoice>) {
+    return this.invoiceModel.find(filter, {}, options).exec();
   }
-
-  findOne(id: number) {
-    return `This action returns a #${id} invoice`;
+  getCount(filter: FilterQuery<Invoice>) {
+    return this.invoiceModel.countDocuments(filter).exec();
+  }
+  findOne(_id: string) {
+    return this.invoiceModel.findOne({ _id }).exec();
   }
 
   update(id: number, updateInvoiceDto: UpdateInvoiceDto) {

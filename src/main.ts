@@ -4,11 +4,11 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log', 'debug', 'verbose']
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.setGlobalPrefix('api/v1');
-  app.enableCors(); // add this line
+  app.enableCors();
   await app.listen(parseInt(process.env.PORT, 10) || 3000);
 }
 bootstrap();
