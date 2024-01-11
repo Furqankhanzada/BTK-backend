@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { BusinessesModule } from '../businesses/businesses.module';
 import { PushNotificationsService } from '../notifications/push-notifications.service';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { CaslModule } from '../casl/casl.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     UsersModule,
     BusinessesModule,
     NotificationsModule,
+    CaslModule,
   ],
   controllers: [InvoicesController],
   providers: [InvoicesService, PushNotificationsService],
