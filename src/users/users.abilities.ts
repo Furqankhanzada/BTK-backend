@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Action, CaslAbilityFactory } from '../casl/casl-ability.factory';
-import { User } from '../users/users.schema';
+import { User } from './users.schema';
 
 export const SUBJECT = 'User';
 
