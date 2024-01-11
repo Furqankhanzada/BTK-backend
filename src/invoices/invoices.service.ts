@@ -51,12 +51,12 @@ export class InvoicesService {
     return this.invoiceModel.findOne({ _id }).exec();
   }
 
-  update(id: number, updateInvoiceDto: UpdateInvoiceDto) {
-    return `This action updates a #${id} invoice`;
+  update(_id: string, updateInvoiceDto: UpdateInvoiceDto) {
+    return this.invoiceModel.findOneAndUpdate({ _id }, updateInvoiceDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} invoice`;
+  remove(_id: string) {
+    return this.invoiceModel.deleteOne({ _id });
   }
   markAsPaid(_id: string) {
     return this.invoiceModel
