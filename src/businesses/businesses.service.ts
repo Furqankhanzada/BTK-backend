@@ -300,7 +300,7 @@ export class BusinessesService {
       businessId: id,
       email: createMembershipDto.email,
       package: createMembershipDto.package,
-      startedAt: createMembershipDto.billingDate,
+      startedAt: createMembershipDto.startedAt,
       status: createMembershipDto.status,
     };
     user.memberships.push(newMembership);
@@ -327,9 +327,11 @@ export class BusinessesService {
       throw new NotFoundException('Membership not found');
     }
 
-    user.memberships[membershipIndex].package = updateMemberDto.package;
-    user.memberships[membershipIndex].startedAt = updateMemberDto.billingDate;
-    user.memberships[membershipIndex].status = updateMemberDto.status;
+    user.memberships = user.memberships.map(membership => {
+      return membership.businessId === id
+        ? { ...membership, ...updateMemberDto }
+        : membership;
+    });
 
     await user.save();
 

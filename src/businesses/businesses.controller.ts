@@ -250,6 +250,7 @@ export class BusinessesController {
     return this.invitationService.create({
       ...createMembershipDto,
       businessId: id,
+      billingDate: createMembershipDto.startedAt,
     });
   }
 
