@@ -17,7 +17,7 @@ import { JsonParsePipe } from './json.parse.pipe';
 import { Invoice, InvoiceStatus } from "./invoice.schema";
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Action, CaslAbilityFactory } from "../casl/casl-ability.factory";
-import { Roles, User } from "../users/users.schema";
+import { Roles, User } from '../users/users.schema';
 
 @Controller('invoices')
 export class InvoicesController {
@@ -44,7 +44,11 @@ export class InvoicesController {
     }
 
     if (!user.roles.includes(Roles.ADMIN)) {
-      filter = {...filter, ownerId: user._id, status: { $ne: InvoiceStatus.PENDING }};
+      const status = filter.status;
+      filter = {...filter, ownerId: user._id, status: { $ne: InvoiceStatus.PENDING  }};
+      if(status){
+        filter.status.$eq = status;
+      }
     }
 
     const invoices = await this.invoicesService.findAll(filter, { skip, limit, sort: {[sortBy]: order.toLowerCase()} });
