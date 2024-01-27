@@ -2,7 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User } from './users.schema';
+
+import { MembershipStatus, User } from './users.schema';
 import {
   AuthNewUserDto,
   PasswordUpdateDto,
@@ -16,7 +17,7 @@ import { Invitation } from '../invitation/invitation.schema';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(User.name) public userModel: Model<User>,
     @InjectModel(Invitation.name) private invitationModel: Model<Invitation>,
     private emailService: EmailService,
     private readonly filesService: FilesService,
@@ -35,20 +36,19 @@ export class UsersService {
   }
 
   async update(_id: string, profileUpdateDto: ProfileUpdateDto): Promise<User> {
-    await this.userModel.updateOne({ _id }, profileUpdateDto).exec();
-    return this.findOne(_id);
+    return this.userModel.findOneAndUpdate({ _id }, profileUpdateDto).exec();
   }
 
   async setVerificationCode(
     _id: string,
     verificationCodeDto: VerificationCodeDto,
   ): Promise<User> {
-    return this.userModel.updateOne({ _id }, verificationCodeDto).exec();
+    return this.userModel.findOneAndUpdate({ _id }, verificationCodeDto).exec();
   }
 
   async removeVerificationCode(_id: string): Promise<User> {
     return this.userModel
-      .updateOne({ _id }, { $set: { verification: null } })
+      .findOneAndUpdate({ _id }, { $set: { verification: null } })
       .exec();
   }
 
@@ -56,7 +56,7 @@ export class UsersService {
     _id: string,
     passwordUpdateDto: PasswordUpdateDto,
   ): Promise<User> {
-    return this.userModel.updateOne({ _id }, passwordUpdateDto).exec();
+    return this.userModel.findOneAndUpdate({ _id }, passwordUpdateDto).exec();
   }
 
   async findAll({ query = {}, projection = {}, options = {} } = {}): Promise<
@@ -85,7 +85,7 @@ export class UsersService {
         businessId: invitation.businessId,
         email: invitation.email,
         package: invitation.package,
-        billingDate: invitation.billingDate,
+        startedAt: invitation.billingDate,
       };
 
       createdUser.memberships.push(membership);
@@ -99,7 +99,7 @@ export class UsersService {
         createUser.email,
       );
 
-      await this.invitationModel.remove({ _id: invitation._id }).exec();
+      await this.invitationModel.deleteOne({ _id: invitation._id }).exec();
 
       return createUser;
     } catch (error) {
@@ -111,7 +111,7 @@ export class UsersService {
       return error;
     }
   }
-  async remove(id) {
+  async remove(id: string) {
     const user = await this.findOne(id);
 
     if (user?.avatar) {
@@ -121,6 +121,14 @@ export class UsersService {
       );
     }
 
-    return this.userModel.remove({ _id: id });
+    return this.userModel.deleteOne({ _id: id });
+  }
+  getActiveMembershipUsers(date: Date) {
+    return this.userModel
+      .find({
+        'memberships.status': MembershipStatus.ACTIVE,
+        // 'memberships.endDate': { $or: [{ $lte: date }, { $exist: false }] },
+      })
+      .exec();
   }
 }

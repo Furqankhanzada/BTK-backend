@@ -1,20 +1,15 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Manual Deployment
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# Controls when the action will run.
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
-  push:
-    branches:
-      - master
-      - development
-  pull_request:
-    branches:
-      - master
-      - development
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'version eg: 2.3.1'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -32,8 +27,8 @@ jobs:
         with:
           node-version: '19.x'
       - run: |
-         yarn install
-         yarn build
+          yarn install
+          yarn build
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -42,15 +37,9 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Deploy Development
-        if: github.ref == 'refs/heads/development'
         run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ bitnami@18.141.255.223:/opt/bitnami/projects/btk
 
-      - name: Deploy Production
-        if: github.ref == 'refs/heads/master'
-        run: rsync -a -P --exclude=node_modules --exclude=src --exclude=test --exclude=.git ./ bitnami@18.141.255.223:/opt/bitnami/projects/explore-btk
-
       - name: Build and Run Development
-        if: github.ref == 'refs/heads/development'
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_ADDRESS }}
@@ -78,34 +67,3 @@ jobs:
             yarn --prod
             pm2 delete "btk"
             pm2 start dist/main.js --name "btk"
-
-      - name: Build and Run Production
-        if: github.ref == 'refs/heads/master'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST_ADDRESS }}
-          username: ${{ secrets.HOST_USER }}
-          key: ${{ secrets.EC2KEY }}
-          script: |
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-            ls
-            cd /opt/bitnami/projects/explore-btk
-            nvm use 19.3.0
-            export NODE_ENV=production
-            export PORT=3002
-            export DATABASE_USER=${{ secrets.DATABASE_USER }}
-            export DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
-            export DATABASE_NAME=${{ secrets.PRODUCTION_DATABASE_NAME }}
-            export AWS_REGION=${{ secrets.AWS_REGION }}
-            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            export AWS_PUBLIC_BUCKET_NAME=${{ secrets.PRODUCTION_AWS_PUBLIC_BUCKET_NAME }}
-            export SESHOST=${{ secrets.SESHOST }}
-            export SESUSER=${{ secrets.SESUSER }}
-            export SESPASSWORD=${{ secrets.SESPASSWORD }}
-            export FROM="${{ secrets.FROM }}"
-            export GOOGLE_ACCOUNT_CREDENTIALS=${{ secrets.GOOGLE_ACCOUNT_CREDENTIALS }}
-            yarn --prod
-            pm2 delete "explore-btk"
-            pm2 start dist/main.js --name "explore-btk"

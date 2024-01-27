@@ -13,7 +13,7 @@ export interface PushNotificationMessageData {
 }
 
 export interface PushNotificationMessage {
-  token: string;
+  token?: string;
   title: string;
   message: string;
   data?: PushNotificationMessageData;
@@ -22,7 +22,6 @@ export interface PushNotificationMessage {
 
 @Injectable()
 export class PushNotificationsService {
-
   public async sendFirebaseMessage(
     token: string,
     message: PushNotificationMessage,
@@ -47,9 +46,7 @@ export class PushNotificationsService {
         },
       };
 
-      const response = await getMessaging().send(fcmMessage, dryRun);
-
-      return response;
+      return getMessaging().send(fcmMessage, dryRun);
     } catch (error) {
       console.log('notification send error', error);
       return error;

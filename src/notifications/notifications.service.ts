@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { PushNotificationsService } from './push-notifications.service';
-import { CreateNotificationDto, UpdateNotificationDto } from './dto/notification.dto';
+import {
+  CreateNotificationDto,
+  UpdateNotificationDto,
+} from './dto/notification.dto';
 import { Notification } from './notification.schema';
 import { NotificationAbilities } from './notification.abilities';
 import { Device } from 'src/devices/device.schema';
@@ -14,14 +17,21 @@ import { UnauthorizedException } from '@nestjs/common/exceptions';
 @Injectable()
 export class NotificationsService {
   constructor(
-    @InjectModel(Notification.name) private notificationModel: Model<Notification>,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<Notification>,
     @InjectModel(Device.name) private deviceModel: Model<Device>,
     private readonly pushNotificationsService: PushNotificationsService,
     private readonly notificationAbility: NotificationAbilities,
-  ) { }
+  ) {}
 
-  async create(createNotificationDto: CreateNotificationDto, ownerId?: string): Promise<Notification> {
-    const createdNotification = new this.notificationModel({ ...createNotificationDto, userId: ownerId });
+  async create(
+    createNotificationDto: CreateNotificationDto,
+    ownerId?: string,
+  ): Promise<Notification> {
+    const createdNotification = new this.notificationModel({
+      ...createNotificationDto,
+      userId: ownerId,
+    });
     const devices = await this.deviceModel.find();
     const notificationDevices = [];
 
@@ -33,12 +43,16 @@ export class NotificationsService {
           token: userDevice.fcmToken,
           title: createNotificationDto.title,
           message: createNotificationDto.description,
-          data: { deeplink: createNotificationDto.link ? createNotificationDto.link : `explorebtk://notifications/${notification.id}` },
-          type: createNotificationDto?.type
-        })
-      })
+          data: {
+            deeplink: createNotificationDto.link
+              ? createNotificationDto.link
+              : `explorebtk://notifications/${notification.id}`,
+          },
+          type: createNotificationDto?.type,
+        });
+      });
 
-      this.pushNotificationsService.sendFirebaseMessages(notificationDevices)
+      this.pushNotificationsService.sendFirebaseMessages(notificationDevices);
       return notification;
     } catch (error) {
       console.log('notification create error', error);
@@ -46,6 +60,13 @@ export class NotificationsService {
     }
   }
 
+  async createNotification(
+    createNotificationDto: Partial<Notification>,
+  ): Promise<Notification> {
+    return this.notificationModel.create({
+      ...createNotificationDto,
+    });
+  }
   findAll(userId: string, deviceUniqueId: string, recent: boolean) {
     const pipeline = [
       {
@@ -56,18 +77,18 @@ export class NotificationsService {
               {
                 ...(userId
                   ? {
-                    $or: [
-                      { $eq: ['$userId', userId] },
-                      { $eq: ['$deviceUniqueId', deviceUniqueId] },
-                    ],
-                  }
+                      $or: [
+                        { $eq: ['$userId', userId] },
+                        { $eq: ['$deviceUniqueId', deviceUniqueId] },
+                      ],
+                    }
                   : { $eq: ['$deviceUniqueId', deviceUniqueId] }),
               },
             ],
           },
         },
       },
-    ]
+    ];
 
     const pipelines: any = [
       { $match: { $or: [{ userId }, { userId: { $exists: false } }] } },
@@ -77,12 +98,19 @@ export class NotificationsService {
           let: { nId: '$_id', nUserId: '$userId' },
           pipeline: pipeline,
           as: 'notificationUsers',
-        }
+        },
       },
       {
-        $replaceRoot: { newRoot: { $mergeObjects: [{ read: { $arrayElemAt: ["$notificationUsers.read", 0] } }, "$$ROOT"] } }
+        $replaceRoot: {
+          newRoot: {
+            $mergeObjects: [
+              { read: { $arrayElemAt: ['$notificationUsers.read', 0] } },
+              '$$ROOT',
+            ],
+          },
+        },
       },
-      { $project: { notificationUsers: 0 } }
+      { $project: { notificationUsers: 0 } },
     ];
 
     if (recent) {
@@ -93,7 +121,9 @@ export class NotificationsService {
   }
 
   async findOne(id: string, user: User) {
-    const notification = await this.notificationModel.findOne({ _id: id }).exec();
+    const notification = await this.notificationModel
+      .findOne({ _id: id })
+      .exec();
 
     if (!notification.userId) {
       return notification;
@@ -110,8 +140,13 @@ export class NotificationsService {
     return notification;
   }
 
-  update(id: string, updateNotificationDto: UpdateNotificationDto): Promise<Notification> {
-    return this.notificationModel.updateOne({ _id: id }, updateNotificationDto).exec();
+  update(
+    id: string,
+    updateNotificationDto: UpdateNotificationDto,
+  ): Promise<Notification> {
+    return this.notificationModel
+      .findOneAndUpdate({ _id: id }, updateNotificationDto)
+      .exec();
   }
 
   remove(id: string): Promise<{ deletedCount?: number }> {

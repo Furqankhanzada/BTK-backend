@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -16,6 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { NotificationUsersModule } from './notification-users/notification-users.module';
 import { DevicesModule } from './devices/devices.module';
 import { InvitationModule } from './invitation/invitation.module';
+import { InvoicesModule } from './invoices/invoices.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { InvitationModule } from './invitation/invitation.module';
     MongooseModule.forRoot(
       `mongodb+srv://${process.env.DATABASE_USER}:${process.env.DATABASE_PASSWORD}@cluster0.sk8if.mongodb.net/${process.env.DATABASE_NAME}?retryWrites=true&w=majority`,
     ),
+    ScheduleModule.forRoot(),
     CategoriesModule,
     AuthModule,
     UsersModule,
@@ -38,6 +41,7 @@ import { InvitationModule } from './invitation/invitation.module';
     NotificationUsersModule,
     DevicesModule,
     InvitationModule,
+    InvoicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

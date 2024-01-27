@@ -1,5 +1,11 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsEnum, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { MembershipStatus, Package } from 'src/users/users.schema';
 
 export class CreateMembershipDto {
@@ -13,7 +19,7 @@ export class CreateMembershipDto {
 
   @IsString()
   @IsNotEmpty()
-  billingDate: Date;
+  startedAt: Date;
 
   @IsEnum(MembershipStatus)
   @IsOptional()

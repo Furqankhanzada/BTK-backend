@@ -1,7 +1,19 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Business } from './business.schema';
 import { Model, Types } from 'mongoose';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+
+import { User } from 'src/users/users.schema';
+import { FilesService } from 'src/files/files.service';
+import {
+  CreateMembershipDto,
+  UpdateMembershipDto,
+} from 'src/auth/dto/business-member.dto';
+
+import { Business } from './business.schema';
 import {
   CreateBusinessDTO,
   UpdateBusinessDTO,
@@ -9,9 +21,6 @@ import {
   UpdateReviewUserDTO,
   UpdateOwnerDTO,
 } from './business.dto';
-import { FilesService } from '../files/files.service';
-import { CreateMembershipDto, UpdateMembershipDto } from 'src/auth/dto/business-member.dto';
-import { User } from 'src/users/users.schema';
 
 interface FindAllArgs {
   query: Partial<Business | { 'reviews.owner._id': string }>;
@@ -25,11 +34,11 @@ export class BusinessesService {
     @InjectModel(Business.name) private businessModel: Model<Business>,
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly filesService: FilesService,
-  ) { }
+  ) {}
 
   async create(
     createBusinessDTO: CreateBusinessDTO,
-    ownerId,
+    ownerId: string,
   ): Promise<Business> {
     const createdBusiness = new this.businessModel({
       ...createBusinessDTO,
@@ -98,7 +107,7 @@ export class BusinessesService {
     await this.businessModel.updateOne({ _id }, { $inc: { views: 1 } }).exec();
     // Query Single
     const pipelines: any = [
-      { $match: { _id: Types.ObjectId(_id) } },
+      { $match: { _id: new Types.ObjectId(_id) } },
       {
         $addFields: {
           reviewStats: {
@@ -201,10 +210,7 @@ export class BusinessesService {
     return this.businessModel.findOne({ _id }).exec();
   }
 
-  async update(
-    { _id }: { _id: string },
-    updateBusinessDTO: UpdateBusinessDTO,
-  ): Promise<Business> {
+  async update({ _id }: { _id: string }, updateBusinessDTO: UpdateBusinessDTO) {
     return this.businessModel.updateOne({ _id }, updateBusinessDTO).exec();
   }
 
@@ -212,13 +218,13 @@ export class BusinessesService {
     { _id }: { _id: string },
     updateOwnerDTO: UpdateOwnerDTO,
   ): Promise<Business> {
-    return this.businessModel.updateOne({ _id }, updateOwnerDTO).exec();
+    return this.businessModel.findOneAndUpdate({ _id }, updateOwnerDTO).exec();
   }
 
   async updateMany(
     { category }: { category: string },
     updateBusinessDTO: UpdateBusinessDTO,
-  ): Promise<Business> {
+  ) {
     return this.businessModel
       .updateMany({ category }, updateBusinessDTO)
       .exec();
@@ -229,11 +235,13 @@ export class BusinessesService {
 
     if (business.thumbnail) {
       const thumbnailURL = new URL(business.thumbnail);
-      this.filesService.deletePublicFile(thumbnailURL.pathname.replace(/^\/|\/$/g, ''));
+      this.filesService.deletePublicFile(
+        thumbnailURL.pathname.replace(/^\/|\/$/g, ''),
+      );
     }
 
     if (business.gallery.length) {
-      const files = business.gallery.map((image) => {
+      const files = business.gallery.map(image => {
         const galleryImageURL = new URL(image.image);
         return { Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '') };
       });
@@ -244,7 +252,6 @@ export class BusinessesService {
   }
 
   async removeManyByUser(userId: string): Promise<{ deletedCount?: number }> {
-
     const businesses = await this.findAll({
       query: { ownerId: userId.toString() },
       projection: {},
@@ -255,96 +262,100 @@ export class BusinessesService {
       businesses.forEach(business => {
         if (business.thumbnail) {
           const thumbnailURL = new URL(business.thumbnail);
-          this.filesService.deletePublicFile(thumbnailURL.pathname.replace(/^\/|\/$/g, ''));
+          this.filesService.deletePublicFile(
+            thumbnailURL.pathname.replace(/^\/|\/$/g, ''),
+          );
         }
 
         if (business.gallery.length) {
-          const files = business.gallery.map((image) => {
+          const files = business.gallery.map(image => {
             const galleryImageURL = new URL(image.image);
             return { Key: galleryImageURL.pathname.replace(/^\/|\/$/g, '') };
           });
           this.filesService.deletePublicFiles(files);
         }
-      })
+      });
     }
 
     return this.businessModel.deleteMany({ ownerId: userId }).exec();
   }
 
   // Member
-  async createMember(
-    id: string,
-    createMembershipDto: CreateMembershipDto
-  ) {
-    const user = await this.userModel.findOne({ email: createMembershipDto.email }).exec();
+  async createMember(id: string, createMembershipDto: CreateMembershipDto) {
+    const user = await this.userModel
+      .findOne({ email: createMembershipDto.email })
+      .exec();
 
-    const existingMembership = user.memberships.find((membership) => membership.businessId === id);
-  
+    const existingMembership = user.memberships.find(
+      membership => membership.businessId === id,
+    );
+
     if (existingMembership) {
       // Handle the case where the user is already a member of the business
       throw new ConflictException('User is already a member of this business.');
     }
-  
+
     // Create the new membership object
     const newMembership = {
       businessId: id,
       email: createMembershipDto.email,
       package: createMembershipDto.package,
-      billingDate: createMembershipDto.billingDate,
-      status: createMembershipDto.status
+      startedAt: createMembershipDto.startedAt,
+      status: createMembershipDto.status,
     };
     user.memberships.push(newMembership);
-  
+
     await user.save();
-  
+
     return newMembership;
   }
 
-  async updateMember(
-    id: string,
-    updateMemberDto: UpdateMembershipDto
-  ) {
-    const user = await this.userModel.findOne({ email: updateMemberDto.email }).exec();
-  
+  async updateMember(id: string, updateMemberDto: UpdateMembershipDto) {
+    const user = await this.userModel
+      .findOne({ email: updateMemberDto.email })
+      .exec();
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-  
+
     const membershipIndex = user.memberships.findIndex(
-      (membership) => membership.businessId === id
+      membership => membership.businessId === id,
     );
-  
+
     if (membershipIndex === -1) {
       throw new NotFoundException('Membership not found');
     }
-  
-    user.memberships[membershipIndex].package = updateMemberDto.package;
-    user.memberships[membershipIndex].billingDate = updateMemberDto.billingDate;
-    user.memberships[membershipIndex].status = updateMemberDto.status;
-  
+
+    user.memberships = user.memberships.map(membership => {
+      return membership.businessId === id
+        ? { ...membership, ...updateMemberDto }
+        : membership;
+    });
+
     await user.save();
-  
+
     return { businessId: id, ...updateMemberDto };
   }
 
   async deleteMember(id: string, email: string) {
     const user = await this.userModel.findOne({ email }).exec();
-  
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
-  
+
     const membershipIndex = user.memberships.findIndex(
-      (membership) => membership.businessId === id
+      membership => membership.businessId === id,
     );
-  
+
     if (membershipIndex === -1) {
       throw new NotFoundException('Membership not found');
     }
-  
+
     user.memberships.splice(membershipIndex, 1);
     await user.save();
-  
+
     return { message: 'success' };
   }
 
@@ -354,7 +365,7 @@ export class BusinessesService {
       .select('name email memberships avatar')
       .lean()
       .exec();
-  
+
     return members.map(member => {
       const memberships = member.memberships.find(
         membership => membership.businessId === id,
@@ -395,10 +406,7 @@ export class BusinessesService {
     return this.findOne(_id);
   }
 
-  async updateReview(
-    owner,
-    updateReviewDTO: UpdateReviewUserDTO,
-  ): Promise<Business> {
+  async updateReview(owner, updateReviewDTO: UpdateReviewUserDTO) {
     const updates = {};
 
     Object.entries(updateReviewDTO).forEach(([key, value]) => {
@@ -418,7 +426,7 @@ export class BusinessesService {
       .exec();
   }
 
-  async removeUserReviewsFromAllBusinesses(user): Promise<Business> {
+  async removeUserReviewsFromAllBusinesses(user) {
     return this.businessModel
       .updateMany(
         { 'reviews.owner._id': user._id.toString() },

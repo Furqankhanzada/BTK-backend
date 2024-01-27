@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Package } from 'src/users/users.schema';
+import { Package, packageSchema } from 'src/users/users.schema';
 
 @Schema({ timestamps: true })
 export class Invitation extends Document {
@@ -10,7 +10,7 @@ export class Invitation extends Document {
   @Prop({ required: true })
   businessId: string;
 
-  @Prop({ required: true, type: Package })
+  @Prop({ required: true, type: packageSchema })
   package: Package;
 
   @Prop({ required: true })

@@ -23,7 +23,14 @@ import { InvitationService } from '../invitation/invitation.service';
     CaslModule,
   ],
   controllers: [BusinessesController],
-  providers: [BusinessesService, BusinessAbilities, BusinessMemberAbilities, FilesService, EmailService, InvitationService],
+  providers: [
+    BusinessesService,
+    BusinessAbilities,
+    BusinessMemberAbilities,
+    FilesService,
+    EmailService,
+    InvitationService,
+  ],
   exports: [BusinessesService],
 })
 export class BusinessesModule {}
