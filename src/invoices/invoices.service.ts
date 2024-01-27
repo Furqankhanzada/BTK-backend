@@ -126,7 +126,7 @@ export class InvoicesService {
         );
         if (invoice) {
           const diffInDays = differenceInDays(invoice.invoiceDueAt, date);
-          const link = `explorebtk://memberships/${invoice.business._id}/payments`;
+          const link = `explorebtk://invoices/${invoice.business._id}`;
           console.log('invoice present diffInDays', diffInDays);
           if (
             diffInDays <= InvoicesService.START_REMINDER_BEFORE_DAYS &&
