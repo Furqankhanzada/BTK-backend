@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { User } from 'src/users/users.schema';
 import { FilesService } from 'src/files/files.service';
+import { InvoicesService } from 'src/invoices/invoices.service';
 import {
   CreateMembershipDto,
   UpdateMembershipDto,
@@ -34,6 +35,7 @@ export class BusinessesService {
     @InjectModel(Business.name) private businessModel: Model<Business>,
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly filesService: FilesService,
+    private readonly invoiceService: InvoicesService,
   ) {}
 
   async create(
@@ -304,6 +306,26 @@ export class BusinessesService {
       status: createMembershipDto.status,
     };
     user.memberships.push(newMembership);
+
+    const date = new Date();
+    const {
+      endDate: invoiceDueAt,
+    } = this.invoiceService.calculateActiveMonthDates(
+      date,
+      newMembership.startedAt,
+    );
+
+    const business = await this.getOne({
+      _id: id,
+    });
+
+    await this.invoiceService.create({
+      ownerId: user._id,
+      amount: newMembership.package.amount,
+      invoiceDueAt,
+      business: { ...business },
+      package: newMembership.package,
+    });
 
     await user.save();
 

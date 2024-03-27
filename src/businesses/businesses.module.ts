@@ -12,6 +12,7 @@ import { EmailService } from '../email/email.service';
 import { User, UserSchema } from '../users/users.schema';
 import { Invitation, InvitationSchema } from '../invitation/invitation.schema';
 import { InvitationService } from '../invitation/invitation.service';
+import { InvoicesService } from 'src/invoices/invoices.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { InvitationService } from '../invitation/invitation.service';
     FilesService,
     EmailService,
     InvitationService,
+    InvoicesService,
   ],
   exports: [BusinessesService],
 })
